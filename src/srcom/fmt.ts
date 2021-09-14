@@ -1,0 +1,40 @@
+import { bold as boldTerminal } from "https://deno.land/std@0.106.0/fmt/colors.ts";
+
+export const MARKUP: MarkupType = typeof globalThis.Deno === "undefined"
+  ? "browser"
+  : (Deno.noColor === true ? "plain" : "markdown");
+
+export type MarkupType = "browser" | "plain" | "markdown" | "terminal" | "object";
+
+export class Format {
+  markup: MarkupType;
+  constructor(markup: MarkupType) {
+    this.markup = markup;
+  }
+  bold(string: string, markupOpt: MarkupType = "plain"): string {
+    switch (this.markup || markupOpt) {
+      case "browser":
+        return `<b>${string}</b>`;
+      case "markdown":
+        return `**${string}**`;
+      case "terminal":
+        return boldTerminal(string);
+      default:
+        return string;
+    }
+  }
+
+  link(
+    link: string,
+    name: string | false = false,
+    markupOpt: MarkupType = "plain",
+  ): string {
+    switch (this.markup || markupOpt) {
+      case "markdown":
+        if (name) return `[${name}](${link})`;
+        /* falls through */
+      default:
+        return link;
+    }
+  }
+}
