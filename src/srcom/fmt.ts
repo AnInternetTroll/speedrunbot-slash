@@ -4,7 +4,12 @@ export const MARKUP: MarkupType = typeof globalThis.Deno === "undefined"
   ? "browser"
   : (Deno.noColor === true ? "plain" : "markdown");
 
-export type MarkupType = "browser" | "plain" | "markdown" | "terminal" | "object";
+export type MarkupType =
+  | "browser"
+  | "plain"
+  | "markdown"
+  | "terminal"
+  | "object";
 
 export class Format {
   markup: MarkupType;

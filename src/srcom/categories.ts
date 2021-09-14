@@ -31,19 +31,20 @@ export async function categories(
     gameId = gameIdTmp ? gameIdTmp.id : false;
   } else gameId = game;
 
-  if (!game) output.push(`No game with the abbreviation ${game} found`);
-
-  const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
-  const categories = (await res.json()).data as SpeedrunCom.Category[];
-  const fullGameCategories: string[] = [];
-  const miscCategories: string[] = [];
-  categories.forEach(category => {
-    if (category.miscellaneous) miscCategories.push(category.name);
-    else fullGameCategories.push(category.name);
-  });
-  output.push(`${fmt.bold(`Categories - ${game}`)}`);
-  output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
-  output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
+  if (!gameId) output.push(`No game with the abbreviation ${game} found`);
+  else {
+    const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
+    const categories = (await res.json()).data as SpeedrunCom.Category[];
+    const fullGameCategories: string[] = [];
+    const miscCategories: string[] = [];
+    categories.forEach((category) => {
+      if (category.miscellaneous) miscCategories.push(category.name);
+      else fullGameCategories.push(category.name);
+    });
+    output.push(`${fmt.bold(`Categories - ${game}`)}`);
+    output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
+    output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
+  }
   return output.join("\n");
 }
 

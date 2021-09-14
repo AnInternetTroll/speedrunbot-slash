@@ -77,10 +77,10 @@ export async function examined(
   output.push(`${fmt.bold("Examined Count")}: ${username}`);
   output.push(`Fullgame: ${fullGameRuns}`);
   output.push(`Individual Level: ${individualLevelRuns}`);
-  output.push("---")
+  output.push("---");
   output.push(`Verified: ${verifiedRuns}`);
   output.push(`Rejected: ${rejectedRuns}`);
-  output.push("---")
+  output.push("---");
   output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
   return output.join("\n");
 }

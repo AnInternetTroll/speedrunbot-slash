@@ -1,11 +1,13 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format, MarkupType } from "./fmt.ts";
-import { getAll, getGame, getUser, SRC_API } from "./utils.ts";
+import { getUser, SRC_API } from "./utils.ts";
 import { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
-interface GamesObject { games: number }
+interface GamesObject {
+  games: number;
+}
 
 export async function games(
   username: string,

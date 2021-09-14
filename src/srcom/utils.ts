@@ -27,12 +27,11 @@ export async function getUser(
 ): Promise<SpeedrunCom.User | false> {
   let res: Response;
   if (id) {
-    res = await fetch(`${SRC_API}/users/${encodeURI(username)}`)
+    res = await fetch(`${SRC_API}/users/${encodeURI(username)}`);
     const data = (await res.json()).data as SpeedrunCom.User;
     return res.ok ? data : false;
-  }
-  else {
-    res = await fetch(`${SRC_API}/users?lookup=${encodeURI(username)}`)
+  } else {
+    res = await fetch(`${SRC_API}/users?lookup=${encodeURI(username)}`);
     const data = (await res.json()).data as SpeedrunCom.User[];
     return data[0] ? data[0] : false;
   }
