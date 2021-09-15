@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
-import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format, MarkupType } from "./fmt.ts";
 import { getAll, getGame, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
@@ -87,16 +86,5 @@ export async function examined(
 
 if (import.meta.main) {
 	const [username, ...games] = Deno.args;
-	console.log(await examined(username, games, { outputType: "markdown" }));
+	console.log(await examined(username, games, { outputType: "terminal" }));
 }
-
-Deno.test("Get user by username", async () => {
-	const res = await examined("AnInternetTroll", [], {
-		outputType: "plain",
-	});
-	const expected = `Examined Count: AnInternetTroll
-Fullgame: 360
-Individual Level: 184
-Total: 544`;
-	assertEquals(res, expected);
-});

@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format } from "./fmt.ts";
 import { getAll, getGame, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
@@ -52,11 +51,3 @@ if (import.meta.main) {
 	const [username, ...games] = Deno.args;
 	console.log(await runs(username, games, { outputType: "terminal" }));
 }
-Deno.test("Get user by username", async () => {
-	const res = await runs("AnInternetTroll", undefined, { outputType: "plain" });
-	const expected = `Run Count: AnInternetTroll
-Fullgame: 20
-Individual Level: 48
-Total: 68`;
-	assertEquals(res, expected);
-});

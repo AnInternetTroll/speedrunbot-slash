@@ -1,11 +1,10 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format } from "./fmt.ts";
 import { getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
-const dateFormat = Intl.DateTimeFormat("en-uk", {
+export const dateFormat = Intl.DateTimeFormat("en-uk", {
 	day: "numeric",
 	month: "long",
 	year: "numeric",
@@ -81,14 +80,3 @@ export default whois;
 if (import.meta.main) {
 	console.log(await whois(Deno.args[0], { outputType: "markdown" }));
 }
-
-Deno.test("Get user by username", async () => {
-	const res = await whois("AnInternetTroll", { outputType: "plain" });
-	const user = await getUser("AnInternetTroll");
-	if (!user) throw new Error("Invalid user");
-	const expected = `Username: ${user.names.international}
-Signed up: ${dateFormat(new Date(user.signup))}
-Socials: https://www.youtube.com/channel/UCYP1Hr3mGPZTCzOdZfF_2Qg, https://www.twitch.tv/aninternettroll
-Country: ${user.location.country.names.international} (${user.location.country.code})`;
-	assertEquals(res, expected);
-});

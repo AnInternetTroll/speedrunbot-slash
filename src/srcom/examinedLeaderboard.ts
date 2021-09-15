@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
-//import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format } from "./fmt.ts";
 import { getAll, getGame, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";

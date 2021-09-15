@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
-import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format } from "./fmt.ts";
 import { getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
@@ -52,13 +51,3 @@ if (import.meta.main) {
 	const [username, ...games] = Deno.args;
 	console.log(await worldRecords(username, games, { outputType: "terminal" }));
 }
-Deno.test("Get world records by username", async () => {
-	const res = await worldRecords("AnInternetTroll", undefined, {
-		outputType: "plain",
-	});
-	const expected = `World Record Count: AnInternetTroll
-Fullgame: 0
-Individual Level: 0
-Total: 0`;
-	assertEquals(res, expected);
-});

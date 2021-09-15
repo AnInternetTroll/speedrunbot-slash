@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-// import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
 import { Format, MarkupType } from "./fmt.ts";
 import { getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
