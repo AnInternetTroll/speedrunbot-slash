@@ -1,53 +1,44 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. --no-check
 import {
-  ApplicationCommandInteraction,
-  Client,
-  Embed,
-  event,
-  Intents,
-  slash,
+	Client,
+	event,
+	Intents,
 } from "https://deno.land/x/harmony@v2.1.3/mod.ts";
 import { commands } from "./srcom/slashCommands.ts";
 
 import "https://deno.land/x/dot_env@0.2.0/load.ts";
 
-import { games } from "./srcom/games.ts";
+import { SpeedrunCom } from "./srcom/slashCommands.ts";
 
 export class SpeedRunBot extends Client {
-  @event()
-  ready() {
-    console.log("Started!");
-    this.register();
-  }
+	@event()
+	ready() {
+		console.log("Started!");
+		this.interactions.loadModule(new SpeedrunCom());
+		// this.deleteCommands(Deno.env.get("TEST_SERVER"));
+		this.register();
+	}
 
-  register() {
-    commands.forEach((command) => {
-      this.interactions.commands.create(command, Deno.env.get("TEST_SERVER"))
-        .then((cmd) => console.log(`Created Slash Command ${cmd.name}!`))
-        .catch((cmd) =>
-          console.log(`Failed to create ${Deno.inspect(cmd)} command!`)
-        );
-    });
-  }
+	register() {
+		commands.forEach((command) => {
+			this.interactions.commands.create(command, Deno.env.get("TEST_SERVER"))
+				.then((cmd) => console.log(`Created Slash Command ${cmd.name}!`))
+				.catch((cmd) => console.log(Deno.inspect(cmd)));
+		});
+	}
 
-  @slash()
-  async games(i: ApplicationCommandInteraction) {
-    const [username] = i.options.map((opt) => opt.value);
-    const [title, ...content] =
-      (await games(username, { outputType: "markdown" })).split("\n");
-
-    const embed = new Embed({
-      title: title,
-      description: content.join("\n"),
-    });
-    await i.reply({ embeds: [embed] });
-  }
+	async deleteCommands(guild?: string) {
+		const cmds = await this.interactions.commands.all();
+		cmds.forEach((cmd) => {
+			this.interactions.commands.delete(cmd.id, guild);
+		});
+	}
 }
 
 if (import.meta.main) {
- const client = new SpeedRunBot({
-    intents: Intents.None,
-    token: Deno.env.get("TOKEN"),
-  });
-  client.connect();
+	const client = new SpeedRunBot({
+		intents: Intents.NonPrivileged,
+		token: Deno.env.get("TOKEN"),
+	});
+	client.connect();
 }

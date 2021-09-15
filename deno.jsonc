@@ -1,0 +1,13 @@
+{
+	"$schema": "https://cdn.deno.land/deno/versions/v1.14.0/raw/cli/schemas/config-file.v1.json",
+	"fmt": {
+		"options": {
+			"useTabs": true
+		}
+	},
+	"compilerOptions": {
+		"jsx": "react",
+		"jsxFactory": "h",
+		"jsxFragmentFactory": "Fragment"
+	}
+}
