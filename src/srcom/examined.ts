@@ -29,6 +29,7 @@ export async function examined(
 		outputType?: MarkupType;
 	} = {},
 ): Promise<string | ExaminedObject> {
+	games = games.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	let userId: string;

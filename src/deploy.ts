@@ -5,12 +5,11 @@
 
 import { client, init } from "./deps_harmony.ts";
 import { SpeedrunCom } from "./srcom/slashCommands.ts";
-import { start } from "https://raw.githubusercontent.com/lucacasonato/fresh/main/server.ts";
-
-import routes from "./routes.gen.ts";
 
 // Disabling the frontend
 // How do I use this with harmony???
+// import { start } from "https://raw.githubusercontent.com/lucacasonato/fresh/main/server.ts";
+// import routes from "./routes.gen.ts";
 // start(routes);
 
 init({ env: true, path: "/discord/interactions" });

@@ -9,6 +9,7 @@ export async function worldRecords(
 	games: string[] = [],
 	{ id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string> {
+	games = games.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	let userId: string;

@@ -21,6 +21,7 @@ export async function examinedLeaderboard(
 	games: string[],
 	{ id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string | LeaderboardMod[]> {
+	games = games.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const leaderboard: LeaderboardMod[] = [];
