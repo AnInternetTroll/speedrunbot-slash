@@ -1,14 +1,10 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. --no-check
-import {
-	Client,
-	event,
-	Intents,
-} from "https://deno.land/x/harmony@v2.1.3/mod.ts";
 import { commands } from "./srcom/slashCommands.ts";
 
 import "https://deno.land/x/dot_env@0.2.0/load.ts";
 
 import { SpeedrunCom } from "./srcom/slashCommands.ts";
+import { Client, event, Intents } from "./deps_harmony.ts";
 
 export class SpeedRunBot extends Client {
 	@event()

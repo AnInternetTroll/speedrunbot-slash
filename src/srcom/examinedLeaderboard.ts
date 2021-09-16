@@ -27,10 +27,10 @@ export async function examinedLeaderboard(
 	const url = new URL(`${SRC_API}/runs`);
 	for (const game in games) {
 		let gameObj: SpeedrunCom.Game | false;
-		if (id) {
+		if (!id) {
 			gameObj = await getGame(games[game]);
 		} else {
-			const res = await fetch(`${SRC_API}/games/${game}`);
+			const res = await fetch(`${SRC_API}/games/${games[game]}`);
 			const data = await res.json();
 			gameObj = data.data as SpeedrunCom.Game;
 		}

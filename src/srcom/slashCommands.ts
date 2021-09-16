@@ -6,7 +6,7 @@ import {
 	slash,
 	SlashCommandOptionType,
 	SlashCommandPartial,
-} from "https://deno.land/x/harmony@v2.1.3/deploy.ts";
+} from "../deps_harmony.ts";
 
 import { games } from "./games.ts";
 import { examined } from "./examined.ts";
