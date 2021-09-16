@@ -9,6 +9,9 @@ import { start } from "https://raw.githubusercontent.com/lucacasonato/fresh/main
 
 import routes from "./routes.gen.ts";
 
-start(routes);
+// Disabling the frontend
+// How do I use this with harmony???
+// start(routes);
+
 init({ env: true, path: "/discord/interactions" });
 client.loadModule(new SpeedrunCom());
