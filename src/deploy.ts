@@ -3,7 +3,7 @@
 /// <reference lib="deno.ns" />
 /// <reference lib="deno.unstable" />
 
-import { client } from "./deps_harmony.ts";
+import { client } from "./pages/api/discord/interactions.ts";
 import { SpeedrunCom } from "./srcom/slashCommands.ts";
 
 // Disabling the frontend

@@ -1,7 +1,6 @@
 // deno-lint-ignore-file no-unreachable no-explicit-any
 import {
 	ApplicationCommandInteraction,
-	client,
 	InteractionType,
 } from "../../../deps_harmony.ts";
 import {
@@ -9,6 +8,7 @@ import {
 	InteractionApplicationCommandResolved,
 	InteractionPayload,
 	InteractionResponseType,
+	InteractionsClient,
 	User,
 } from "https://deno.land/x/harmony@v2.1.3/mod.ts";
 import { decodeText } from "https://deno.land/x/harmony@v2.1.3/src/utils/encoding.ts";
@@ -16,6 +16,11 @@ import {
 	readAll,
 	readerFromStreamReader,
 } from "https://deno.land/std@0.107.0/io/mod.ts";
+
+export const client = new InteractionsClient({
+	token: Deno.env.get("TOKEN"),
+	publicKey: Deno.env.get("PUBLIC_KEY"),
+});
 
 export default async (req: Request): Promise<Response> => {
 	const bad = new Response(

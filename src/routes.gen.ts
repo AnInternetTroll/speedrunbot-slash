@@ -8,13 +8,13 @@ import * as $2 from "./pages/api/discord/interactions.ts";
 import * as $3 from "./pages/login.tsx";
 
 const routes = {
-  pages: {
-    "./pages/index.tsx": $0,
-    "./pages/api/discord/token.ts": $1,
-    "./pages/api/discord/interactions.ts": $2,
-    "./pages/login.tsx": $3,
-  },
-  baseUrl: import.meta.url,
+	pages: {
+		"./pages/index.tsx": $0,
+		"./pages/api/discord/token.ts": $1,
+		"./pages/api/discord/interactions.ts": $2,
+		"./pages/login.tsx": $3,
+	},
+	baseUrl: import.meta.url,
 };
 
 export default routes;

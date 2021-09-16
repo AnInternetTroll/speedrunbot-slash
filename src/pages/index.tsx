@@ -1,6 +1,6 @@
 /** @jsx h */
-import { h, IS_BROWSER, useState } from "../deps.ts";
-import { client } from "../deps_harmony.ts";
+import { h, IS_BROWSER } from "../deps.ts";
+import { client } from "./api/discord/interactions.ts";
 import { DISCORD_URL } from "../utils.ts";
 
 export default function Home() {
