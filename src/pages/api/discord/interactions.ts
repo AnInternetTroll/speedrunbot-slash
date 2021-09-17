@@ -35,7 +35,6 @@ export default async (req: Request): Promise<Response> => {
 		const body = (await req.body.getReader().read()).value;
 		if (body === undefined) return bad;
 
-		// we have to wrap because there are some weird scope errors
 		if (req.method.toLowerCase() !== "post") return bad;
 
 		const signature = req.headers.get("x-signature-ed25519");
@@ -52,11 +51,9 @@ export default async (req: Request): Promise<Response> => {
 		try {
 			const payload: InteractionPayload = JSON.parse(decodeText(rawbody));
 
-			// TODO: Maybe fix all this hackery going on here?
 			if (payload.type === InteractionType.APPLICATION_COMMAND) {
-				res = new ApplicationCommandInteraction(this as any, payload, {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					user: new User(this as any, (payload.member?.user ?? payload.user)!),
+				res = new ApplicationCommandInteraction(client as any, payload, {
+					user: new User(client as any, (payload.member?.user ?? payload.user)!),
 					member: payload.member as any,
 					guild: payload.guild_id as any,
 					channel: payload.channel_id as any,
@@ -69,9 +66,8 @@ export default async (req: Request): Promise<Response> => {
 					},
 				});
 			} else {
-				res = new Interaction(this as any, payload, {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					user: new User(this as any, (payload.member?.user ?? payload.user)!),
+				res = new Interaction(client as any, payload, {
+					user: new User(client as any, (payload.member?.user ?? payload.user)!),
 					member: payload.member as any,
 					guild: payload.guild_id as any,
 					channel: payload.channel_id as any,
@@ -99,6 +95,7 @@ export default async (req: Request): Promise<Response> => {
 
 		await (client as any)._process(res);
 	} catch (e) {
+		console.log(e);
 		await client.emit("interactionError", e);
 		return bad;
 	}
