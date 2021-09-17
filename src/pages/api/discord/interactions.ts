@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-unreachable no-explicit-any
+// deno-lint-ignore-file no-explicit-any
 import {
 	ApplicationCommandInteraction,
 	InteractionType,
@@ -74,7 +74,16 @@ export default async (req: Request): Promise<Response> => {
 					channel: payload.channel_id as any,
 				});
 			}
+
+			if (res.type === InteractionType.PING) {
+				await res.respond({ type: InteractionResponseType.PONG });
+				client.emit("ping");
+				return bad;
+			}
+
 			await client.emit("interaction", res);
+			await (client as any)._process(res);
+
 			return new Response(res instanceof FormData ? res : JSON.stringify(res), {
 				status: 200,
 				headers: new Headers({
@@ -87,14 +96,6 @@ export default async (req: Request): Promise<Response> => {
 			console.log(e);
 			return bad;
 		}
-
-		if (res.type === InteractionType.PING) {
-			await res.respond({ type: InteractionResponseType.PONG });
-			client.emit("ping");
-			return bad;
-		}
-
-		await (client as any)._process(res);
 	} catch (e) {
 		console.log(e);
 		await client.emit("interactionError", e);
