@@ -46,6 +46,7 @@ export default async (req: Request): Promise<Response> => {
 			? req.body
 			: await readAll(readerFromStreamReader(bodyReader));
 		const verify = await client.verifyKey(rawbody, signature, timestamp);
+		console.log(verify, new TextDecoder().decode(rawbody), signature, timestamp);
 		if (!verify) return bad;
 
 		let res: ApplicationCommandInteraction | Interaction;
