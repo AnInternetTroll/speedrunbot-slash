@@ -42,20 +42,12 @@ export default async (req: Request): Promise<Response> => {
 		if (signature === null || timestamp === null) return bad;
 
 		const verify = await client.verifyKey(rawbody, signature, timestamp);
-
-		console.log(
-			verify,
-			new TextDecoder().decode(rawbody),
-			signature,
-			timestamp,
-		);
-
 		if (!verify) return bad;
 
 		let res: ApplicationCommandInteraction | Interaction;
 		try {
 			const payload: InteractionPayload = JSON.parse(decodeText(rawbody));
-
+			console.log(payload);
 			if (payload.type === InteractionType.APPLICATION_COMMAND) {
 				res = new ApplicationCommandInteraction(client as any, payload, {
 					user: new User(
@@ -84,6 +76,7 @@ export default async (req: Request): Promise<Response> => {
 					channel: payload.channel_id as any,
 				});
 			}
+			console.log(res);
 			await client.emit("interaction", res);
 			return new Response(res instanceof FormData ? res : JSON.stringify(res), {
 				status: 200,
