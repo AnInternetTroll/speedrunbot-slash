@@ -12,15 +12,14 @@ import {
 	User,
 } from "https://deno.land/x/harmony@v2.1.3/mod.ts";
 import { decodeText } from "https://deno.land/x/harmony@v2.1.3/src/utils/encoding.ts";
-import {
-	readAll,
-	readerFromStreamReader,
-} from "https://deno.land/std@0.107.0/io/mod.ts";
+import { SpeedrunCom } from "../../../srcom/slashCommands.ts";
 
 export const client = new InteractionsClient({
 	token: Deno.env.get("TOKEN"),
 	publicKey: Deno.env.get("PUBLIC_KEY"),
 });
+
+client.loadModule(new SpeedrunCom());
 
 export default async (req: Request): Promise<Response> => {
 	const bad = new Response(
@@ -47,7 +46,6 @@ export default async (req: Request): Promise<Response> => {
 		let res: ApplicationCommandInteraction | Interaction;
 		try {
 			const payload: InteractionPayload = JSON.parse(decodeText(rawbody));
-			console.log(payload);
 			if (payload.type === InteractionType.APPLICATION_COMMAND) {
 				res = new ApplicationCommandInteraction(client as any, payload, {
 					user: new User(
@@ -76,7 +74,6 @@ export default async (req: Request): Promise<Response> => {
 					channel: payload.channel_id as any,
 				});
 			}
-			console.log(res);
 			await client.emit("interaction", res);
 			return new Response(res instanceof FormData ? res : JSON.stringify(res), {
 				status: 200,
