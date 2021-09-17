@@ -32,8 +32,11 @@ export default async (req: Request): Promise<Response> => {
 	try {
 		if (req.bodyUsed === true) throw new Error("Request Body already used");
 		if (req.body === null) return bad;
-		const body = (await req.body.getReader().read()).value;
+		const bodyReader = req.body.getReader();
+		const body = (await bodyReader.read()).value;
 		if (body === undefined) return bad;
+
+		bodyReader.releaseLock();
 
 		if (req.method.toLowerCase() !== "post") return bad;
 
@@ -43,7 +46,7 @@ export default async (req: Request): Promise<Response> => {
 
 		const rawbody = req.body instanceof Uint8Array
 			? req.body
-			: await readAll(readerFromStreamReader(req.body.getReader()));
+			: await readAll(readerFromStreamReader(bodyReader));
 		const verify = await client.verifyKey(rawbody, signature, timestamp);
 		if (!verify) return bad;
 
@@ -53,7 +56,10 @@ export default async (req: Request): Promise<Response> => {
 
 			if (payload.type === InteractionType.APPLICATION_COMMAND) {
 				res = new ApplicationCommandInteraction(client as any, payload, {
-					user: new User(client as any, (payload.member?.user ?? payload.user)!),
+					user: new User(
+						client as any,
+						(payload.member?.user ?? payload.user)!,
+					),
 					member: payload.member as any,
 					guild: payload.guild_id as any,
 					channel: payload.channel_id as any,
@@ -67,7 +73,10 @@ export default async (req: Request): Promise<Response> => {
 				});
 			} else {
 				res = new Interaction(client as any, payload, {
-					user: new User(client as any, (payload.member?.user ?? payload.user)!),
+					user: new User(
+						client as any,
+						(payload.member?.user ?? payload.user)!,
+					),
 					member: payload.member as any,
 					guild: payload.guild_id as any,
 					channel: payload.channel_id as any,
