@@ -32,9 +32,8 @@ export default async (req: Request): Promise<Response> => {
 	try {
 		if (req.bodyUsed === true) throw new Error("Request Body already used");
 		if (req.body === null) return bad;
-		const bodyReader = req.body.getReader();
-		const body = (await bodyReader.read()).value;
-		if (body === undefined) return bad;
+		const rawbody = (await req.body.getReader().read()).value;
+		if (rawbody === undefined) return bad;
 
 		if (req.method.toLowerCase() !== "post") return bad;
 
@@ -42,11 +41,15 @@ export default async (req: Request): Promise<Response> => {
 		const timestamp = req.headers.get("x-signature-timestamp");
 		if (signature === null || timestamp === null) return bad;
 
-		const rawbody = req.body instanceof Uint8Array
-			? req.body
-			: await readAll(readerFromStreamReader(bodyReader));
 		const verify = await client.verifyKey(rawbody, signature, timestamp);
-		console.log(verify, new TextDecoder().decode(rawbody), signature, timestamp);
+
+		console.log(
+			verify,
+			new TextDecoder().decode(rawbody),
+			signature,
+			timestamp,
+		);
+
 		if (!verify) return bad;
 
 		let res: ApplicationCommandInteraction | Interaction;
