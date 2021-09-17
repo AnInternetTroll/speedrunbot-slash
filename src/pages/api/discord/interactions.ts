@@ -36,8 +36,6 @@ export default async (req: Request): Promise<Response> => {
 		const body = (await bodyReader.read()).value;
 		if (body === undefined) return bad;
 
-		bodyReader.releaseLock();
-
 		if (req.method.toLowerCase() !== "post") return bad;
 
 		const signature = req.headers.get("x-signature-ed25519");
