@@ -15,6 +15,7 @@ import { categories } from "./categories.ts";
 import { runs } from "./runs.ts";
 import { whois } from "./whois.ts";
 import { worldRecords } from "./worldrecords.ts";
+import { categoriesPlayed } from "./categoriesPlayed.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -44,6 +45,21 @@ export const commands: SlashCommandPartial[] = [
 			{
 				...srcGame,
 				required: true,
+			},
+		],
+	},
+	{
+		name: "categories-played",
+		description: "See how many categories a player has submitted runs to.",
+		options: [
+			{
+				...srcUser,
+				required: true,
+			},
+			srcGame,
+			{
+				...srcGame,
+				name: "game2",
 			},
 		],
 	},
@@ -146,6 +162,18 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) => categories(i.option("game"), { outputType: "markdown" }),
+		);
+	}
+
+	@slash("categories-played")
+	async categoriesPlayed(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				categoriesPlayed(i.option("username"), [
+					i.option("game"),
+					i.option("game2"),
+				], { outputType: "markdown" }),
 		);
 	}
 
