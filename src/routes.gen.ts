@@ -5,14 +5,16 @@
 import * as $0 from "./pages/index.tsx";
 import * as $1 from "./pages/api/discord/token.ts";
 import * as $2 from "./pages/api/discord/interactions.ts";
-import * as $3 from "./pages/login.tsx";
+import * as $3 from "./pages/api/discord/bot_info.ts";
+import * as $4 from "./pages/login.tsx";
 
 const routes = {
 	pages: {
 		"./pages/index.tsx": $0,
 		"./pages/api/discord/token.ts": $1,
 		"./pages/api/discord/interactions.ts": $2,
-		"./pages/login.tsx": $3,
+		"./pages/api/discord/bot_info.ts": $3,
+		"./pages/login.tsx": $4,
 	},
 	baseUrl: import.meta.url,
 };

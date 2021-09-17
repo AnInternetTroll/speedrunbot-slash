@@ -1,5 +1,5 @@
 import { DISCORD_URL } from "../../../utils.ts";
-import { client } from "../../../deps_harmony.ts";
+import { client } from "./interactions.ts";
 
 export default async (req: Request): Promise<Response> => {
 	try {
@@ -9,14 +9,18 @@ export default async (req: Request): Promise<Response> => {
 			client_secret: Deno.env.get("CLIENT_SECRET")!,
 			grant_type: "authorization_code",
 			code,
+			redirect_uri: req.url,
 		});
 		const res = await fetch(`${DISCORD_URL}/oauth2/token`, {
 			headers: {
-				"Conent-Type": "application/x-www-form-urlencoded",
+				"Content-Type": "application/x-www-form-urlencoded",
 			},
 			body: body.toString(),
+			method: "POST",
 		});
-		return new Response(res.body);
+		const data = await res.json();
+		console.log(body);
+		return new Response(JSON.stringify(data));
 	} catch (err) {
 		console.log(err);
 		return new Response(
