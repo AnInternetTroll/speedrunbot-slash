@@ -12,7 +12,7 @@ export class SpeedRunBot extends Client {
 		console.log("Started!");
 		this.interactions.loadModule(new SpeedrunCom());
 		// this.deleteCommands(Deno.env.get("TEST_SERVER"));
-		this.register();
+		//this.register();
 	}
 
 	register() {

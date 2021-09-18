@@ -268,4 +268,12 @@ export namespace SpeedrunCom {
 		miscellaneous: boolean;
 		links: Link[];
 	}
+
+	export interface Level {
+		id: string;
+		name: string;
+		weblink: string;
+		rules: string;
+		links: Link[];
+	}
 }

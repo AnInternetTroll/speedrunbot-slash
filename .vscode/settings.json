@@ -7,7 +7,10 @@
 	"deno.config": "./deno.jsonc",
 	"deno.suggest.imports.hosts": {
 		"https://deno.land": true,
-		"https://x.lcas.dev": true
+		"https://x.lcas.dev": true,
+		"https://esm.sh": false,
+		"https://harmony.": false,
+		"https://code.harmony.rocks": true
 	},
 	"editor.suggest.showStatusBar": true,
 	"editor.quickSuggestions": {

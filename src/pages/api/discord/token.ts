@@ -9,7 +9,8 @@ export default async (req: Request): Promise<Response> => {
 			client_secret: Deno.env.get("CLIENT_SECRET")!,
 			grant_type: "authorization_code",
 			code,
-			redirect_uri: req.url,
+			prompt: "consent",
+			redirect_uri: encodeURIComponent(req.url),
 		});
 		const res = await fetch(`${DISCORD_URL}/oauth2/token`, {
 			headers: {
@@ -19,7 +20,7 @@ export default async (req: Request): Promise<Response> => {
 			method: "POST",
 		});
 		const data = await res.json();
-		console.log(body);
+		console.log(body.toString());
 		return new Response(JSON.stringify(data));
 	} catch (err) {
 		console.log(err);

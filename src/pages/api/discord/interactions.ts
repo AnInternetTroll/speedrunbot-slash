@@ -1,17 +1,15 @@
 // deno-lint-ignore-file no-explicit-any
 import {
 	ApplicationCommandInteraction,
-	InteractionType,
-} from "../../../deps_harmony.ts";
-import {
+	decodeText,
 	Interaction,
 	InteractionApplicationCommandResolved,
 	InteractionPayload,
 	InteractionResponseType,
 	InteractionsClient,
+	InteractionType,
 	User,
-} from "https://deno.land/x/harmony@v2.1.3/mod.ts";
-import { decodeText } from "https://deno.land/x/harmony@v2.1.3/src/utils/encoding.ts";
+} from "../../../deps_harmony.ts";
 import { SpeedrunCom } from "../../../srcom/slashCommands.ts";
 
 export const client = new InteractionsClient({

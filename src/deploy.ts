@@ -5,9 +5,8 @@
 
 import { client } from "./pages/api/discord/interactions.ts";
 import { SpeedrunCom } from "./srcom/slashCommands.ts";
+import "https://deno.land/x/dot_env@0.2.0/load.ts";
 
-// Disabling the frontend
-// How do I use this with harmony???
 import { start } from "https://raw.githubusercontent.com/lucacasonato/fresh/main/server.ts";
 import routes from "./routes.gen.ts";
 

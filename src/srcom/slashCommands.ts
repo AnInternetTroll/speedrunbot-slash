@@ -16,6 +16,8 @@ import { runs } from "./runs.ts";
 import { whois } from "./whois.ts";
 import { worldRecords } from "./worldrecords.ts";
 import { categoriesPlayed } from "./categoriesPlayed.ts";
+import { pending } from "./pending.ts";
+import { pendingQueue } from "./pendingQueue.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -93,6 +95,34 @@ export const commands: SlashCommandPartial[] = [
 		],
 	},
 	{
+		name: "pending",
+		description: "See all pending runs of a game.",
+		options: [
+			{
+				...srcGame,
+				required: true,
+			},
+			{
+				...srcGame,
+				name: "game2",
+			},
+		],
+	},
+	{
+		name: "pending-count",
+		description: "See how man pending runs a game has.",
+		options: [
+			{
+				...srcGame,
+				required: true,
+			},
+			{
+				...srcGame,
+				name: "game2",
+			},
+		],
+	},
+	{
 		name: "runs",
 		description: "See how many runs a player has submitted.",
 		options: [
@@ -134,18 +164,47 @@ export const commands: SlashCommandPartial[] = [
 	},
 ];
 
+function splitIntoChunks(array: string[], perChunk: number): string[][] {
+	const result = array.reduce<string[][]>((resultArray, item, index) => {
+		const chunkIndex = Math.floor(index / perChunk);
+
+		if (!resultArray[chunkIndex]) {
+			resultArray[chunkIndex] = []; // start a new chunk
+		}
+
+		resultArray[chunkIndex].push(item);
+
+		return resultArray;
+	}, []);
+
+	return result;
+}
+
 async function sendCommand(
 	i: ApplicationCommandInteraction,
 	func: (i: ApplicationCommandInteraction) => Promise<string>,
-	{ defer = false }: { defer?: boolean } = {},
+	{ defer = true }: { defer?: boolean } = {},
 ) {
 	if (defer) i.defer();
 	const [title, ...description] = (await func(i)).split("\n");
-	const embed = new Embed({
-		title,
-		description: description.join("\n"),
-	});
-	await i.reply({ embeds: [embed] });
+	if (description.length > 10) {
+		const chunks = splitIntoChunks(description, 10);
+		for (let ii = 0; ii < chunks.length; ii++) {
+			await i.send({
+				embed: new Embed({
+					title: `${title}: ${ii + 1}/${chunks.length}`,
+					description: chunks[ii].join("\n"),
+				}),
+				ephemeral: true,
+			});
+		}
+	} else {
+		const embed = new Embed({
+			title,
+			description: description.join("\n"),
+		});
+		await i.reply({ embeds: [embed] });
+	}
 }
 
 export class SpeedrunCom extends ApplicationCommandsModule {
@@ -198,7 +257,6 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("game"),
 					i.option("game2"),
 				], { outputType: "markdown" }),
-			{ defer: true },
 		);
 	}
 
@@ -208,6 +266,30 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			i,
 			(i) =>
 				runs(i.option("username"), [
+					i.option("game"),
+					i.option("game2"),
+				], { outputType: "markdown" }),
+		);
+	}
+
+	@slash()
+	async pending(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				pending([
+					i.option("game"),
+					i.option("game2"),
+				], { outputType: "markdown" }),
+		);
+	}
+
+	@slash("pending-queue")
+	async pendingQueue(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				pendingQueue([
 					i.option("game"),
 					i.option("game2"),
 				], { outputType: "markdown" }),
