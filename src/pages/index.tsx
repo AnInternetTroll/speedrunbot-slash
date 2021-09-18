@@ -1,5 +1,5 @@
 /** @jsx h */
-import { h, IS_BROWSER, useData, useEffect, useState } from "../deps.ts";
+import { h, useEffect, useState } from "../deps.ts";
 import { DISCORD_URL } from "../utils.ts";
 
 export default function Home() {
@@ -15,11 +15,15 @@ export default function Home() {
 			<p>
 				This is the home page of speedrun.bot
 			</p>
-			<a
-				href={`${DISCORD_URL}/authorize?client_id=${id}&scope=applications.commands`}
-			>
-				Click here to invite the bot!
-			</a>
+			{id
+				? (
+					<a
+						href={`${DISCORD_URL}/authorize?client_id=${id}&scope=applications.commands`}
+					>
+						Click here to invite the bot!
+					</a>
+				)
+				: "Loading..."}
 		</div>
 	);
 }

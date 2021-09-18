@@ -17,7 +17,7 @@ import { whois } from "./whois.ts";
 import { worldRecords } from "./worldrecords.ts";
 import { categoriesPlayed } from "./categoriesPlayed.ts";
 import { pending } from "./pending.ts";
-import { pendingQueue } from "./pendingQueue.ts";
+import { pendingCount } from "./pendingCount.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -185,9 +185,12 @@ async function sendCommand(
 	func: (i: ApplicationCommandInteraction) => Promise<string>,
 	{ defer = true }: { defer?: boolean } = {},
 ) {
-	if (defer) i.defer();
+	if (defer) await i.defer();
 	const [title, ...description] = (await func(i)).split("\n");
 	if (description.length > 10) {
+		await i.reply(
+			"This message will be sent into many small and hidden chunks to prevent spam.",
+		);
 		const chunks = splitIntoChunks(description, 10);
 		for (let ii = 0; ii < chunks.length; ii++) {
 			await i.send({
@@ -284,12 +287,12 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		);
 	}
 
-	@slash("pending-queue")
-	async pendingQueue(i: ApplicationCommandInteraction) {
+	@slash("pending-count")
+	async pendingCount(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
 			(i) =>
-				pendingQueue([
+				pendingCount([
 					i.option("game"),
 					i.option("game2"),
 				], { outputType: "markdown" }),

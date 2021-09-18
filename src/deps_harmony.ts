@@ -1,2 +1,2 @@
-export * from "https://code.harmony.rocks/502c47385ed66e571e5108e07ed5ac3c18fd6264/mod.ts";
-export * from "https://code.harmony.rocks/502c47385ed66e571e5108e07ed5ac3c18fd6264/src/utils/encoding.ts";
+export * from "https://code.harmony.rocks/5cb3d8e6494831b7e9141206171ad6671bccca09/mod.ts";
+export * from "https://code.harmony.rocks/5cb3d8e6494831b7e9141206171ad6671bccca09/src/utils/encoding.ts";

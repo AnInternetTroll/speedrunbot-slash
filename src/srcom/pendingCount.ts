@@ -4,7 +4,7 @@ import { getAll, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
-export async function pendingQueue(
+export async function pendingCount(
 	games: string[] = [],
 	{ id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string> {
@@ -43,5 +43,5 @@ export async function pendingQueue(
 }
 
 if (import.meta.main) {
-	console.log(await pendingQueue(Deno.args, { outputType: "terminal" }));
+	console.log(await pendingCount(Deno.args, { outputType: "terminal" }));
 }

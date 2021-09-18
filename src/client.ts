@@ -4,7 +4,7 @@ import { commands } from "./srcom/slashCommands.ts";
 import "https://deno.land/x/dot_env@0.2.0/load.ts";
 
 import { SpeedrunCom } from "./srcom/slashCommands.ts";
-import { Client, event, Intents } from "./deps_harmony.ts";
+import { Client, event } from "./deps_harmony.ts";
 
 export class SpeedRunBot extends Client {
 	@event()
@@ -12,7 +12,7 @@ export class SpeedRunBot extends Client {
 		console.log("Started!");
 		this.interactions.loadModule(new SpeedrunCom());
 		// this.deleteCommands(Deno.env.get("TEST_SERVER"));
-		//this.register();
+		// this.register();
 	}
 
 	register() {
@@ -33,7 +33,7 @@ export class SpeedRunBot extends Client {
 
 if (import.meta.main) {
 	const client = new SpeedRunBot({
-		intents: Intents.NonPrivileged,
+		intents: [],
 		token: Deno.env.get("TOKEN"),
 	});
 	client.connect();
