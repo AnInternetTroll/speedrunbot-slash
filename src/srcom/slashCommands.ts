@@ -18,6 +18,7 @@ import { worldRecords } from "./worldrecords.ts";
 import { categoriesPlayed } from "./categoriesPlayed.ts";
 import { pending } from "./pending.ts";
 import { pendingCount } from "./pendingCount.ts";
+import { podiums } from "./podiums.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -53,6 +54,22 @@ export const commands: SlashCommandPartial[] = [
 	{
 		name: "categories-played",
 		description: "See how many categories a player has submitted runs to.",
+		options: [
+			{
+				...srcUser,
+				required: true,
+			},
+			srcGame,
+			{
+				...srcGame,
+				name: "game2",
+			},
+		],
+	},
+	{
+		name: "podiums",
+		description:
+			"See how many runs a player has on the podium of leaderboards.",
 		options: [
 			{
 				...srcUser,
@@ -233,6 +250,18 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			i,
 			(i) =>
 				categoriesPlayed(i.option("username"), [
+					i.option("game"),
+					i.option("game2"),
+				], { outputType: "markdown" }),
+		);
+	}
+
+	@slash()
+	async podiums(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				podiums(i.option("username"), [
 					i.option("game"),
 					i.option("game2"),
 				], { outputType: "markdown" }),
