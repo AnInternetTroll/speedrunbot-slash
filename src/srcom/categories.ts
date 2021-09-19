@@ -39,8 +39,11 @@ export async function categories(
 		const miscCategories: string[] = [];
 		categories.forEach((category) => {
 			if (category.miscellaneous) miscCategories.push(category.name);
-			else if(category.type === "per-game") fullGameCategories.push(category.name);
-			else if(category.type === "per-level") individualLevelCategories.push(category.name);
+			else if (category.type === "per-game") {
+				fullGameCategories.push(category.name);
+			} else if (category.type === "per-level") {
+				individualLevelCategories.push(category.name);
+			}
 		});
 		output.push(`${fmt.bold(`Categories - ${game}`)}`);
 		output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
