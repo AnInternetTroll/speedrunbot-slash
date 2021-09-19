@@ -19,6 +19,7 @@ import { categoriesPlayed } from "./categoriesPlayed.ts";
 import { pending } from "./pending.ts";
 import { pendingCount } from "./pendingCount.ts";
 import { podiums } from "./podiums.ts";
+import { modCount } from "./modCount.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -34,6 +35,16 @@ export const commands: SlashCommandPartial[] = [
 	{
 		name: "games",
 		description: "See how many games a player has submitted runs to.",
+		options: [
+			{
+				...srcUser,
+				required: true,
+			},
+		],
+	},
+	{
+		name: "mod-count",
+		description: "See how many games and series a user moderates.",
 		options: [
 			{
 				...srcUser,
@@ -233,6 +244,14 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) => games(i.option("username"), { outputType: "markdown" }),
+		);
+	}
+
+	@slash()
+	async modCount(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) => modCount(i.option("username"), { outputType: "markdown" }),
 		);
 	}
 

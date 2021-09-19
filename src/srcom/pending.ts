@@ -6,6 +6,7 @@ import type { SpeedrunCom } from "./types.d.ts";
 import { TimeDelta } from "https://raw.githubusercontent.com/AnInternetTroll/datetime-js/master/src/index.js";
 
 function sec2time(timeInSeconds: number): string {
+	// @ts-ignore The library doesn't provide any types
 	return new TimeDelta({ seconds: timeInSeconds }).toString().replaceAll(
 		"000",
 		"",
