@@ -35,13 +35,16 @@ export async function categories(
 		const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
 		const categories = (await res.json()).data as SpeedrunCom.Category[];
 		const fullGameCategories: string[] = [];
+		const individualLevelCategories: string[] = [];
 		const miscCategories: string[] = [];
 		categories.forEach((category) => {
 			if (category.miscellaneous) miscCategories.push(category.name);
-			else fullGameCategories.push(category.name);
+			else if(category.type === "per-game") fullGameCategories.push(category.name);
+			else if(category.type === "per-level") individualLevelCategories.push(category.name);
 		});
 		output.push(`${fmt.bold(`Categories - ${game}`)}`);
 		output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
+		output.push(`Individual Level: ${individualLevelCategories.join(", ")}`);
 		output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
 	}
 	return output.join("\n");
