@@ -3,7 +3,7 @@ import { Format } from "./fmt.ts";
 import { getAll, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { TimeDelta } from "https://esm.sh/@silane/datetime";
+import { TimeDelta } from "https://raw.githubusercontent.com/AnInternetTroll/datetime-js/master/src/index.js";
 
 function sec2time(timeInSeconds: number): string {
 	return new TimeDelta({ seconds: timeInSeconds }).toString().replaceAll(
