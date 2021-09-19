@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGame, SRC_API } from "./utils.ts";
+import { getAll, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 import { TimeDelta } from "https://raw.githubusercontent.com/AnInternetTroll/datetime-js/master/src/index.js";
@@ -24,11 +24,11 @@ interface Run extends SpeedrunCom.Run {
 	players: { data: SpeedrunCom.User[] };
 }
 
-export async function pending(
-	games: string[] = [],
+export async function pendingUsers(
+	users: string[] = [],
 	{ id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string> {
-	games = games.filter((a) => !!a);
+	users = users.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const url = new URL(
@@ -37,16 +37,16 @@ export async function pending(
 
 	const runs: Run[] = [];
 	const urls: URL[] = [];
-	if (games.length) {
-		for (const game in games) {
-			let gameId: string;
-			if (id) gameId = games[game];
+	if (users.length) {
+		for (const game in users) {
+			let userId: string;
+			if (id) userId = users[game];
 			else {
-				const gameObj = await getGame(games[game]);
-				if (gameObj) gameId = gameObj.id;
+				const userObj = await getUser(users[game]);
+				if (userObj) userId = userObj.id;
 				else continue;
 			}
-			url.searchParams.set("game", gameId);
+			url.searchParams.set("user", userId);
 			urls.push(url);
 		}
 		const allRuns = await Promise.all(urls.map((url) => getAll(url)));
@@ -54,7 +54,8 @@ export async function pending(
 	} else {
 		runs.push.apply(runs, await getAll(url) as Run[]);
 	}
-	output.push(`${fmt.bold("Pending")}: ${games.join(" and ")}`);
+
+	output.push(`${fmt.bold("Pending")}: ${users.join(" and ")}`);
 	if (outputType === "markdown") {
 		runs.forEach((run) => {
 			output.push(
@@ -90,5 +91,5 @@ export async function pending(
 }
 
 if (import.meta.main) {
-	console.log(await pending(Deno.args, { outputType: "markdown" }));
+	console.log(await pendingUsers(Deno.args, { outputType: "markdown" }));
 }

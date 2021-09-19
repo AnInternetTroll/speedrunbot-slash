@@ -16,10 +16,11 @@ import { runs } from "./runs.ts";
 import { whois } from "./whois.ts";
 import { worldRecords } from "./worldrecords.ts";
 import { categoriesPlayed } from "./categoriesPlayed.ts";
-import { pending } from "./pending.ts";
+import { pendingGames } from "./pendingGames.ts";
 import { pendingCount } from "./pendingCount.ts";
 import { podiums } from "./podiums.ts";
 import { modCount } from "./modCount.ts";
+import { pendingUsers } from "./pendingUsers.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -123,7 +124,7 @@ export const commands: SlashCommandPartial[] = [
 		],
 	},
 	{
-		name: "pending",
+		name: "pending-games",
 		description: "See all pending runs of a game.",
 		options: [
 			{
@@ -133,6 +134,20 @@ export const commands: SlashCommandPartial[] = [
 			{
 				...srcGame,
 				name: "game2",
+			},
+		],
+	},
+	{
+		name: "pending-games",
+		description: "See all pending runs of a game.",
+		options: [
+			{
+				...srcUser,
+				required: true,
+			},
+			{
+				...srcUser,
+				name: "user2",
 			},
 		],
 	},
@@ -323,14 +338,26 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		);
 	}
 
-	@slash()
-	async pending(i: ApplicationCommandInteraction) {
+	@slash("pending-games")
+	async pendingGames(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
 			(i) =>
-				pending([
+				pendingGames([
 					i.option("game"),
 					i.option("game2"),
+				], { outputType: "markdown" }),
+		);
+	}
+
+	@slash("pending-users")
+	async pendingUsers(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				pendingUsers([
+					i.option("user"),
+					i.option("user2"),
 				], { outputType: "markdown" }),
 		);
 	}
