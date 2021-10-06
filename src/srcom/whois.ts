@@ -8,7 +8,7 @@ export const dateFormat = Intl.DateTimeFormat("en-uk", {
 	day: "numeric",
 	month: "long",
 	year: "numeric",
-	timeZone: "Europe/London"
+	timeZone: "Europe/London",
 }).format;
 
 export async function whois(
