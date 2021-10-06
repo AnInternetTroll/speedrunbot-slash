@@ -1,36 +1,30 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGame, getUser, SRC_API } from "./utils.ts";
+import { getAll, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
-export async function runs(
-  username: string,
+export async function pendingCount(
   games: string[] = [],
   { id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string> {
   games = games.filter((a) => !!a);
   const fmt = new Format(outputType);
   const output: string[] = [];
-  let userId: string;
-  if (!id) {
-    const userIdTmep = await getUser(username);
-    if (!userIdTmep) return `No user with the username "${username}"`;
-    else {
-      userId = userIdTmep.id;
-      username = userIdTmep.names.international;
-    }
-  } else userId = username;
-  const url = new URL(`${SRC_API}/runs?user=${userId}`);
+  const url = new URL(`${SRC_API}/runs?status=new`);
 
   const runs: SpeedrunCom.Run[] = [];
   if (games.length) {
     for (const game in games) {
-      const gameId = await getGame(games[game]);
-      if (gameId) {
-        url.searchParams.set("game", gameId.id);
-        runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
+      let gameId: string;
+      if (id) gameId = games[game];
+      else {
+        const gameObj = await getGame(games[game]);
+        if (gameObj) gameId = gameObj.id;
+        else continue;
       }
+      url.searchParams.set("game", gameId);
+      runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
     }
   } else {
     runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
@@ -41,7 +35,7 @@ export async function runs(
     if (run.level) individualLevelRuns++;
     else fullGameRuns++;
   });
-  output.push(`${fmt.bold("Run Count")}: ${username}`);
+  output.push(`${fmt.bold("Pending count")}: ${games.join(" and ")}`);
   output.push(`Fullgame: ${fullGameRuns}`);
   output.push(`Individual Level: ${individualLevelRuns}`);
   output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
@@ -49,6 +43,5 @@ export async function runs(
 }
 
 if (import.meta.main) {
-  const [username, ...games] = Deno.args;
-  console.log(await runs(username, games, { outputType: "terminal" }));
+  console.log(await pendingCount(Deno.args, { outputType: "terminal" }));
 }

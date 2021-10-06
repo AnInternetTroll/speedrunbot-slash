@@ -3,12 +3,11 @@ import { getUser } from "../../src/srcom/utils.ts";
 import whois, { dateFormat } from "../../src/srcom/whois.ts";
 
 Deno.test("Get user by username", async () => {
-	const res = await whois("AnInternetTroll", { outputType: "plain" });
-	const user = await getUser("AnInternetTroll");
-	if (!user) throw new Error("Invalid user");
-	const expected = `Username: ${user.names.international}
-Signed up: ${dateFormat(new Date(user.signup))}
-Socials: https://www.youtube.com/channel/UCYP1Hr3mGPZTCzOdZfF_2Qg, https://www.twitch.tv/aninternettroll
-Country: ${user.location.country.names.international} (${user.location.country.code})`;
-	assertEquals(res, expected);
+  const res = await whois("7H3", { outputType: "plain" });
+  const expected = `Username: 7H3
+Signed up: 8 July 2019
+Role: banned
+Socials: https://www.youtube.com/channel/UC1OiPUfoGgJ7EQDY2w3I3uA, https://www.twitch.tv/m.gdtheone, https://www.twitter.com/mobile.EsKeDit7
+Region: Ontario, Canada /ca/on`;
+  assertEquals(res, expected);
 });

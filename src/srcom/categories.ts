@@ -5,54 +5,54 @@ import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
 interface CategoriesObject {
-	fullGame: string[];
-	misc: string[];
+  fullGame: string[];
+  misc: string[];
 }
 
 export async function categories(
-	game: string,
-	{ id, outputType }: { id?: boolean; outputType: "object" },
+  game: string,
+  { id, outputType }: { id?: boolean; outputType: "object" },
 ): Promise<CategoriesObject>;
 export async function categories(
-	game: string,
-	{ id, outputType }: { id?: boolean; outputType?: MarkupType },
+  game: string,
+  { id, outputType }: { id?: boolean; outputType?: MarkupType },
 ): Promise<string>;
 export async function categories(
-	game: string,
-	{ id = false, outputType = "markdown" }: Opts = {},
+  game: string,
+  { id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string | CategoriesObject> {
-	const fmt = new Format(outputType);
-	const output: string[] = [];
-	let gameId: string | false;
+  const fmt = new Format(outputType);
+  const output: string[] = [];
+  let gameId: string | false;
 
-	if (!id) {
-		const gameIdTmp = await getGame(game);
-		gameId = gameIdTmp ? gameIdTmp.id : false;
-	} else gameId = game;
+  if (!id) {
+    const gameIdTmp = await getGame(game);
+    gameId = gameIdTmp ? gameIdTmp.id : false;
+  } else gameId = game;
 
-	if (!gameId) output.push(`No game with the abbreviation ${game} found`);
-	else {
-		const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
-		const categories = (await res.json()).data as SpeedrunCom.Category[];
-		const fullGameCategories: string[] = [];
-		const individualLevelCategories: string[] = [];
-		const miscCategories: string[] = [];
-		categories.forEach((category) => {
-			if (category.miscellaneous) miscCategories.push(category.name);
-			else if (category.type === "per-game") {
-				fullGameCategories.push(category.name);
-			} else if (category.type === "per-level") {
-				individualLevelCategories.push(category.name);
-			}
-		});
-		output.push(`${fmt.bold(`Categories - ${game}`)}`);
-		output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
-		output.push(`Individual Level: ${individualLevelCategories.join(", ")}`);
-		output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
-	}
-	return output.join("\n");
+  if (!gameId) output.push(`No game with the abbreviation ${game} found`);
+  else {
+    const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
+    const categories = (await res.json()).data as SpeedrunCom.Category[];
+    const fullGameCategories: string[] = [];
+    const individualLevelCategories: string[] = [];
+    const miscCategories: string[] = [];
+    categories.forEach((category) => {
+      if (category.miscellaneous) miscCategories.push(category.name);
+      else if (category.type === "per-game") {
+        fullGameCategories.push(category.name);
+      } else if (category.type === "per-level") {
+        individualLevelCategories.push(category.name);
+      }
+    });
+    output.push(`${fmt.bold(`Categories - ${game}`)}`);
+    output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
+    output.push(`Individual Level: ${individualLevelCategories.join(", ")}`);
+    output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
+  }
+  return output.join("\n");
 }
 
 if (import.meta.main) {
-	console.log(await categories(Deno.args[0], { outputType: "terminal" }));
+  console.log(await categories(Deno.args[0], { outputType: "terminal" }));
 }

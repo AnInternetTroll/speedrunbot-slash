@@ -27,3 +27,15 @@ jobs:
 
       - name: Run tests
         run: deno test -A
+
+  publish:
+    if: github.repository == 'AnInternetTroll/speedrunbot-slash' && github.ref == 'refs/heads/master',
+    runs-on: ubuntu-latest
+
+    env:
+      TOKEN: ${{ secrets.TOKEN }}
+      PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+
+    steps:
+      - name: Update commands
+        run: deno run --allow-net=gateway.discord.gg,discord.com --allow-env --allow-read=. --no-check src/client.ts -u

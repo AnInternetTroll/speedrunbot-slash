@@ -1,19 +1,19 @@
 {
-	"deno.enable": true,
-	"deno.lint": true,
-	"deno.unstable": false,
-	"deno.suggest.autoImports": true,
-	"deno.suggest.imports.autoDiscover": true,
-	"deno.config": "./deno.jsonc",
-	"deno.suggest.imports.hosts": {
-		"https://deno.land": true,
-		"https://x.lcas.dev": true,
-		"https://esm.sh": false,
-		"https://harmony.": false,
-		"https://code.harmony.rocks": true
-	},
-	"editor.suggest.showStatusBar": true,
-	"editor.quickSuggestions": {
-		"strings": true
-	}
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": false,
+  "deno.suggest.autoImports": true,
+  "deno.suggest.imports.autoDiscover": true,
+  "deno.config": "./deno.jsonc",
+  "deno.suggest.imports.hosts": {
+    "https://deno.land": true,
+    "https://x.lcas.dev": true,
+    "https://esm.sh": false,
+    "https://harmony.": false,
+    "https://code.harmony.rocks": true
+  },
+  "editor.suggest.showStatusBar": true,
+  "editor.quickSuggestions": {
+    "strings": true
+  }
 }

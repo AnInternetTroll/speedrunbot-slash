@@ -4,11 +4,11 @@
 /// <reference lib="deno.unstable" />
 
 import { client } from "./pages/api/discord/interactions.ts";
-import { SpeedrunCom } from "./srcom/slashCommands.ts";
+import { SpeedrunCom } from "./srcom/slash_commands.ts";
 import "https://deno.land/x/dot_env@0.2.0/load.ts";
 
-import { start } from "https://raw.githubusercontent.com/lucacasonato/fresh/main/server.ts";
 import routes from "./routes.gen.ts";
+import { start } from "./deps_server.ts";
 
 start(routes);
 
