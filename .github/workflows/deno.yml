@@ -29,7 +29,7 @@ jobs:
         run: deno test -A
 
   publish:
-    if: github.repository == 'AnInternetTroll/speedrunbot-slash' && github.ref == 'refs/heads/master',
+    if: github.repository == 'AnInternetTroll/speedrunbot-slash' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     env:

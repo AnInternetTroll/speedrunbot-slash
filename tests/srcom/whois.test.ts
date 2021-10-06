@@ -1,6 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
-import { getUser } from "../../src/srcom/utils.ts";
-import whois, { dateFormat } from "../../src/srcom/whois.ts";
+import whois from "../../src/srcom/whois.ts";
 
 Deno.test("Get user by username", async () => {
   const res = await whois("7H3", { outputType: "plain" });
