@@ -1,6 +1,7 @@
 import { client } from "./interactions.ts";
 import { DISCORD_URL } from "../../../utils.ts";
 import { commands } from "../../../srcom/slash_commands.ts";
+import { HandlerContext } from "../../../deps_server.ts";
 
 interface ReqBody {
 	// deno-lint-ignore camelcase
@@ -17,25 +18,28 @@ const bad = new Response(
 	},
 );
 
-export default async (req: Request): Promise<Response> => {
-	const admin = await isAdmin(req);
-	if (admin) {
-		await client.commands.bulkEdit(commands);
-		return new Response(JSON.stringify({
-			code: 200,
-			message: "Updated commands",
-		}));
-	} else {
-		return new Response(
-			JSON.stringify({
-				code: 403,
-				message: "You are not this bot's owner",
-			}),
-			{
-				status: 403,
-			},
-		);
-	}
+export const handler = {
+	async POST(ctx: HandlerContext): Promise<Response> {
+		const req = ctx.req;
+		const admin = await isAdmin(req);
+		if (admin) {
+			await client.commands.bulkEdit(commands);
+			return new Response(JSON.stringify({
+				code: 200,
+				message: "Updated commands",
+			}));
+		} else {
+			return new Response(
+				JSON.stringify({
+					code: 403,
+					message: "You are not this bot's owner",
+				}),
+				{
+					status: 403,
+				},
+			);
+		}
+	},
 };
 
 async function isAdmin(input: string | Request): Promise<boolean> {

@@ -4,7 +4,9 @@ import { DISCORD_URL } from "../utils.ts";
 import type { BotInfo } from "./api/discord/bot_info.ts";
 import type { Token } from "./api/discord/token.ts";
 
-export default function Home() {
+export const config = { runtimeJS: true };
+
+export default function Admin() {
 	const [botInfo, setBotInfo] = useState<BotInfo | null>(null);
 	const [code, setCode] = useState("");
 	const [token, setToken] = useState("");

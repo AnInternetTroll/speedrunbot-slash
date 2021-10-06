@@ -2,6 +2,8 @@
 import { h, useEffect, useState } from "../deps_frontend.ts";
 import { DISCORD_URL } from "../utils.ts";
 
+export const config = { runtimeJS: true };
+
 export default function Home() {
 	const [id, setId] = useState("");
 	useEffect(() => {
