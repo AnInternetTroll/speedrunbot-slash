@@ -5,50 +5,50 @@ import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
 export async function runs(
-  username: string,
-  games: string[] = [],
-  { id = false, outputType = "markdown" }: Opts = {},
+	username: string,
+	games: string[] = [],
+	{ id = false, outputType = "markdown" }: Opts = {},
 ): Promise<string> {
-  games = games.filter((a) => !!a);
-  const fmt = new Format(outputType);
-  const output: string[] = [];
-  let userId: string;
-  if (!id) {
-    const userIdTmep = await getUser(username);
-    if (!userIdTmep) return `No user with the username "${username}"`;
-    else {
-      userId = userIdTmep.id;
-      username = userIdTmep.names.international;
-    }
-  } else userId = username;
-  const url = new URL(`${SRC_API}/runs?user=${userId}`);
+	games = games.filter((a) => !!a);
+	const fmt = new Format(outputType);
+	const output: string[] = [];
+	let userId: string;
+	if (!id) {
+		const userIdTmep = await getUser(username);
+		if (!userIdTmep) return `No user with the username "${username}"`;
+		else {
+			userId = userIdTmep.id;
+			username = userIdTmep.names.international;
+		}
+	} else userId = username;
+	const url = new URL(`${SRC_API}/runs?user=${userId}`);
 
-  const runs: SpeedrunCom.Run[] = [];
-  if (games.length) {
-    for (const game in games) {
-      const gameId = await getGame(games[game]);
-      if (gameId) {
-        url.searchParams.set("game", gameId.id);
-        runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
-      }
-    }
-  } else {
-    runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
-  }
-  let fullGameRuns = 0;
-  let individualLevelRuns = 0;
-  runs.forEach((run) => {
-    if (run.level) individualLevelRuns++;
-    else fullGameRuns++;
-  });
-  output.push(`${fmt.bold("Run Count")}: ${username}`);
-  output.push(`Fullgame: ${fullGameRuns}`);
-  output.push(`Individual Level: ${individualLevelRuns}`);
-  output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
-  return output.join("\n");
+	const runs: SpeedrunCom.Run[] = [];
+	if (games.length) {
+		for (const game in games) {
+			const gameId = await getGame(games[game]);
+			if (gameId) {
+				url.searchParams.set("game", gameId.id);
+				runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
+			}
+		}
+	} else {
+		runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
+	}
+	let fullGameRuns = 0;
+	let individualLevelRuns = 0;
+	runs.forEach((run) => {
+		if (run.level) individualLevelRuns++;
+		else fullGameRuns++;
+	});
+	output.push(`${fmt.bold("Run Count")}: ${username}`);
+	output.push(`Fullgame: ${fullGameRuns}`);
+	output.push(`Individual Level: ${individualLevelRuns}`);
+	output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
+	return output.join("\n");
 }
 
 if (import.meta.main) {
-  const [username, ...games] = Deno.args;
-  console.log(await runs(username, games, { outputType: "terminal" }));
+	const [username, ...games] = Deno.args;
+	console.log(await runs(username, games, { outputType: "terminal" }));
 }
