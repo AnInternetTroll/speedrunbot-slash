@@ -37,5 +37,13 @@ jobs:
       PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
 
     steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
       - name: Update commands
-        run: deno run --allow-net=gateway.discord.gg,discord.com --allow-env --allow-read=. --no-check src/client.ts -u
+        run: ./src/client.ts -u
