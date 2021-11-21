@@ -1,4 +1,5 @@
 import {
+	ApplicationCommandChoice,
 	ApplicationCommandInteraction,
 	ApplicationCommandOption,
 	ApplicationCommandsModule,
@@ -261,37 +262,30 @@ async function sendCommand(
 }
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-
 	@autocomplete("*", "*")
 	async autocomplete(d: AutocompleteInteraction) {
-		console.log(d.focusedOption.name, d.focusedOption.value);
+		const completions: ApplicationCommandChoice[] = [];
 		if (
 			d.focusedOption.name.includes("user") ||
 			d.focusedOption.name.includes("username")
 		) {
 			const res = await fetch(`${SRC_API}/users?name=${d.focusedOption.value}`);
 			const body = await res.json();
-			const completions = (body.data as ISpeedrunCom.User[]).map((user) => ({
-				name: d.focusedOption.name,
+			completions.push(...(body.data as ISpeedrunCom.User[]).map((user) => ({
+				name: user.names.international,
 				value: user.names.international,
-			}));
-			console.log(completions);
-			return d.autocomplete(
-				completions,
-			);
+			})));
 		} else if (d.focusedOption.name.includes("game")) {
 			const res = await fetch(`${SRC_API}/games?name=${d.focusedOption.value}`);
 			const body = await res.json();
-			const completions = (body.data as ISpeedrunCom.Game[]).map((user) => ({
-				name: d.focusedOption.name,
-				value: user.names.international,
-			}));
-			return d.autocomplete(
-				completions,
-			);
-		} else {
-			d.autocomplete([{ name: d.focusedOption.name, value: "nothing found" }]);
+			completions.push(...(body.data as ISpeedrunCom.Game[]).map((game) => ({
+				name: game.names.international,
+				value: game.abbreviation,
+			})));
 		}
+		return d.autocomplete(
+			completions,
+		);
 	}
 
 	@slash()
