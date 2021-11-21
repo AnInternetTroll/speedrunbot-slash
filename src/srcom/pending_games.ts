@@ -57,15 +57,17 @@ export async function pendingGames(
 	if (outputType === "markdown") {
 		runs.forEach((run) => {
 			output.push(
-				`[${run.level?.data.name ||
-					run.category.data.name}](${run.weblink}) in \`${
-					sec2time(run.times.primary_t)
-				}\` by ${
+				`[${
+					run.level?.data.name ||
+					run.category.data.name
+				}](${run.weblink}) in \`${sec2time(run.times.primary_t)}\` by ${
 					run.players.data.map((p) =>
 						// @ts-ignore A user can be a guest
 						`[${p.rel === "guest" ? p.name : p.names.international}](${
 							// @ts-ignore A user can be a guest
-							p.rel === "guest" ? p.uri : p.weblink
+							p.rel === "guest"
+								? p.uri
+								: p.weblink
 						})`
 					).join(" and ")
 				}`,

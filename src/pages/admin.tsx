@@ -1,10 +1,11 @@
 /** @jsx h */
 import { h, IS_BROWSER, useEffect, useState } from "../deps_frontend.ts";
+import type { PageConfig } from "../deps_frontend.ts";
 import { DISCORD_URL } from "../utils.ts";
 import type { BotInfo } from "./api/discord/bot_info.ts";
 import type { Token } from "./api/discord/token.ts";
 
-export const config = { runtimeJS: true };
+export const config: PageConfig = { runtimeJS: true };
 
 export default function Admin() {
 	const [botInfo, setBotInfo] = useState<BotInfo | null>(null);

@@ -2,6 +2,8 @@ import {
 	ApplicationCommandInteraction,
 	ApplicationCommandOption,
 	ApplicationCommandsModule,
+	autocomplete,
+	AutocompleteInteraction,
 	Embed,
 	slash,
 	SlashCommandOptionType,
@@ -21,16 +23,21 @@ import { pendingCount } from "./pending_count.ts";
 import { podiums } from "./podiums.ts";
 import { modCount } from "./mod_count.ts";
 import { pendingUsers } from "./pending_users.ts";
+import { SRC_API } from "./utils.ts";
+
+import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
 	type: SlashCommandOptionType.STRING,
 	description: "A speedrun.com username",
+	autocomplete: true,
 };
 const srcGame: ApplicationCommandOption = {
 	name: "game",
 	description: "A game abbreviation.",
 	type: SlashCommandOptionType.STRING,
+	autocomplete: true,
 };
 export const commands: SlashCommandPartial[] = [
 	{
@@ -254,6 +261,39 @@ async function sendCommand(
 }
 
 export class SpeedrunCom extends ApplicationCommandsModule {
+
+	@autocomplete("*", "*")
+	async autocomplete(d: AutocompleteInteraction) {
+		console.log(d.focusedOption.name, d.focusedOption.value);
+		if (
+			d.focusedOption.name.includes("user") ||
+			d.focusedOption.name.includes("username")
+		) {
+			const res = await fetch(`${SRC_API}/users?name=${d.focusedOption.value}`);
+			const body = await res.json();
+			const completions = (body.data as ISpeedrunCom.User[]).map((user) => ({
+				name: d.focusedOption.name,
+				value: user.names.international,
+			}));
+			console.log(completions);
+			return d.autocomplete(
+				completions,
+			);
+		} else if (d.focusedOption.name.includes("game")) {
+			const res = await fetch(`${SRC_API}/games?name=${d.focusedOption.value}`);
+			const body = await res.json();
+			const completions = (body.data as ISpeedrunCom.Game[]).map((user) => ({
+				name: d.focusedOption.name,
+				value: user.names.international,
+			}));
+			return d.autocomplete(
+				completions,
+			);
+		} else {
+			d.autocomplete([{ name: d.focusedOption.name, value: "nothing found" }]);
+		}
+	}
+
 	@slash()
 	async games(i: ApplicationCommandInteraction) {
 		await sendCommand(
