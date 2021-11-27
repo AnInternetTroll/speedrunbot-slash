@@ -14,12 +14,12 @@ function mergeMods(users: LeaderboardMod[]): LeaderboardMod[] {
 	const mods = groupBy(users, (user) => user.username);
 
 	return Object.entries(mods).map(([username, entries]) => {
-	  return {
-		username,
-		count: entries.reduce((acc, c) => acc + c.count, 0),
-	  };
+		return {
+			username,
+			count: entries.reduce((acc, c) => acc + c.count, 0),
+		};
 	});
-  }
+}
 
 export async function examinedLeaderboard(
 	games: string[],
@@ -40,21 +40,27 @@ export async function examinedLeaderboard(
 	const urlT = new URL(`${SRC_API}/runs`);
 	const gameObjs = await getGames(games);
 
-	const leaderboard = mergeMods(await Promise.all((await Promise.all(gameObjs.map<Promise<LeaderboardMod>[]>((gameObj) => {
-		const urlG = new URL(urlT);
-		urlG.searchParams.set("game", gameObj.id);
-		return Object.keys(gameObj.moderators).map<Promise<LeaderboardMod>>(async (mod) => {
-			const url = new URL(urlG);
-			// @ts-ignore The user exists or else they wouldn't be a mod
-			const user: SpeedrunCom.User = await getUser(mod);
-			url.searchParams.set("examiner", mod);
-			const runs = await getAll<SpeedrunCom.Run>(url);
-			return {
-				username: user.names.international,
-				count: runs.length,
-			};
-		});
-	}))).flat()));
+	const leaderboard = mergeMods(
+		await Promise.all(
+			(await Promise.all(gameObjs.map<Promise<LeaderboardMod>[]>((gameObj) => {
+				const urlG = new URL(urlT);
+				urlG.searchParams.set("game", gameObj.id);
+				return Object.keys(gameObj.moderators).map<Promise<LeaderboardMod>>(
+					async (mod) => {
+						const url = new URL(urlG);
+						// @ts-ignore The user exists or else they wouldn't be a mod
+						const user: SpeedrunCom.User = await getUser(mod);
+						url.searchParams.set("examiner", mod);
+						const runs = await getAll<SpeedrunCom.Run>(url);
+						return {
+							username: user.names.international,
+							count: runs.length,
+						};
+					},
+				);
+			}))).flat(),
+		),
+	);
 
 	if (outputType === "object") return leaderboard;
 	leaderboard.sort((a, b) => b.count - a.count);

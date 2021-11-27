@@ -16,7 +16,6 @@ if (import.meta.main) {
 		intents: [],
 		token: Deno.env.get("TOKEN"),
 	});
-	//client.interactions.autocomplete("*", "*", SpeedrunCom.autocomplete);
 	await client.connect();
 	await client.interactions.commands.bulkEdit(
 		commands,

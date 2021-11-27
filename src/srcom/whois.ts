@@ -1,8 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getUser, SRC_API } from "./utils.ts";
+import { getUser } from "./utils.ts";
 import type { Opts } from "./utils.ts";
-import type { SpeedrunCom } from "./types.d.ts";
 
 export const dateFormat = Intl.DateTimeFormat("en-uk", {
 	day: "numeric",

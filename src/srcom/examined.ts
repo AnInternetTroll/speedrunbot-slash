@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
-import { Format, MarkupType } from "./fmt.ts";
-import { getAll, getGame, getGames, getUser, SRC_API } from "./utils.ts";
+import { Format } from "./fmt.ts";
+import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 interface ExaminedObject {

@@ -26,7 +26,6 @@ export async function categories(
 	const gameObj = await getGame(game);
 
 	if (!gameObj) return `${game} game not found.`;
-
 	else {
 		const res = await fetch(`${SRC_API}/games/${gameObj.id}/categories`);
 		const categories = (await res.json()).data as SpeedrunCom.Category[];
