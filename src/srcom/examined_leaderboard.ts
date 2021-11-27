@@ -1,63 +1,61 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGame, getUser, SRC_API } from "./utils.ts";
+import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
+import { groupBy } from "https://deno.land/std@0.116.0/collections/mod.ts";
 
 interface LeaderboardMod {
 	username: string;
 	count: number;
 }
 
+function mergeMods(users: LeaderboardMod[]): LeaderboardMod[] {
+	const mods = groupBy(users, (user) => user.username);
+
+	return Object.entries(mods).map(([username, entries]) => {
+	  return {
+		username,
+		count: entries.reduce((acc, c) => acc + c.count, 0),
+	  };
+	});
+  }
+
 export async function examinedLeaderboard(
 	games: string[],
-	{ id, outputType }: Opts,
+	{ outputType }: Opts,
 ): Promise<string>;
 export async function examinedLeaderboard(
 	games: string[],
-	{ id, outputType }: { id?: boolean; outputType: "object" },
+	{ outputType }: { outputType: "object" },
 ): Promise<LeaderboardMod[]>;
 export async function examinedLeaderboard(
 	games: string[],
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string | LeaderboardMod[]> {
 	games = games.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	const leaderboard: LeaderboardMod[] = [];
-	const url = new URL(`${SRC_API}/runs`);
-	for (const game in games) {
-		let gameObj: SpeedrunCom.Game | false;
-		if (!id) {
-			gameObj = await getGame(games[game]);
-		} else {
-			const res = await fetch(`${SRC_API}/games/${games[game]}`);
-			const data = await res.json();
-			gameObj = data.data as SpeedrunCom.Game;
-		}
-		if (!gameObj) continue;
-		url.searchParams.set("game", gameObj.id);
-		for (const mod in gameObj.moderators) {
-			const user = await getUser(mod, true);
-			if (!user) continue;
+
+	const urlT = new URL(`${SRC_API}/runs`);
+	const gameObjs = await getGames(games);
+
+	const leaderboard = mergeMods(await Promise.all((await Promise.all(gameObjs.map<Promise<LeaderboardMod>[]>((gameObj) => {
+		const urlG = new URL(urlT);
+		urlG.searchParams.set("game", gameObj.id);
+		return Object.keys(gameObj.moderators).map<Promise<LeaderboardMod>>(async (mod) => {
+			const url = new URL(urlG);
+			// @ts-ignore The user exists or else they wouldn't be a mod
+			const user: SpeedrunCom.User = await getUser(mod);
 			url.searchParams.set("examiner", mod);
-			const runs = await getAll(url) as SpeedrunCom.Run[];
-			const el = leaderboard.findIndex((mod) =>
-				mod.username === user.names.international
-			);
-			if (el !== -1) {
-				leaderboard[el] = {
-					count: leaderboard[el].count + runs.length,
-					username: leaderboard[el].username,
-				};
-			} else {
-				leaderboard.push({
-					count: runs.length,
-					username: user.names.international,
-				});
-			}
-		}
-	}
+			const runs = await getAll<SpeedrunCom.Run>(url);
+			return {
+				username: user.names.international,
+				count: runs.length,
+			};
+		});
+	}))).flat()));
+
 	if (outputType === "object") return leaderboard;
 	leaderboard.sort((a, b) => b.count - a.count);
 	output.push(

@@ -11,34 +11,28 @@ interface CategoriesObject {
 export async function categoriesPlayed(
 	username: string,
 	games: string[],
-	{ id, outputType }: { id?: boolean; outputType: "object" },
+	{ outputType }: { outputType: "object" },
 ): Promise<CategoriesObject>;
 export async function categoriesPlayed(
 	username: string,
 	games: string[],
-	{ id, outputType }: { id?: boolean; outputType?: MarkupType },
+	{ outputType }: { outputType?: MarkupType },
 ): Promise<string>;
 export async function categoriesPlayed(
 	username: string,
 	games: string[] = [],
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string | CategoriesObject> {
 	games = games.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const categories: string[] = [];
-	let userId: string;
-	if (!id) {
-		const userIdTmep = await getUser(username);
-		if (!userIdTmep) return `No user with the username "${username}"`;
-		else {
-			userId = userIdTmep.id;
-			username = userIdTmep.names.international;
-		}
-	} else userId = username;
+	const user = await getUser(username);
+
+	if (!user) return `${username} user not found.`;
 
 	const res = await fetch(
-		`${SRC_API}/users/${userId}/personal-bests?embed=game`,
+		`${SRC_API}/users/${user.id}/personal-bests?embed=game`,
 	);
 	const runs = (await res.json()).data as {
 		place: number;

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getUser, SRC_API } from "./utils.ts";
+import { getAll, getUsers, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 import { TimeDelta } from "../deps_general.ts";
@@ -26,34 +26,25 @@ interface Run extends SpeedrunCom.Run {
 
 export async function pendingUsers(
 	users: string[] = [],
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string> {
-	users = users.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const url = new URL(
 		`${SRC_API}/runs?status=new&embed=category,level,players`,
 	);
 
-	const runs: Run[] = [];
 	const urls: URL[] = [];
-	if (users.length) {
-		for (const game in users) {
-			let userId: string;
-			if (id) userId = users[game];
-			else {
-				const userObj = await getUser(users[game]);
-				if (userObj) userId = userObj.id;
-				else continue;
-			}
-			url.searchParams.set("user", userId);
-			urls.push(url);
-		}
-		const allRuns = await Promise.all(urls.map((url) => getAll(url)));
-		allRuns.forEach((runList) => runs.push.apply(runs, runList as Run[]));
-	} else {
-		runs.push.apply(runs, await getAll(url) as Run[]);
-	}
+	const userObjs = await getUsers(users);
+
+	if (!userObjs.length) return "No users found";
+
+	userObjs.forEach((user) => {
+		url.searchParams.set("user", user.id);
+		urls.push(url);
+	});
+
+	const runs = (await Promise.all(urls.map((url) => getAll<Run>(url)))).flat();
 
 	output.push(`${fmt.bold("Pending")}: ${users.join(" and ")}`);
 	if (outputType === "markdown") {

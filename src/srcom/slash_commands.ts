@@ -263,7 +263,7 @@ async function sendCommand(
 
 export class SpeedrunCom extends ApplicationCommandsModule {
 	@autocomplete("*", "*")
-	async autocomplete(d: AutocompleteInteraction) {
+	async autoComplete(d: AutocompleteInteraction) {
 		const completions: ApplicationCommandChoice[] = [];
 		if (
 			d.focusedOption.name.includes("user") ||

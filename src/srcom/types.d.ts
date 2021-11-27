@@ -155,7 +155,7 @@ export namespace SpeedrunCom {
 	}
 
 	export interface Moderators {
-		[modId: string]: string;
+		[modId: string]: "super-moderator" | "moderator";
 	}
 
 	export interface Logo {

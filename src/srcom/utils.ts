@@ -2,9 +2,9 @@
 import type { MarkupType } from "./fmt.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 export const SRC_API = "https://www.speedrun.com/api/v1";
+import { delay } from "https://deno.land/std@0.116.0/async/mod.ts";
 
 export interface Opts {
-	id?: boolean;
 	outputType?: MarkupType;
 }
 
@@ -22,42 +22,78 @@ interface ApiArrayResponse {
 }
 
 export async function getUser(
-	username: string,
-	id?: boolean,
+	query: string,
 ): Promise<SpeedrunCom.User | false> {
 	let res: Response;
-	if (id) {
-		res = await fetch(`${SRC_API}/users/${encodeURI(username)}`);
+	res = await fetch(`${SRC_API}/users?lookup=${encodeURI(query)}`);
+	const data = (await res.json()).data as SpeedrunCom.User[];
+	if (res.ok && data[0]) return data[0];
+	else {
+		res = await fetch(`${SRC_API}/users/${encodeURI(query)}`);
 		const data = (await res.json()).data as SpeedrunCom.User;
-		return res.ok ? data : false;
-	} else {
-		res = await fetch(`${SRC_API}/users?lookup=${encodeURI(username)}`);
-		const data = (await res.json()).data as SpeedrunCom.User[];
-		return data[0] ? data[0] : false;
+		return (res.ok && data) ? data : false;
 	}
 }
 
 export async function getGame(
-	abbreviation: string,
+	query: string,
 ): Promise<SpeedrunCom.Game | false> {
-	const res = await fetch(`${SRC_API}/games?abbreviation=${abbreviation}`);
+	let res: Response;
+	res = await fetch(`${SRC_API}/games?abbreviation=${query}`);
 	const data = (await res.json()).data as SpeedrunCom.Game[];
-	return data[0] ? data[0] : false;
+	if (data[0]) return data[0];
+	else {
+		res = await fetch(`${SRC_API}/games?name=${query}`);
+		const data = (await res.json()).data as SpeedrunCom.Game[];
+		if (data[0]) return data[0];
+		else {
+			res = await fetch(`${SRC_API}/games/${query}`);
+			const data = (await res.json()).data as SpeedrunCom.Game;
+			if (data) return data;
+		}
+	}
+	return false;
 }
 
-export async function getAll(url: URL | string): Promise<unknown[]> {
+export async function getGames(games: string[]): Promise<SpeedrunCom.Game[]> {
+	// The filter function should filter out all the `false` stuff.
+	// Trust me bro I got this
+	return (await Promise.all(games.map(getGame))).filter((game) =>
+		!!game
+	) as SpeedrunCom.Game[];
+}
+
+export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
+	// The filter function should filter out all the `false` stuff.
+	// Trust me bro I got this
+	return (await Promise.all(users.map(getUser))).filter((user) =>
+		!!user
+	) as SpeedrunCom.User[];
+}
+
+export async function getAll<T>(url: URL | string): Promise<T[]> {
 	if (typeof url === "string") url = new URL(url);
 	url.searchParams.set("max", "200");
 	let data: unknown[] = [];
 	let size = 0;
 	let tmpSize;
+	let attempts = 0;
 	do {
 		url.searchParams.set("offset", size.toString());
 		const res = await fetch(url);
+		if (!res.ok) {
+			if (res.status === 420) {
+				console.warn("We are being throttled " + res.status);
+				attempts++;
+				if (attempts > 5) break;
+				await delay(90000);
+			}
+			continue;
+		} else attempts = 0;
 		const resJSON = await res.json() as ApiArrayResponse;
 		data = data.concat(resJSON.data);
 		size += resJSON.pagination.size;
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
-	return data;
+	return data as T[];
 }

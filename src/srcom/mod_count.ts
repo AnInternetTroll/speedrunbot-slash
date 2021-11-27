@@ -6,28 +6,22 @@ import type { SpeedrunCom } from "./types.d.ts";
 
 export async function modCount(
 	username: string,
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	let userId: string;
-	if (!id) {
-		const userIdTmep = await getUser(username);
-		if (!userIdTmep) return `No user with the username "${username}"`;
-		else {
-			userId = userIdTmep.id;
-			username = userIdTmep.names.international;
-		}
-	} else userId = username;
+
+	const user = await getUser(username);
+	if (!user) return `${username} user not found.`;
 
 	const games = await getAll(
-		`${SRC_API}/games?moderator=${userId}&_bulk=true`,
+		`${SRC_API}/games?moderator=${user.id}&_bulk=true`,
 	) as SpeedrunCom.Game[];
 	const series = await getAll(
-		`${SRC_API}/series?moderator=${userId}&_bulk=true`,
+		`${SRC_API}/series?moderator=${user.id}&_bulk=true`,
 	) as SpeedrunCom.Game[];
 
-	output.push(`${fmt.bold("Mod Count")}: ${username}`);
+	output.push(`${fmt.bold("Mod Count")}: ${user.names.international}`);
 	output.push(`Games: ${games.length}`);
 	output.push(`Series: ${series.length}`);
 	return output.join("\n");

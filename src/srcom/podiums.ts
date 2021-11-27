@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format, MarkupType } from "./fmt.ts";
-import { getGame, getUser, SRC_API } from "./utils.ts";
+import { getGame, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -21,28 +21,18 @@ export async function podiums(
 export async function podiums(
 	username: string,
 	games: string[] = [],
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string | PodiumsObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	// @ts-ignore the .filter should filter out all the bad stuff
-	const gameIDs: { id: string; abbreviation: string }[] =
-		(await Promise.all(games.map((gameID) => getGame(gameID)))).map((game) =>
-			game ? { id: game.id, abbreviation: game.abbreviation } : undefined
-		).filter((a) => !!a);
 
-	let userId: string;
-	if (!id) {
-		const userIdTmep = await getUser(username);
-		if (!userIdTmep) return `No user with the username "${username}"`;
-		else {
-			userId = userIdTmep.id;
-			username = userIdTmep.names.international;
-		}
-	} else userId = username;
+	const user = await getUser(username);
+	if (!user) return `${username} user not found.`;
+
+	const gameObjs = await getGames(games);
 
 	const res = await fetch(
-		`${SRC_API}/users/${userId}/personal-bests?embed=game`,
+		`${SRC_API}/users/${user.id}/personal-bests?embed=game`,
 	);
 	const runs = (await res.json()).data as {
 		place: number;
@@ -50,22 +40,19 @@ export async function podiums(
 		game: { data: SpeedrunCom.Game };
 	}[];
 	let total = 0;
+	const gameCount: Record<string, number> = {};
 
 	for (let i = 0; i < runs.length; i++) {
 		const run = runs[i];
 		if (run.place <= 3) {
 			if (!games.length) total++;
 			else {
-				if (id) {
-					if (gameIDs.find((gameObj) => run.run.game === gameObj.id)) total++;
-					else continue;
-				} else {
-					if (
-						gameIDs.find((gameObj) =>
-							gameObj.abbreviation === run.game.data.abbreviation
-						)?.id
-					) {
-						total++;
+				if (gameObjs.find((game) => game.id === run.game.data.id)) {
+					total++;
+					if (games.length && games.length !== 1) {
+						const name = run.game.data.names.international;
+						if (isNaN(gameCount[name])) gameCount[name] = 1;
+						else gameCount[name]++;
 					}
 				}
 			}
@@ -74,7 +61,14 @@ export async function podiums(
 
 	if (outputType === "object") return { podiums: total };
 
-	output.push(`${fmt.bold("Podium Count")}: ${username}`);
+	output.push(`${fmt.bold("Podium Count")}: ${user.names.international}`);
+
+	if (Object.keys(gameCount).length) {
+		output.push("");
+		for (const game in gameCount) output.push(`${game}: ${gameCount[game]}`);
+		output.push("");
+	}
+
 	output.push(`Top three runs: ${total}`);
 	return output.join("\n");
 }

@@ -11,28 +11,24 @@ interface CategoriesObject {
 
 export async function categories(
 	game: string,
-	{ id, outputType }: { id?: boolean; outputType: "object" },
+	{ outputType }: { outputType: "object" },
 ): Promise<CategoriesObject>;
 export async function categories(
 	game: string,
-	{ id, outputType }: { id?: boolean; outputType?: MarkupType },
+	{ outputType }: { outputType?: MarkupType },
 ): Promise<string>;
 export async function categories(
 	game: string,
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string | CategoriesObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	let gameId: string | false;
+	const gameObj = await getGame(game);
 
-	if (!id) {
-		const gameIdTmp = await getGame(game);
-		gameId = gameIdTmp ? gameIdTmp.id : false;
-	} else gameId = game;
+	if (!gameObj) return `${game} game not found.`;
 
-	if (!gameId) output.push(`No game with the abbreviation ${game} found`);
 	else {
-		const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
+		const res = await fetch(`${SRC_API}/games/${gameObj.id}/categories`);
 		const categories = (await res.json()).data as SpeedrunCom.Category[];
 		const fullGameCategories: string[] = [];
 		const individualLevelCategories: string[] = [];

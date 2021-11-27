@@ -1,49 +1,47 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import { getUser, SRC_API } from "./utils.ts";
+import { getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
 export async function worldRecords(
 	username: string,
 	games: string[] = [],
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string> {
 	games = games.filter((a) => !!a);
+	const gameObjs = await getGames(games);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	let userId: string;
-	if (!id) {
-		const userIdTmep = await getUser(username);
-		if (!userIdTmep) return `No user with the username "${username}"`;
-		else {
-			userId = userIdTmep.id;
-			username = userIdTmep.names.international;
-		}
-	} else userId = username;
+	const user = await getUser(username);
+	if (!user) return `${username} user not found.`;
 
 	const res = await fetch(
-		`${SRC_API}/users/${userId}/personal-bests?embed=game&top=1`,
+		`${SRC_API}/users/${user.id}/personal-bests?top=1`,
 	);
+
 	const data = (await res.json()).data as {
 		place: number;
 		run: SpeedrunCom.Run;
-		game: { data: SpeedrunCom.Game };
 	}[];
+
 	let fullGameRuns = 0;
 	let individualLevelRuns = 0;
+
 	data.forEach((run) => {
 		if (
 			run.place === 1 &&
-			(!games.length || games.includes(run.game.data.abbreviation))
+			(!games.length || gameObjs.find((game) => game.id === run.run.game))
 		) {
 			if (run.run.level) individualLevelRuns++;
 			else fullGameRuns++;
 		}
 	});
-	output.push(`${fmt.bold("World Record Count")}: ${username}`);
+
+	output.push(`${fmt.bold("World Record Count")}: ${user.names.international}`);
 	output.push(`Fullgame: ${fullGameRuns}`);
 	output.push(`Individual Level: ${individualLevelRuns}`);
+
 	output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
 	return output.join("\n");
 }

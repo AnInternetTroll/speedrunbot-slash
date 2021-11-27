@@ -10,34 +10,28 @@ interface GamesObject {
 
 export async function games(
 	username: string,
-	{ id, outputType }: { id?: boolean; outputType: "object" },
+	{ outputType }: { outputType: "object" },
 ): Promise<GamesObject>;
 export async function games(
 	username: string,
-	{ id, outputType }: { id?: boolean; outputType?: MarkupType },
+	{ outputType }: { outputType?: MarkupType },
 ): Promise<string>;
 export async function games(
 	username: string,
-	{ id = false, outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown" }: Opts = {},
 ): Promise<string | GamesObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const games: string[] = [];
-	let userId: string;
-	if (!id) {
-		const userIdTmep = await getUser(username);
-		if (!userIdTmep) return `No user with the username "${username}"`;
-		else {
-			userId = userIdTmep.id;
-			username = userIdTmep.names.international;
-		}
-	} else userId = username;
+	const user = await getUser(username);
+	if (!user) return `${username} user not found.`;
 
-	const res = await fetch(`${SRC_API}/users/${userId}/personal-bests`);
+	const res = await fetch(`${SRC_API}/users/${user.id}/personal-bests`);
 	const runs = (await res.json()).data as {
 		place: number;
 		run: SpeedrunCom.Run;
 	}[];
+
 	runs.forEach((run) => {
 		if (games.includes(run.run.game)) return;
 		else games.push(run.run.game);
@@ -45,7 +39,7 @@ export async function games(
 
 	if (outputType === "object") return { games: games.length };
 
-	output.push(`${fmt.bold("Games Played")}: ${username}`);
+	output.push(`${fmt.bold("Games Played")}: ${user.names.international}`);
 	output.push(`${games.length}`);
 	return output.join("\n");
 }
