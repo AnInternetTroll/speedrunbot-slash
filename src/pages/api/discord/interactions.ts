@@ -1,4 +1,9 @@
-import { HandlerContext, InteractionsClient } from "../../../deps_server.ts";
+import {
+	HandlerContext,
+	InteractionResponseType,
+	InteractionsClient,
+	InteractionType,
+} from "../../../deps_server.ts";
 import { SpeedrunCom } from "../../../srcom/slash_commands.ts";
 
 export const client = new InteractionsClient({
@@ -10,11 +15,18 @@ client.loadModule(new SpeedrunCom());
 
 export const handler = {
 	POST(ctx: HandlerContext): Promise<Response> {
-		return new Promise((res) =>
-			client.verifyFetchEvent({
+		const req = ctx.req;
+		// deno-lint-ignore no-async-promise-executor
+		return new Promise(async (res) => {
+			const interaction = await client.verifyFetchEvent({
 				respondWith: res,
-				request: ctx.req,
-			})
-		);
+				request: req,
+			});
+			if (interaction === false) {
+				return res(new Response(null, { status: 401 }));
+			}
+			if (interaction.type === 1) return interaction.respond({ type: 1 });
+			await client._process(interaction);
+		});
 	},
 };
