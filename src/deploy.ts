@@ -13,3 +13,5 @@ import { start } from "./deps_server.ts";
 start(routes);
 
 client.loadModule(new SpeedrunCom());
+
+client.autocomplete("*", "*", SpeedrunCom.autoComplete);

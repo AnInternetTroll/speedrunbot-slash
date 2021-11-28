@@ -3,7 +3,7 @@ import {
 	ApplicationCommandInteraction,
 	ApplicationCommandOption,
 	ApplicationCommandsModule,
-	autocomplete,
+	//autocomplete,
 	AutocompleteInteraction,
 	Embed,
 	slash,
@@ -262,8 +262,8 @@ async function sendCommand(
 }
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-	@autocomplete("*", "*")
-	async autoComplete(d: AutocompleteInteraction) {
+	//@autocomplete("*", "*")
+	static async autoComplete(d: AutocompleteInteraction) {
 		const completions: ApplicationCommandChoice[] = [];
 		if (
 			d.focusedOption.name.includes("user") ||
