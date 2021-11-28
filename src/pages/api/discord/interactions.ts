@@ -68,6 +68,7 @@ export const handler = {
 							},
 					});
 				} else if (payload.type === InteractionType.AUTOCOMPLETE) {
+					console.log(payload);
 					res = new AutocompleteInteraction(client as any, payload, {
 						user: new User(
 							client as any,
@@ -76,14 +77,7 @@ export const handler = {
 						member: payload.member as any,
 						guild: payload.guild_id as any,
 						channel: payload.channel_id as any,
-						resolved: ((payload.data as any)
-							?.resolved as unknown as InteractionApplicationCommandResolved) ??
-							{
-								users: {},
-								members: {},
-								roles: {},
-								channels: {},
-							},
+						resolved: payload.data as any,
 					});
 				} else {
 					res = new Interaction(client as any, payload, {
