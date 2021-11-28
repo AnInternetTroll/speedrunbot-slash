@@ -17,16 +17,28 @@ export const handler = {
 	POST(ctx: HandlerContext): Promise<Response> {
 		const req = ctx.req;
 		// deno-lint-ignore no-async-promise-executor
-		return new Promise(async (res) => {
-			const interaction = await client.verifyFetchEvent({
-				respondWith: res,
-				request: req,
-			});
-			if (interaction === false) {
-				return res(new Response(null, { status: 401 }));
+		return new Promise(async (res, rej) => {
+			try {
+				const interaction = await client.verifyFetchEvent({
+					respondWith: res,
+					request: req,
+				});
+				if (interaction === false) {
+					return res(new Response("Not Authorized", { status: 400 }));
+				}
+				if (interaction.type === InteractionType.PING) {
+					client.emit("ping");
+					return interaction.respond({ type: InteractionResponseType.PONG });
+				}
+				await client._process(interaction);
+			} catch (e) {
+				await client.emit("interactionError", e as Error);
+				rej(
+					new Response(e, {
+						status: 500,
+					}),
+				);
 			}
-			if (interaction.type === 1) return interaction.respond({ type: 1 });
-			await client._process(interaction);
 		});
 	},
 };
