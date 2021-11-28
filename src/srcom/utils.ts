@@ -60,7 +60,7 @@ export async function getGame(
 export async function getGames(games: string[]): Promise<SpeedrunCom.Game[]> {
 	// The filter function should filter out all the `false` stuff.
 	// Trust me bro I got this
-	return (await Promise.all(games.map(getGame))).filter((game) =>
+	return (await Promise.all(games.filter(game => !!game).map(getGame))).filter((game) =>
 		!!game
 	) as SpeedrunCom.Game[];
 }
@@ -68,7 +68,7 @@ export async function getGames(games: string[]): Promise<SpeedrunCom.Game[]> {
 export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
 	// The filter function should filter out all the `false` stuff.
 	// Trust me bro I got this
-	return (await Promise.all(users.map(getUser))).filter((user) =>
+	return (await Promise.all(users.filter(usr => !!usr).map(getUser))).filter((user) =>
 		!!user
 	) as SpeedrunCom.User[];
 }
