@@ -72,7 +72,7 @@ export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
 }
 
 export async function getAll<T>(url: URL | string): Promise<T[]> {
-	if (typeof url === "string") url = new URL(url);
+	url = new URL(url);
 	url.searchParams.set("max", "200");
 	let data: unknown[] = [];
 	let size = 0;
