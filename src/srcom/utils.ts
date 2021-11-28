@@ -24,6 +24,7 @@ interface ApiArrayResponse {
 export async function getUser(
 	query: string,
 ): Promise<SpeedrunCom.User | false> {
+	if (!query.length) return false;
 	let res: Response;
 	res = await fetch(`${SRC_API}/users?lookup=${encodeURI(query)}`);
 	const data = (await res.json()).data as SpeedrunCom.User[];
@@ -38,6 +39,7 @@ export async function getUser(
 export async function getGame(
 	query: string,
 ): Promise<SpeedrunCom.Game | false> {
+	if (!query.length) return false;
 	let res: Response;
 	res = await fetch(`${SRC_API}/games?abbreviation=${query}`);
 	const data = (await res.json()).data as SpeedrunCom.Game[];
