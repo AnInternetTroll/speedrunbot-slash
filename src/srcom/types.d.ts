@@ -53,11 +53,6 @@ export namespace SpeedrunCom {
 		image: Image;
 	}
 
-	export interface Link {
-		rel: string;
-		uri: string;
-	}
-
 	export interface User {
 		id: string;
 		names: Names;
@@ -74,10 +69,6 @@ export namespace SpeedrunCom {
 		speedrunslive?: ExternalAccount;
 		assets: Assets;
 		links: Link[];
-	}
-
-	export interface Link {
-		uri: string;
 	}
 
 	export interface Videos {
@@ -113,18 +104,11 @@ export namespace SpeedrunCom {
 		region: string;
 	}
 
-	export type Values = any;
-
-	export interface Link2 {
-		rel: string;
-		uri: string;
-	}
-
 	export interface Run {
 		id: string;
 		weblink: string;
 		game: string;
-		level?: any;
+		level?: string;
 		category: string;
 		videos: Videos;
 		comment: string;
@@ -136,7 +120,7 @@ export namespace SpeedrunCom {
 		system: System;
 		splits?: any;
 		values: Values;
-		links: Link2[];
+		links: Link[];
 	}
 
 	export interface GameNames {
@@ -221,11 +205,6 @@ export namespace SpeedrunCom {
 		foreground: Foreground;
 	}
 
-	export interface Link {
-		rel: string;
-		uri: string;
-	}
-
 	export interface Game {
 		id: string;
 		names: GameNames;
@@ -253,11 +232,6 @@ export namespace SpeedrunCom {
 		value: number;
 	}
 
-	export interface Link {
-		rel: string;
-		uri: string;
-	}
-
 	export interface Category {
 		id: string;
 		name: string;
@@ -274,6 +248,55 @@ export namespace SpeedrunCom {
 		name: string;
 		weblink: string;
 		rules: string;
+		links: Link[];
+	}
+
+	export interface Scope {
+		type: string;
+	}
+
+	export interface Flags {
+		miscellaneous: boolean;
+	}
+
+	export interface Values {
+		values: { [id: string]: { label: string; rules: string; flags: Flags } };
+		default: string;
+	}
+
+	export interface Link {
+		rel?: string;
+		uri: string;
+	}
+
+	export interface Variable {
+		id: string;
+		name: string;
+		category?: string;
+		scope: Scope;
+		mandatory: boolean;
+		"user-defined": boolean;
+		obsoletes: boolean;
+		values: Values;
+		"is-subcategory": boolean;
+		links: Link[];
+	}
+
+	export interface Leaderboard {
+		weblink: string;
+		game: string;
+		category: string;
+		level?: string;
+		platform?: string;
+		region?: string;
+		emulators?: string;
+		"video-only": boolean;
+		timing: string;
+		values: Values;
+		runs: {
+			place: number;
+			run: Run;
+		};
 		links: Link[];
 	}
 }

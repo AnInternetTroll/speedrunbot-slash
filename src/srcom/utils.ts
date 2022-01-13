@@ -73,7 +73,7 @@ export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
 }
 
 export async function getAll<T>(url: URL | string): Promise<T[]> {
-	url = new URL(url);
+	url = new URL(url.toString());
 	url.searchParams.set("max", "200");
 	let data: unknown[] = [];
 	let size = 0;
@@ -97,4 +97,45 @@ export async function getAll<T>(url: URL | string): Promise<T[]> {
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
 	return data as T[];
+}
+
+export async function getCategories(
+	gameId: string,
+): Promise<SpeedrunCom.Category[] | false> {
+	if (!gameId.length) return false;
+	const res = await fetch(`${SRC_API}/games/${gameId}/categories`);
+	const data = (await res.json()).data as SpeedrunCom.Category[];
+	return data.length ? data : false;
+}
+
+export async function getVariables(
+	gameId: string,
+): Promise<SpeedrunCom.Variable[] | false> {
+	let res: Response;
+	if (gameId) res = await fetch(`${SRC_API}/games/${gameId}/variables`);
+	else return false;
+	if (!res.ok) return false;
+
+	const data = (await res.json()).data as SpeedrunCom.Variable[];
+
+	return typeof data[0] === "undefined" ? false : data;
+}
+
+export async function getLeaderboard(
+	gameId: string,
+	categoryId: string,
+	variables: Record<string, string>,
+	levelId: string | false = false,
+): Promise<SpeedrunCom.Leaderboard | false> {
+	const url = new URL(
+		`${SRC_API}/leaderboards/${gameId}/${
+			levelId ? `level/${levelId}/${categoryId}` : `category/${categoryId}`
+		}`,
+	);
+	for (const variableId in variables) {
+		url.searchParams.set(`var-${variableId}`, variables[variableId]);
+	}
+	const res = await fetch(url);
+	const data = (await res.json()).data as SpeedrunCom.Leaderboard;
+	return data;
 }
