@@ -21,7 +21,7 @@ deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env
 src/client.ts
 ```
 
-For more info read [CONTRIBUTING.md]
+For more info read [CONTRIBUTING.md](CONTRIBUTING.md)
 
 # Credits
 
