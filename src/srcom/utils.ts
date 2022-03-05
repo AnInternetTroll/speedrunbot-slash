@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import type { MarkupType } from "./fmt.ts";
 import type { SpeedrunCom } from "./types.d.ts";
+import { delay } from "../../deps_general.ts";
 export const SRC_API = "https://www.speedrun.com/api/v1";
-import { delay } from "https://deno.land/std@0.116.0/async/mod.ts";
 
 export interface Opts {
 	outputType?: MarkupType;
@@ -73,7 +73,7 @@ export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
 }
 
 export async function getAll<T>(url: URL | string): Promise<T[]> {
-	url = new URL(url);
+	url = new URL(url.toString());
 	url.searchParams.set("max", "200");
 	let data: unknown[] = [];
 	let size = 0;

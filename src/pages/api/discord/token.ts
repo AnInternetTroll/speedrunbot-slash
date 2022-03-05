@@ -1,5 +1,5 @@
 // deno-lint-ignore-file camelcase
-import { HandlerContext } from "../../../deps_server.ts";
+import { HandlerContext } from "../../../../deps_server.ts";
 import { DISCORD_URL } from "../../../utils.ts";
 import { client } from "./interactions.ts";
 

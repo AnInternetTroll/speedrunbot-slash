@@ -1,5 +1,5 @@
 /** @jsx h */
-import { h, useEffect, useState } from "../deps_frontend.ts";
+import { h, useEffect, useState } from "../../deps_frontend.ts";
 import { DISCORD_URL } from "../utils.ts";
 
 export const config = { runtimeJS: true };

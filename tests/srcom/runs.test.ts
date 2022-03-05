@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.106.0/testing/asserts.ts";
+import { assertEquals } from "../../deps_testing.ts";
 import { runs } from "../../src/srcom/runs.ts";
 
 Deno.test("Get user runs by username", async () => {

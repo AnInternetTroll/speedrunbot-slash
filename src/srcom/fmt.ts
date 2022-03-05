@@ -1,4 +1,4 @@
-import { bold as boldTerminal } from "https://deno.land/std@0.106.0/fmt/colors.ts";
+import { bold as boldTerminal } from "../../deps_general.ts";
 
 export const MARKUP: MarkupType = typeof globalThis.Deno === "undefined"
 	? "browser"

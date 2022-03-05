@@ -1,7 +1,7 @@
 import { client } from "./interactions.ts";
 import { DISCORD_URL } from "../../../utils.ts";
 import { commands } from "../../../srcom/slash_commands.ts";
-import { HandlerContext } from "../../../deps_server.ts";
+import { HandlerContext } from "../../../../deps_server.ts";
 
 interface ReqBody {
 	// deno-lint-ignore camelcase

@@ -9,7 +9,7 @@ import {
 	slash,
 	SlashCommandOptionType,
 	SlashCommandPartial,
-} from "../deps_server.ts";
+} from "../../deps_server.ts";
 
 import { games } from "./games.ts";
 import { examined } from "./examined.ts";

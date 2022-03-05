@@ -3,7 +3,7 @@ import { Format } from "./fmt.ts";
 import { getAll, getGames, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { TimeDelta } from "../deps_general.ts";
+import { TimeDelta } from "../../deps_general.ts";
 
 function sec2time(timeInSeconds: number): string {
 	return new TimeDelta({ seconds: timeInSeconds }).toString().replaceAll(
@@ -58,6 +58,7 @@ export async function pendingGames(
 						`[${p.rel === "guest" ? p.name : p.names.international}](${
 							// @ts-ignore A user can be a guest
 							p.rel === "guest"
+								// @ts-ignore A user can be a guest
 								? p.uri
 								: p.weblink
 						})`

@@ -3,7 +3,7 @@ import { Format } from "./fmt.ts";
 import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { groupBy } from "https://deno.land/std@0.116.0/collections/mod.ts";
+import { groupBy } from "../../deps_general.ts";
 
 interface LeaderboardMod {
 	username: string;
@@ -16,6 +16,7 @@ function mergeMods(users: LeaderboardMod[]): LeaderboardMod[] {
 	return Object.entries(mods).map(([username, entries]) => {
 		return {
 			username,
+			// @ts-ignore I'm don't understand why `entries` can be undefined
 			count: entries.reduce((acc, c) => acc + c.count, 0),
 		};
 	});

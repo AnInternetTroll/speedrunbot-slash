@@ -3,7 +3,7 @@ import { Format } from "./fmt.ts";
 import { getAll, getUsers, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { TimeDelta } from "../deps_general.ts";
+import { TimeDelta } from "../../deps_general.ts";
 
 function sec2time(timeInSeconds: number): string {
 	// @ts-ignore The library doesn't provide any types
@@ -59,6 +59,7 @@ export async function pendingUsers(
 						`[${p.rel === "guest" ? p.name : p.names.international}](${
 							// @ts-ignore A user can be a guest
 							p.rel === "guest"
+								// @ts-ignore A user can be a guest
 								? p.uri
 								: p.weblink
 						})`

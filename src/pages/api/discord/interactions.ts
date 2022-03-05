@@ -1,4 +1,4 @@
-import { HandlerContext, InteractionsClient } from "../../../deps_server.ts";
+import { HandlerContext, InteractionsClient } from "../../../../deps_server.ts";
 import { SpeedrunCom } from "../../../srcom/slash_commands.ts";
 
 export const client = new InteractionsClient({

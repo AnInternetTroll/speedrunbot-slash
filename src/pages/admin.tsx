@@ -1,6 +1,6 @@
 /** @jsx h */
-import { h, IS_BROWSER, useEffect, useState } from "../deps_frontend.ts";
-import type { PageConfig } from "../deps_frontend.ts";
+import { h, IS_BROWSER, useEffect, useState } from "../../deps_frontend.ts";
+import type { PageConfig } from "../../deps_frontend.ts";
 import { DISCORD_URL } from "../utils.ts";
 import type { BotInfo } from "./api/discord/bot_info.ts";
 import type { Token } from "./api/discord/token.ts";
