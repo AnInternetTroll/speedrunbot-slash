@@ -26,7 +26,7 @@ if (import.meta.main) {
 	console.log("Editted!");
 	const args = parse(Deno.args);
 	if (args.update || args.u) {
-		console.log("Goodbye!")
+		console.log("Goodbye!");
 		await client.close();
 		Deno.exit(0);
 	}
