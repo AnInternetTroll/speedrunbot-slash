@@ -44,11 +44,11 @@ export async function examinedLeaderboard(
 	const leaderboard = mergeMods(
 		await Promise.all(
 			(await Promise.all(gameObjs.map<Promise<LeaderboardMod>[]>((gameObj) => {
-				const urlG = new URL(urlT);
+				const urlG = new URL(urlT.toString());
 				urlG.searchParams.set("game", gameObj.id);
 				return Object.keys(gameObj.moderators).map<Promise<LeaderboardMod>>(
 					async (mod) => {
-						const url = new URL(urlG);
+						const url = new URL(urlG.toString());
 						// @ts-ignore The user exists or else they wouldn't be a mod
 						const user: SpeedrunCom.User = await getUser(mod);
 						url.searchParams.set("examiner", mod);

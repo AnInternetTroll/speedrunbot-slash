@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import type { MarkupType } from "./fmt.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { delay } from "../../deps_general.ts";
+import { delay, TimeDelta } from "../../deps_general.ts";
 export const SRC_API = "https://www.speedrun.com/api/v1";
 
 export interface Opts {
@@ -97,4 +97,11 @@ export async function getAll<T>(url: URL | string): Promise<T[]> {
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
 	return data as T[];
+}
+
+export function sec2time(timeInSeconds: number): string {
+	return new TimeDelta({ seconds: timeInSeconds }).toString().replaceAll(
+		"000",
+		"",
+	);
 }

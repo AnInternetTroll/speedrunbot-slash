@@ -18,6 +18,7 @@ import { categories } from "./categories.ts";
 import { runs } from "./runs.ts";
 import { whois } from "./whois.ts";
 import { worldRecords } from "./world_records.ts";
+import { worldRecord } from "./world_record.ts";
 import { categoriesPlayed } from "./categories_played.ts";
 import { pendingGames } from "./pending_games.ts";
 import { pendingCount } from "./pending_count.ts";
@@ -210,6 +211,27 @@ export const commands: SlashCommandPartial[] = [
 			{
 				...srcGame,
 				name: "game2",
+			},
+		],
+	},
+	{
+		name: "world-record",
+		description:
+			"See the world record of a given game, category, and sub category.",
+		options: [
+			{
+				...srcGame,
+				required: true,
+			},
+			{
+				name: "category",
+				description: "A game's category",
+				type: SlashCommandOptionType.STRING,
+			},
+			{
+				name: "subcategory",
+				description: "A game's variable, such as a sub category",
+				type: SlashCommandOptionType.STRING,
 			},
 		],
 	},
@@ -425,6 +447,20 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("game"),
 					i.option("game2"),
 				], { outputType: "markdown" }),
+		);
+	}
+
+	@slash("world-record")
+	async worldRecord(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				worldRecord(
+					i.option("game"),
+					i.option("category"),
+					i.option("subcategory"),
+					{ outputType: "markdown" },
+				),
 		);
 	}
 }

@@ -54,7 +54,7 @@ export namespace SpeedrunCom {
 	}
 
 	export interface Link {
-		rel: string;
+		rel?: string;
 		uri: string;
 	}
 
@@ -74,10 +74,6 @@ export namespace SpeedrunCom {
 		speedrunslive?: ExternalAccount;
 		assets: Assets;
 		links: Link[];
-	}
-
-	export interface Link {
-		uri: string;
 	}
 
 	export interface Videos {
@@ -115,11 +111,6 @@ export namespace SpeedrunCom {
 
 	export type Values = any;
 
-	export interface Link2 {
-		rel: string;
-		uri: string;
-	}
-
 	export interface Run {
 		id: string;
 		weblink: string;
@@ -136,7 +127,7 @@ export namespace SpeedrunCom {
 		system: System;
 		splits?: any;
 		values: Values;
-		links: Link2[];
+		links: Link[];
 	}
 
 	export interface GameNames {
@@ -221,11 +212,6 @@ export namespace SpeedrunCom {
 		foreground: Foreground;
 	}
 
-	export interface Link {
-		rel: string;
-		uri: string;
-	}
-
 	export interface Game {
 		id: string;
 		names: GameNames;
@@ -253,16 +239,11 @@ export namespace SpeedrunCom {
 		value: number;
 	}
 
-	export interface Link {
-		rel: string;
-		uri: string;
-	}
-
 	export interface Category {
 		id: string;
 		name: string;
 		weblink: string;
-		type: string;
+		type: "per-level" | "per-game";
 		rules: string;
 		players: Players;
 		miscellaneous: boolean;
@@ -274,6 +255,52 @@ export namespace SpeedrunCom {
 		name: string;
 		weblink: string;
 		rules: string;
+		links: Link[];
+	}
+
+	export interface Scope {
+		type: string;
+	}
+
+	export interface Variable {
+		id: string;
+		name: string;
+		category?: any;
+		scope: Scope;
+		mandatory: boolean;
+		"user-defined": boolean;
+		obsoletes: boolean;
+		values: {
+			values: {
+				[k: string]: {
+					label: string;
+					rules: string;
+					flags: {
+						miscellaneous: boolean;
+					};
+				};
+			};
+			default: string;
+		};
+		"is-subcategory": boolean;
+		links: Link[];
+	}
+
+	export interface Leaderboard {
+		weblink: string;
+		game: string;
+		category: string;
+		level?: any;
+		platform?: any;
+		region?: any;
+		emulators?: any;
+		"video-only": boolean;
+		timing: string;
+		values: Values;
+		runs: {
+			place: number;
+			run: Run;
+		}[];
 		links: Link[];
 	}
 }
