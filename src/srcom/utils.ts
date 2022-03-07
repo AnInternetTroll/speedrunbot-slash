@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import type { MarkupType } from "./fmt.ts";
-import type { SpeedrunCom } from "./types.d.ts";
+import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
 export const SRC_API = "https://www.speedrun.com/api/v1";
 
@@ -97,6 +97,26 @@ export async function getAll<T>(url: URL | string): Promise<T[]> {
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
 	return data as T[];
+}
+
+/**
+ * This function uses an unofficial API to get a user's stats
+ * It will throw if anything bad happens
+ * @param userId A speedrun.com user ID
+ * @returns It should return `SpeedrunComUnofficial.Stats` but it is actually `unknown`.
+ * Be ready to catch any errors thrown with the returned object
+ */
+export async function unofficialGetUserStats(
+	userId: string,
+): Promise<SpeedrunComUnofficial.Stats> {
+	const res = await fetch(
+		"https://www.speedrun.com/_fedata/user/stats?" + new URLSearchParams({
+			userId,
+			ver: "3",
+		}),
+	);
+	const data = await res.json();
+	return data;
 }
 
 export function sec2time(timeInSeconds: number): string {

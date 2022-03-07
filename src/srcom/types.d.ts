@@ -1,4 +1,4 @@
-// deno-lint-ignore-file camelcase no-explicit-any
+// deno-lint-ignore-file no-explicit-any
 export namespace SpeedrunCom {
 	export interface Names {
 		international: string;
@@ -302,5 +302,130 @@ export namespace SpeedrunCom {
 			run: Run;
 		}[];
 		links: Link[];
+	}
+}
+
+export namespace SpeedrunComUnofficial {
+	export interface Color {
+		id: number;
+		name: string;
+		pos: number;
+		darkColor: string;
+		lightColor: string;
+	}
+
+	export interface User {
+		id: string;
+		url: string;
+		name: string;
+		pronouns: string;
+		powerLevel: number;
+		color1: Color;
+		color2: Color;
+		signupDate: number;
+		lastOnline: number;
+		avatarPath: string;
+		hasDonated: boolean;
+		donated: number;
+		coin: number;
+		isGameModerator: boolean;
+		isTranslator: boolean;
+		bio: string;
+	}
+
+	export interface UserStats {
+		totalRuns: number;
+		totalRunTime: number;
+		minRunDate: number;
+		maxRunDate: number;
+		totalCommentLikesGiven: number;
+		totalCommentLikesReceived: number;
+		totalComments: number;
+		minCommentDate: number;
+		maxCommentDate: number;
+		guidesCreated: number;
+		resourcesCreated: number;
+	}
+
+	export interface Game {
+		id: string;
+		url: string;
+		name: string;
+		type: string;
+		loadtimes: boolean;
+		milliseconds: boolean;
+		igt: boolean;
+		verification: boolean;
+		requireVideo: boolean;
+		autoVerify: boolean;
+		emulator: number;
+		defaultTimer: number;
+		releaseDate: number;
+		addedDate: number;
+		touchDate: number;
+		runCommentsMode: number;
+		coverPath: string;
+		trophy1stPath: string;
+		trophy2ndPath: string;
+		trophy3rdPath: string;
+		trophy4thPath: string;
+	}
+
+	export interface GameStat {
+		game: Game;
+		totalRuns: number;
+		totalTime: number;
+		uniqueLevels: number;
+		uniqueCategories: number;
+		minDate: number;
+		maxDate: number;
+	}
+
+	export interface Game {
+		id: string;
+		url: string;
+		name: string;
+		type: string;
+		loadtimes: boolean;
+		milliseconds: boolean;
+		igt: boolean;
+		verification: boolean;
+		requireVideo: boolean;
+		autoVerify: boolean;
+		emulator: number;
+		defaultTimer: number;
+		releaseDate: number;
+		addedDate: number;
+		touchDate: number;
+		runCommentsMode: number;
+		coverPath: string;
+		trophy1stPath: string;
+		trophy2ndPath: string;
+		trophy3rdPath: string;
+		trophy4thPath: string;
+	}
+
+	export interface ModStat {
+		game: Game;
+		level: number;
+		totalRuns: number;
+		totalTime: number;
+		minDate: number;
+		maxDate: number;
+	}
+
+	export interface FollowStat {
+		game: Game;
+		pos: number;
+		accessCount: number;
+		lastAccessDate: number;
+	}
+
+	export interface Stats {
+		user: User;
+		userStats: UserStats;
+		followStats: FollowStat[];
+		gameStats: GameStat[];
+		modStats: ModStat[];
 	}
 }

@@ -8,7 +8,7 @@ In April 2022 bots in over 100 servers will not be able to read messages
 anymore. This means that bots will **have** to use slash commands instead. Slash
 commands are not anybody's favourite, but they're here and we might as well use
 them to the best of our abilities. As such this bot is meant to run on
-[Deno Deploy](https://deno.com/deploy). A serverless enviorment where discord
+[Deno Deploy](https://deno.com/deploy). A serverless environment where discord
 tells deno deploy what command it wants and deno deploy responds.
 
 # Development
