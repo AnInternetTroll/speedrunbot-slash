@@ -35,7 +35,7 @@ export async function whois(
 		user.speedrunslive
 	) {
 		const socials: string[] = [];
-		if (user.youtube) socials.push(fmt.link(user.youtube.uri, "Youtube"));
+		if (user.youtube) socials.push(fmt.link(user.youtube.uri, "YouTube"));
 		if (user.hitbox) socials.push(fmt.link(user.hitbox.uri, "Hitbox"));
 		if (user.twitch) socials.push(fmt.link(user.twitch.uri, "Twitch"));
 		if (user.twitter) {
