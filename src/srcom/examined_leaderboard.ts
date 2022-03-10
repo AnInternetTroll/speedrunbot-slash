@@ -86,7 +86,7 @@ export async function examinedLeaderboard(
 	leaderboard.sort((a, b) => b.count - a.count);
 	output.push(
 		`${fmt.bold("Examiner leaderboard")} for ${
-			games.filter((a) => a).join(" and ")
+			gameObjs.map((a) => a.names.international).join(" and ")
 		}`,
 	);
 	for (const modIndex in leaderboard) {
