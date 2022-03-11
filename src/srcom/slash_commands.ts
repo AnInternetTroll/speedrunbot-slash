@@ -26,6 +26,7 @@ import { podiums } from "./podiums.ts";
 import { modCount } from "./mod_count.ts";
 import { pendingUsers } from "./pending_users.ts";
 import { SRC_API } from "./utils.ts";
+import { runInfo } from "./run_info.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 
@@ -232,6 +233,22 @@ export const commands: SlashCommandPartial[] = [
 				name: "subcategory",
 				description: "A game's variable, such as a sub category",
 				type: SlashCommandOptionType.STRING,
+			},
+		],
+	},
+	{
+		name: "run-info",
+		description: "Get info about a run ID or link",
+		options: [
+			{
+				name: "run",
+				description: "A run ID or link",
+				type: SlashCommandOptionType.STRING,
+				required: true,
+			},
+			{
+				...srcGame,
+				name: "game2",
 			},
 		],
 	},
@@ -459,6 +476,18 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("game"),
 					i.option("category"),
 					i.option("subcategory"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash("run-info")
+	async runInfo(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runInfo(
+					i.option("run"),
 					{ outputType: "markdown" },
 				),
 		);

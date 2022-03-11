@@ -24,7 +24,8 @@ be if the `Deno` API works on [Deno Deploy](https://deno.com/deploy) as well.
 
 # Running the code
 
-Before running the bot you must first make a `.env` file in the root of the project and put in the following
+Before running the bot you must first make a `.env` file in the root of the
+project and put in the following
 
 ```sh
 TOKEN="YOUR BOT'S DISCORD TOKEN"

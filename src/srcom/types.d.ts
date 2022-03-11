@@ -111,6 +111,11 @@ export namespace SpeedrunCom {
 
 	export type Values = any;
 
+	interface Guest {
+		name: string;
+		links: Link[];
+	}
+
 	export interface Run {
 		id: string;
 		weblink: string;
@@ -120,7 +125,7 @@ export namespace SpeedrunCom {
 		videos: Videos;
 		comment: string;
 		status: Status;
-		players: Player[];
+		players: (Player | Guest)[];
 		date: string;
 		submitted?: any;
 		times: Times;
