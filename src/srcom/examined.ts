@@ -1,6 +1,12 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
+import {
+	getAll,
+	getGames,
+	getUser,
+	SRC_API,
+	unofficialGetUserStats,
+} from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 interface ExaminedObject {
@@ -52,15 +58,28 @@ export async function examined(
 	let individualLevelRuns = 0;
 	let verifiedRuns = 0;
 	let rejectedRuns = 0;
+	let total = runs.length;
 	runs.forEach((run) => {
 		if (run.level) individualLevelRuns++;
 		else fullGameRuns++;
 		if (run.status.status === "verified") verifiedRuns++;
 		else rejectedRuns++;
 	});
+	if (total === 10_000) {
+		try {
+			let totalExaminedRuns = 0;
+			const stats = await unofficialGetUserStats(user.id);
+			for (const modStat of stats.modStats) {
+				totalExaminedRuns += modStat.totalRuns;
+			}
+			if (totalExaminedRuns > total) total = totalExaminedRuns;
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	if (outputType === "object") {
 		return {
-			total: runs.length,
+			total,
 			fullGame: fullGameRuns,
 			individualLevel: individualLevelRuns,
 			verified: verifiedRuns,
@@ -75,7 +94,7 @@ export async function examined(
 	output.push(`Verified: ${verifiedRuns}`);
 	output.push(`Rejected: ${rejectedRuns}`);
 	output.push("");
-	output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
+	output.push(`Total: ${total}`);
 	return output.join("\n");
 }
 

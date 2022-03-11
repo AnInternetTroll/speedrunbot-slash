@@ -87,7 +87,7 @@ export async function getAll<T>(url: URL | string): Promise<T[]> {
 				console.warn("We are being throttled " + res.status);
 				attempts++;
 				if (attempts > 5) break;
-				await delay(90000);
+				await delay(30_000);
 			}
 			continue;
 		} else attempts = 0;
