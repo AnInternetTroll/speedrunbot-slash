@@ -94,8 +94,10 @@ export async function runInfo(
 	);
 
 	output.push(
-		`Video${runObj.videos.links.length > 1 ? "s" : ""}: ${
-			runObj.videos.links.map((link) => link.uri).join(" and ")
+		`Video${runObj.videos && runObj.videos.links.length > 1 ? "s" : ""}: ${
+			runObj.videos
+				? runObj.videos.links.map((link) => link.uri).join(" and ")
+				: "No video :("
 		}`,
 	);
 	output.push(`${fmt.link(runObj.weblink, "Web link")}`);
