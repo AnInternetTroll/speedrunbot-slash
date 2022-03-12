@@ -308,6 +308,13 @@ export namespace SpeedrunCom {
 		}[];
 		links: Link[];
 	}
+
+	export interface Platform {
+		id: string;
+		name: string;
+		released: number;
+		links: Link[];
+	}
 }
 
 export namespace SpeedrunComUnofficial {

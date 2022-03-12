@@ -22,7 +22,7 @@ export async function runInfo(
 	const runRequest = await fetch(
 		`${SRC_API}/runs/${
 			encodeURIComponent(run.split("/").at(-1)!)
-		}?embed=players,game,category`,
+		}?embed=players,game,category,level`,
 	);
 
 	if (!runRequest.ok) {
@@ -32,9 +32,20 @@ export async function runInfo(
 
 	const runObj = (await runRequest.json()).data as SpeedrunCom.Run;
 
+	let platform: { name: string; emulated: boolean } | null = null;
+	if (runObj.system.platform) {
+		const res = await fetch(`${SRC_API}/platforms/${runObj.system.platform}`);
+		const data = (await res.json()).data as SpeedrunCom.Platform;
+		platform = { name: data.name, emulated: runObj.system.emulated };
+	}
+
 	const category =
 		(runObj.category as unknown as { data: SpeedrunCom.Category }).data
 			.name;
+	const level = runObj.level
+		? (runObj.level as unknown as { data: SpeedrunCom.Level }).data
+			.name
+		: null;
 	const time = sec2time(runObj.times.primary_t);
 	const game = (runObj.game as unknown as { data: SpeedrunCom.Game }).data.names
 		.international;
@@ -66,18 +77,29 @@ export async function runInfo(
 						(await getUser(runObj.status.examiner) as SpeedrunCom.User).names
 							.international
 					} on ${dateFormat(new Date(runObj.status["verify-date"]))}`
-					: "Unknown")
+					: "")
 				: ""
 		}`,
 	);
 
-	output.push(`Date: ${dateFormat(new Date(runObj.date))}`);
+	if (runObj.date) {
+		output.push(
+			`Date: ${dateFormat(new Date(runObj.date))}`,
+		);
+	}
+
+	if (level) output.push(`Level: ${level}`);
 
 	output.push(
 		`Category: ${
 			(runObj.category as unknown as { data: SpeedrunCom.Category }).data.name
 		}`,
 	);
+	if (platform) {
+		output.push(
+			`Platform: ${platform.name} ${platform.emulated ? "(Emulated)" : ""}`,
+		);
+	}
 
 	output.push(
 		`Player${playersObjs.length > 1 ? "s" : ""}: ${
