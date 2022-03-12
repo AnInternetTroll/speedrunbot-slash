@@ -29,6 +29,7 @@ import { SRC_API } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
+import gameInfo from "./game_info.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -246,9 +247,15 @@ export const commands: SlashCommandPartial[] = [
 				type: SlashCommandOptionType.STRING,
 				required: true,
 			},
+		],
+	},
+	{
+		name: "game-info",
+		description: "Get info about a run ID or link",
+		options: [
 			{
 				...srcGame,
-				name: "game2",
+				required: true,
 			},
 		],
 	},
@@ -488,6 +495,18 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			(i) =>
 				runInfo(
 					i.option("run"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash("game-info")
+	async gameInfo(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				gameInfo(
+					i.option("game"),
 					{ outputType: "markdown" },
 				),
 		);

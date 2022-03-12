@@ -223,6 +223,11 @@ export namespace SpeedrunCom {
 		abbreviation: string;
 		weblink: string;
 		released: number;
+		// This will always be a string
+		// Regardless on weather the game moderators have set a discord or not
+		// But if they did not set it then it will be an empty string (`""`)
+		// As such let's pretend that it can be `undefined`
+		discord?: string;
 		"release-date": string;
 		ruleset: Ruleset;
 		romhack: boolean;
@@ -313,6 +318,12 @@ export namespace SpeedrunCom {
 		id: string;
 		name: string;
 		released: number;
+		links: Link[];
+	}
+
+	export interface Genre {
+		id: string;
+		name: string;
 		links: Link[];
 	}
 }
