@@ -136,7 +136,7 @@ export const commands: SlashCommandPartial[] = [
 	},
 	{
 		name: "pending-games",
-		description: "See all pending runs of a game.",
+		description: "See all pending runs for one or more games.",
 		options: [
 			{
 				...srcGame,
@@ -150,7 +150,7 @@ export const commands: SlashCommandPartial[] = [
 	},
 	{
 		name: "pending-users",
-		description: "See all pending runs of a users.",
+		description: "See all pending runs for one or more users.",
 		options: [
 			{
 				...srcUser,
@@ -164,7 +164,7 @@ export const commands: SlashCommandPartial[] = [
 	},
 	{
 		name: "pending-count",
-		description: "See how man pending runs a game has.",
+		description: "See how many pending runs a game has.",
 		options: [
 			{
 				...srcGame,
@@ -203,7 +203,7 @@ export const commands: SlashCommandPartial[] = [
 	},
 	{
 		name: "world-records",
-		description: "See how many world records a player has submitted.",
+		description: "See how many world records a player has on `speedrun.com`.",
 		options: [
 			{
 				...srcUser,
@@ -219,7 +219,7 @@ export const commands: SlashCommandPartial[] = [
 	{
 		name: "world-record",
 		description:
-			"See the world record of a given game, category, and sub category.",
+			"See the world record of a given game, category, and sub-category.",
 		options: [
 			{
 				...srcGame,
@@ -239,7 +239,7 @@ export const commands: SlashCommandPartial[] = [
 	},
 	{
 		name: "run-info",
-		description: "Get info about a run ID or link",
+		description: "Get info about a run.",
 		options: [
 			{
 				name: "run",
@@ -251,7 +251,7 @@ export const commands: SlashCommandPartial[] = [
 	},
 	{
 		name: "game-info",
-		description: "Get info about a run ID or link",
+		description: "Get info about a game.",
 		options: [
 			{
 				...srcGame,

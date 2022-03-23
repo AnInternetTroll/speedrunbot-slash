@@ -1,11 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import {
-	getAll,
-	getGames,
-	getUser,
-	SRC_API,
-} from "./utils.ts";
+import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 import { groupBy } from "../../deps_general.ts";
