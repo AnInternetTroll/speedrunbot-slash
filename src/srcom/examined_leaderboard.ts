@@ -5,7 +5,6 @@ import {
 	getGames,
 	getUser,
 	SRC_API,
-	unofficialGetUserStats,
 } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
@@ -54,19 +53,6 @@ export async function examinedLeaderboard(
 				urlG.searchParams.set("game", gameObj.id);
 				return Object.keys(gameObj.moderators).map<Promise<LeaderboardMod>>(
 					async (mod) => {
-						try {
-							const stats = await unofficialGetUserStats(mod);
-							const count = stats.modStats.find((game) =>
-								game.game.id === gameObj.id
-							)?.totalRuns;
-							if (!count) throw new Error("No game found in the secret api");
-							return {
-								username: stats.user.name,
-								count,
-							};
-						} catch (err) {
-							console.error(err);
-						}
 						const url = new URL(urlG.toString());
 						// @ts-ignore The user exists or else they wouldn't be a mod
 						const user: SpeedrunCom.User = await getUser(mod);
