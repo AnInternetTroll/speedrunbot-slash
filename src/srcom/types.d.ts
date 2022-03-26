@@ -264,7 +264,7 @@ export namespace SpeedrunCom {
 		id: string;
 		name: string;
 		weblink: string;
-		rules: string;
+		rules: string | null;
 		links: Link[];
 	}
 

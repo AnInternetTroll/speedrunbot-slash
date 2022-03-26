@@ -25,11 +25,13 @@ import { pendingCount } from "./pending_count.ts";
 import { podiums } from "./podiums.ts";
 import { modCount } from "./mod_count.ts";
 import { pendingUsers } from "./pending_users.ts";
-import { SRC_API } from "./utils.ts";
+import { getGame, SRC_API } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
+import { levelInfo } from "./level_info.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
+import { Moogle } from "../../deps_general.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -43,6 +45,13 @@ const srcGame: ApplicationCommandOption = {
 	type: SlashCommandOptionType.STRING,
 	autocomplete: true,
 };
+const srcLevel: ApplicationCommandOption = {
+	name: "level",
+	description: "A level's name.",
+	type: SlashCommandOptionType.STRING,
+	autocomplete: true,
+};
+
 export const commands: SlashCommandPartial[] = [
 	{
 		name: "games",
@@ -259,6 +268,20 @@ export const commands: SlashCommandPartial[] = [
 			},
 		],
 	},
+	{
+		name: "level-info",
+		description: "Get info about a game's level.",
+		options: [
+			{
+				...srcGame,
+				required: true,
+			},
+			{
+				...srcLevel,
+				required: true,
+			},
+		],
+	},
 ];
 
 function splitIntoChunks(array: string[], perChunk: number): string[][] {
@@ -328,6 +351,32 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				name: game.names.international,
 				value: game.abbreviation,
 			})));
+		} else if (d.focusedOption.name.includes("level")) {
+			const game = d.option("game");
+			const level = d.option("level");
+			if (
+				(typeof game === "string" && game.length) && (typeof level === "string")
+			) {
+				const gameObj = await getGame(d.option("game"));
+				if (gameObj) {
+					const levels = (await (await fetch(
+						`${SRC_API}/games/${gameObj.id}/levels`,
+					)).json()).data as ISpeedrunCom.Level[];
+					if (!levels.length) return "No levels found";
+					const searchService = new Moogle<ISpeedrunCom.Level>();
+					levels.forEach((level) =>
+						searchService.addItem([level.name.toLowerCase()], level)
+					);
+
+					const searchResult = searchService.search(
+						level.toLowerCase(),
+					);
+					completions.push(...[...searchResult].map((res) => ({
+						name: res[1].item.name,
+						value: res[1].item.name,
+					})));
+				}
+			}
 		}
 		return d.autocomplete(
 			completions,
@@ -507,6 +556,19 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			(i) =>
 				gameInfo(
 					i.option("game"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash("level-info")
+	async levelInfo(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				levelInfo(
+					i.option("game"),
+					i.option("level"),
 					{ outputType: "markdown" },
 				),
 		);

@@ -81,7 +81,7 @@ export async function getAll<T>(url: URL | string): Promise<T[]> {
 	let attempts = 0;
 	do {
 		url.searchParams.set("offset", size.toString());
-		const res = await fetch(url);
+		const res = await fetch(url.toString());
 		if (!res.ok) {
 			if (res.status === 420) {
 				console.warn("We are being throttled " + res.status);

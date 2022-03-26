@@ -4,13 +4,6 @@ import { getGame, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
-export const dateFormat = Intl.DateTimeFormat("en-uk", {
-	day: "numeric",
-	month: "long",
-	year: "numeric",
-	timeZone: "Europe/London",
-}).format;
-
 export async function gameInfo(
 	game: string,
 	{ outputType = "markdown" }: Opts = {},
