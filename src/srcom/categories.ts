@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format, MarkupType } from "./fmt.ts";
-import { getGame, SRC_API } from "./utils.ts";
+import { CommandError, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -25,26 +25,26 @@ export async function categories(
 	const output: string[] = [];
 	const gameObj = await getGame(game);
 
-	if (!gameObj) return `${game} game not found.`;
-	else {
-		const res = await fetch(`${SRC_API}/games/${gameObj.id}/categories`);
-		const categories = (await res.json()).data as SpeedrunCom.Category[];
-		const fullGameCategories: string[] = [];
-		const individualLevelCategories: string[] = [];
-		const miscCategories: string[] = [];
-		categories.forEach((category) => {
-			if (category.miscellaneous) miscCategories.push(category.name);
-			else if (category.type === "per-game") {
-				fullGameCategories.push(category.name);
-			} else if (category.type === "per-level") {
-				individualLevelCategories.push(category.name);
-			}
-		});
-		output.push(`${fmt.bold(`Categories - ${game}`)}`);
-		output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
-		output.push(`Individual Level: ${individualLevelCategories.join(", ")}`);
-		output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
-	}
+	if (!gameObj) throw new CommandError(`${game} game not found.`);
+
+	const res = await fetch(`${SRC_API}/games/${gameObj.id}/categories`);
+	const categories = (await res.json()).data as SpeedrunCom.Category[];
+	const fullGameCategories: string[] = [];
+	const individualLevelCategories: string[] = [];
+	const miscCategories: string[] = [];
+	categories.forEach((category) => {
+		if (category.miscellaneous) miscCategories.push(category.name);
+		else if (category.type === "per-game") {
+			fullGameCategories.push(category.name);
+		} else if (category.type === "per-level") {
+			individualLevelCategories.push(category.name);
+		}
+	});
+	output.push(`${fmt.bold(`Categories - ${game}`)}`);
+	output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
+	output.push(`Individual Level: ${individualLevelCategories.join(", ")}`);
+	output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
+
 	return output.join("\n");
 }
 

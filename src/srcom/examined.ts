@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
 import {
+	CommandError,
 	getAll,
 	getGames,
 	getUser,
@@ -36,7 +37,7 @@ export async function examined(
 	const output: string[] = [];
 
 	const user = await getUser(username);
-	if (!user) return `${username} user not found.`;
+	if (!user) throw new CommandError(`${username} user not found.`);
 
 	const url = new URL(`${SRC_API}/runs?examiner=${user.id}`);
 
@@ -65,6 +66,7 @@ export async function examined(
 		if (run.status.status === "verified") verifiedRuns++;
 		else rejectedRuns++;
 	});
+	let warning = "";
 	if (total === 10_000) {
 		try {
 			let totalExaminedRuns = 0;
@@ -73,6 +75,8 @@ export async function examined(
 				totalExaminedRuns += modStat.totalRuns;
 			}
 			if (totalExaminedRuns > total) total = totalExaminedRuns;
+			warning =
+				"Due to the ammount of runs being over 10 000 the count may be innaccurate.";
 		} catch (err) {
 			console.error(err);
 		}
@@ -88,6 +92,7 @@ export async function examined(
 	}
 
 	output.push(`${fmt.bold("Examined Count")}: ${user.names.international}`);
+	if (warning) output.push(fmt.bold(warning));
 	output.push(`Fullgame: ${fullGameRuns}`);
 	output.push(`Individual Level: ${individualLevelRuns}`);
 	output.push("");

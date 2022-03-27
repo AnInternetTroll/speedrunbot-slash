@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
 import { Moogle } from "../../deps_general.ts";
-import { getGame, SRC_API } from "./utils.ts";
+import { CommandError, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
@@ -12,18 +12,18 @@ export async function categoryInfo(
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	if (!game) return "No game found";
-	if (!category) return "No category found";
+	if (!game) throw new CommandError("No game found");
+	if (!category) throw new CommandError("No category found");
 
 	const gameObj = await getGame(game);
 
-	if (!gameObj) return "No game found";
+	if (!gameObj) throw new CommandError("No game found");
 
 	const categories =
 		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`)).json())
 			.data as SpeedrunCom.Category[];
 
-	if (!categories.length) return "No categories found";
+	if (!categories.length) throw new CommandError("No categories found");
 
 	const searchService = new Moogle<SpeedrunCom.Category>();
 

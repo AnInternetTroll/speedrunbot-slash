@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getUser } from "./utils.ts";
+import { CommandError, getUser } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 
 export const dateFormat = Intl.DateTimeFormat("en-uk", {
@@ -18,7 +18,7 @@ export async function whois(
 	const output: string[] = [];
 
 	const user = await getUser(username);
-	if (!user) return `No user with the username "${username}"`;
+	if (!user) throw new CommandError(`No user with the username "${username}"`);
 
 	output.push(`${fmt.bold("Username")}: ${user.names.international}`);
 	if (user.pronouns) output.push(`${fmt.bold("Pronouns")}: ${user.pronouns}`);

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGames, sec2time, SRC_API } from "./utils.ts";
+import { CommandError, getAll, getGames, sec2time, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -28,7 +28,7 @@ export async function pendingGames(
 	const urls: URL[] = [];
 	const gameObjs = await getGames(games);
 
-	if (!gameObjs.length) return "No games found";
+	if (!gameObjs.length) throw new CommandError("No games found");
 
 	gameObjs.forEach((game) => {
 		url.searchParams.set("game", game.id);

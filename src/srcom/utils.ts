@@ -21,6 +21,8 @@ interface ApiArrayResponse {
 	};
 }
 
+export class CommandError extends Error {}
+
 export async function getUser(
 	query: string,
 ): Promise<SpeedrunCom.User | false> {

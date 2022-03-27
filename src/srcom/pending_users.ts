@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getUsers, sec2time, SRC_API } from "./utils.ts";
+import { CommandError, getAll, getUsers, sec2time, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -28,7 +28,7 @@ export async function pendingUsers(
 	const urls: URL[] = [];
 	const userObjs = await getUsers(users);
 
-	if (!userObjs.length) return "No users found";
+	if (!userObjs.length) throw new CommandError("No users found.");
 
 	userObjs.forEach((user) => {
 		url.searchParams.set("user", user.id);

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGames, SRC_API } from "./utils.ts";
+import { CommandError, getAll, getGames, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -14,19 +14,18 @@ export async function pendingCount(
 	const url = new URL(`${SRC_API}/runs?status=new&embed=game`);
 	const runs: SpeedrunCom.Run[] = [];
 
-	if (games.length) {
-		const tasks: Promise<SpeedrunCom.Run[]>[] = [];
-		const gameObjs = await getGames(games);
-		for (const game in gameObjs) {
-			url.searchParams.set("game", gameObjs[game].id);
-			games[game] = gameObjs[game].names.international;
-			tasks.push(getAll<SpeedrunCom.Run>(url));
-		}
-		const runsResponses = (await Promise.all(tasks)).flat();
-		runs.push(...runsResponses);
-	} else {
-		runs.push.apply(runs, await getAll(url) as SpeedrunCom.Run[]);
+	if (!games.length) throw new CommandError("No games found");
+
+	const tasks: Promise<SpeedrunCom.Run[]>[] = [];
+	const gameObjs = await getGames(games);
+	for (const game in gameObjs) {
+		url.searchParams.set("game", gameObjs[game].id);
+		games[game] = gameObjs[game].names.international;
+		tasks.push(getAll<SpeedrunCom.Run>(url));
 	}
+	const runsResponses = (await Promise.all(tasks)).flat();
+	runs.push(...runsResponses);
+
 	let fullGameRuns = 0;
 	let individualLevelRuns = 0;
 	const gameCount: Record<string, number> = {};
