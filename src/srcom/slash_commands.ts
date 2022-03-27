@@ -28,6 +28,7 @@ import { pendingUsers } from "./pending_users.ts";
 import { getGame, SRC_API } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
 import { levelInfo } from "./level_info.ts";
+import { categoryInfo } from "./category_info.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
@@ -50,6 +51,17 @@ const srcLevel: ApplicationCommandOption = {
 	description: "A level's name.",
 	type: SlashCommandOptionType.STRING,
 	autocomplete: true,
+};
+const srcCategory = {
+	name: "category",
+	description: "A game's category",
+	type: SlashCommandOptionType.STRING,
+	autocomplete: true,
+};
+const srcSubcategory = {
+	name: "subcategory",
+	description: "A game's variable, such as a sub category",
+	type: SlashCommandOptionType.STRING,
 };
 
 export const commands: SlashCommandPartial[] = [
@@ -234,16 +246,8 @@ export const commands: SlashCommandPartial[] = [
 				...srcGame,
 				required: true,
 			},
-			{
-				name: "category",
-				description: "A game's category",
-				type: SlashCommandOptionType.STRING,
-			},
-			{
-				name: "subcategory",
-				description: "A game's variable, such as a sub category",
-				type: SlashCommandOptionType.STRING,
-			},
+			srcCategory,
+			srcSubcategory,
 		],
 	},
 	{
@@ -278,6 +282,20 @@ export const commands: SlashCommandPartial[] = [
 			},
 			{
 				...srcLevel,
+				required: true,
+			},
+		],
+	},
+	{
+		name: "category-info",
+		description: "Get info about a game's category.",
+		options: [
+			{
+				...srcGame,
+				required: true,
+			},
+			{
+				...srcCategory,
 				required: true,
 			},
 		],
@@ -370,6 +388,33 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 
 					const searchResult = searchService.search(
 						level.toLowerCase(),
+					);
+					completions.push(...[...searchResult].map((res) => ({
+						name: res[1].item.name,
+						value: res[1].item.name,
+					})));
+				}
+			}
+		} else if (d.focusedOption.name.includes("category")) {
+			const game = d.option("game");
+			const category = d.option("category");
+			if (
+				(typeof game === "string" && game.length) &&
+				(typeof category === "string")
+			) {
+				const gameObj = await getGame(d.option("game"));
+				if (gameObj) {
+					const categories =
+						(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`))
+							.json()).data as ISpeedrunCom.Category[];
+
+					const searchService = new Moogle<ISpeedrunCom.Category>();
+					categories.forEach((category) =>
+						searchService.addItem([category.name.toLowerCase()], category)
+					);
+
+					const searchResult = searchService.search(
+						category.toLowerCase(),
 					);
 					completions.push(...[...searchResult].map((res) => ({
 						name: res[1].item.name,
@@ -569,6 +614,19 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				levelInfo(
 					i.option("game"),
 					i.option("level"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash("category-info")
+	async categoryInfo(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				categoryInfo(
+					i.option("game"),
+					i.option("category"),
 					{ outputType: "markdown" },
 				),
 		);
