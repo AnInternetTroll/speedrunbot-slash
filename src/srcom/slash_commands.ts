@@ -29,6 +29,7 @@ import { getGame, SRC_API } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
 import { levelInfo } from "./level_info.ts";
 import { categoryInfo } from "./category_info.ts";
+import { leaderboard } from "./leaderboard.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
@@ -298,6 +299,18 @@ export const commands: SlashCommandPartial[] = [
 				...srcCategory,
 				required: true,
 			},
+		],
+	},
+	{
+		name: "leaderboard",
+		description: "Get the top 10 for a given game, category and subcategory",
+		options: [
+			{
+				...srcGame,
+				required: true,
+			},
+			srcCategory,
+			srcSubcategory,
 		],
 	},
 ];
@@ -627,6 +640,20 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				categoryInfo(
 					i.option("game"),
 					i.option("category"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash("leaderboard")
+	async leaderboard(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				leaderboard(
+					i.option("game"),
+					i.option("category"),
+					i.option("subcategory"),
 					{ outputType: "markdown" },
 				),
 		);

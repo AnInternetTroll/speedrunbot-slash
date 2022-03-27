@@ -125,3 +125,20 @@ export function sec2time(timeInSeconds: number): string {
 		"",
 	);
 }
+
+// Adapted from
+// https://github.com/Mango0x45/speedrunbot-plusplus/blob/38a7231805c966d55b1e23cd7e94a7ddd042088e/src/srcom/utils.py.m4#L248
+export function getCategoryObj<
+	T extends (SpeedrunCom.Category | SpeedrunCom.Level)[],
+>(
+	categoryName: string,
+	categories: T,
+): SpeedrunCom.Category | SpeedrunCom.Level | false {
+	const category = categoryName.toLowerCase();
+	for (const cat of categories) {
+		if (cat.name.toLocaleLowerCase() == category) {
+			return cat;
+		}
+	}
+	return false;
+}

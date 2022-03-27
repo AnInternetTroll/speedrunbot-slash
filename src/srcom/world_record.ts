@@ -1,20 +1,13 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { getGame, getUser, sec2time, SRC_API } from "./utils.ts";
+import {
+	getCategoryObj,
+	getGame,
+	getUser,
+	sec2time,
+	SRC_API,
+} from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-
-function getCategoryObj(
-	categoryName: string,
-	categories: (SpeedrunCom.Category | SpeedrunCom.Level)[],
-): SpeedrunCom.Category | SpeedrunCom.Level | false {
-	const category = categoryName.toLowerCase();
-	for (const cat of categories) {
-		if (cat.name.toLocaleLowerCase() == category) {
-			return cat;
-		}
-	}
-	return false;
-}
 
 // Strongly copied from
 // https://github.com/Mango0x45/speedrunbot-plusplus/blob/38a7231805c966d55b1e23cd7e94a7ddd042088e/src/srcom/worldrecord.py
