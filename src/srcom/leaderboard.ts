@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
 import {
+	CommandError,
 	getCategoryObj,
 	getGame,
 	getUser,
@@ -18,11 +19,11 @@ export async function leaderboard(
 	subcategory: string,
 	{ outputType = "markdown" }: Opts,
 ): Promise<string> {
-	if (!game) return "No game found";
+	if (!game) throw new CommandError("No game found");
 	const output: string[] = [];
 	const fmt = new Format(outputType);
 	const gameObj = await getGame(game);
-	if (!gameObj) return "No game found";
+	if (!gameObj) throw new CommandError(`No game '${game}' found`);
 
 	const categories =
 		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`)).json())
@@ -38,17 +39,25 @@ export async function leaderboard(
 					.data as SpeedrunCom.Level[];
 			categoryObj = getCategoryObj(category, levels);
 			levelFlag = true;
-			if (!categoryObj) return "No category found";
+			if (!categoryObj) {
+				throw new CommandError(`No category '${category}' found`);
+			}
 		}
 	} else {
 		// Get default category if none supplied
-		if (!categories.length) return "The game has no categories";
+		if (!categories.length) {
+			throw new CommandError(
+				`The game '${gameObj.names.international}' has no categories`,
+			);
+		}
 		categoryObj = categories[0];
 		if ((categoryObj as SpeedrunCom.Category)?.type === "per-level") {
 			const levels =
 				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`)).json())
 					.data as SpeedrunCom.Level[];
-			if (!levels.length) return "Game has no categories or levels";
+			if (!levels.length) {
+				throw new CommandError("Game has no categories or levels");
+			}
 			categoryObj = levels[0];
 			levelFlag = true;
 		}
@@ -81,9 +90,6 @@ export async function leaderboard(
 			}
 		}
 	}
-	// if (!(subCategoryValue && subcategoryObj)) {
-	// 	return "Subcategory not found";
-	// }
 
 	let leaderboard: SpeedrunCom.Leaderboard;
 	if (levelFlag) {

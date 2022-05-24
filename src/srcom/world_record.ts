@@ -1,5 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import {
+	CommandError,
 	getCategoryObj,
 	getGame,
 	getUser,
@@ -22,7 +23,7 @@ export async function worldRecord(
 	const output: string[] = [];
 
 	const gameObj = await getGame(game);
-	if (!gameObj) return "No game found";
+	if (!gameObj) throw new CommandError(`No game '${game}' found`);
 
 	// Get the games categories
 	const categories: SpeedrunCom.Category[] =
@@ -39,17 +40,21 @@ export async function worldRecord(
 				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`))
 					.json()).data;
 			categoryObj = getCategoryObj(category, categories);
-			if (!categoryObj) return "No category found";
+			if (!categoryObj) throw new CommandError("No category found");
 		}
 	} else {
 		// Get default category if none supplied.
-		if (!categories.length) return "The game does not have any categories";
+		if (!categories.length) {
+			throw new CommandError("The game does not have any categories");
+		}
 		categoryObj = categories[0];
 		if ((categoryObj as SpeedrunCom.Category).type === "per-level") {
 			const categories: SpeedrunCom.Level[] =
 				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`))
 					.json()).data;
-			if (!categories.length) return "The game does not have any categories";
+			if (!categories.length) {
+				throw new CommandError("The game does not have any categories");
+			}
 			categoryObj = categories[0];
 			levelFlag = true;
 		}
@@ -111,13 +116,17 @@ export async function worldRecord(
 		)).json()).data;
 	}
 
-	if (!leaderboard.runs.length) return "No runs have been set in this category";
+	if (!leaderboard.runs.length) {
+		throw new CommandError("No runs have been set in this category");
+	}
 
 	let wr: SpeedrunCom.Run;
 	try {
 		wr = leaderboard.runs[0].run;
 	} catch (_e) {
-		return "The category is an IL category, not level";
+		throw new CommandError(
+			`The category '${category}' is an IL category, not level`,
+		);
 	}
 	const playersTasks: Promise<string>[] = wr.players.map((player) =>
 		player.rel === "user"

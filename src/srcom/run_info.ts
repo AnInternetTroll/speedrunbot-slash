@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getUser, sec2time, SRC_API } from "./utils.ts";
+import { CommandError, getUser, sec2time, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
@@ -17,7 +17,7 @@ export async function runInfo(
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	if (!run) return "No run found";
+	if (!run) throw new CommandError("No run found");
 
 	const runRequest = await fetch(
 		`${SRC_API}/runs/${
@@ -26,8 +26,8 @@ export async function runInfo(
 	);
 
 	if (!runRequest.ok) {
-		if (runRequest.status === 404) return "No run found";
-		else return await runRequest.text();
+		if (runRequest.status === 404) throw new CommandError("No run found");
+		else throw new Error(await runRequest.text());
 	}
 
 	const runObj = (await runRequest.json()).data as SpeedrunCom.Run;

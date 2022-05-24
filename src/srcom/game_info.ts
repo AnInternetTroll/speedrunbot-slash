@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getGame, getUser, SRC_API } from "./utils.ts";
+import { CommandError, getGame, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
@@ -10,11 +10,11 @@ export async function gameInfo(
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	if (!game) return "No game found";
+	if (!game) throw new CommandError("No game found");
 
 	const gameObj = await getGame(game);
 
-	if (!gameObj) return "No game found";
+	if (!gameObj) throw new CommandError(`No game '${game}' found`);
 
 	const genres = await Promise.all(
 		gameObj.genres.map((genre) =>

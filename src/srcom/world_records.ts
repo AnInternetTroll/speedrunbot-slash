@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import { getGames, getUser, SRC_API } from "./utils.ts";
+import { CommandError, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -14,7 +14,7 @@ export async function worldRecords(
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const user = await getUser(username);
-	if (!user) return `${username} user not found.`;
+	if (!user) throw new CommandError(`${username} user not found.`);
 
 	const res = await fetch(
 		`${SRC_API}/users/${user.id}/personal-bests?top=1`,

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
+import { CommandError, getAll, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 import { groupBy } from "../../deps_general.ts";
@@ -40,6 +40,8 @@ export async function examinedLeaderboard(
 
 	const urlT = new URL(`${SRC_API}/runs`);
 	const gameObjs = await getGames(games);
+
+	if (!games.length) throw new CommandError("No games found.");
 
 	const leaderboard = mergeMods(
 		await Promise.all(

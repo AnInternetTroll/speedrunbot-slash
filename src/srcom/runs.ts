@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { getAll, getGames, getUser, SRC_API } from "./utils.ts";
+import { CommandError, getAll, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -13,7 +13,9 @@ export async function runs(
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	const user = await getUser(username);
-	if (!user) return `${username} not found`;
+
+	if (!user) throw new CommandError(`${username} not found`);
+
 	const url = new URL(`${SRC_API}/runs?user=${user.id}&embed=game`);
 
 	const runs: SpeedrunCom.Run[] = [];
@@ -60,5 +62,10 @@ export async function runs(
 
 if (import.meta.main) {
 	const [username, ...games] = Deno.args;
-	console.log(await runs(username, games, { outputType: "terminal" }));
+	try {
+		console.log(await runs(username, games, { outputType: "terminal" }));
+	} catch (err) {
+		if (err instanceof CommandError) console.error("Error:", err.message);
+		else console.log("Unexpected Error:", err);
+	}
 }

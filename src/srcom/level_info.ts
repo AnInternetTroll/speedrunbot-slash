@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
 import { Moogle } from "../../deps_general.ts";
-import { getGame, SRC_API } from "./utils.ts";
+import { CommandError, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
@@ -12,17 +12,17 @@ export async function levelInfo(
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	if (!game) return "No game found";
-	if (!level) return "No level found";
+	if (!game) throw new CommandError("No game found");
+	if (!level) throw new CommandError("No level found");
 
 	const gameObj = await getGame(game);
 
-	if (!gameObj) return "No game found";
+	if (!gameObj) throw new CommandError("No game found");
 
 	const levels = (await (await fetch(
 		`${SRC_API}/games/${gameObj.id}/levels`,
 	)).json()).data as SpeedrunCom.Level[];
-	if (!levels.length) return "No levels found";
+	if (!levels.length) throw new CommandError("No levels found");
 	const searchService = new Moogle<SpeedrunCom.Level>();
 	levels.forEach((level) =>
 		searchService.addItem([level.name.toLowerCase()], level)
@@ -30,7 +30,7 @@ export async function levelInfo(
 
 	const searchResult = searchService.search(level.toLowerCase());
 
-	if (!searchResult.size) return "No level found";
+	if (!searchResult.size) throw new CommandError("No level found");
 
 	const levelObj = [...searchResult][0][1].item;
 

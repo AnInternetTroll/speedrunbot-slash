@@ -25,7 +25,7 @@ import { pendingCount } from "./pending_count.ts";
 import { podiums } from "./podiums.ts";
 import { modCount } from "./mod_count.ts";
 import { pendingUsers } from "./pending_users.ts";
-import { getGame, SRC_API } from "./utils.ts";
+import { CommandError, getGame, SRC_API } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
 import { levelInfo } from "./level_info.ts";
 import { categoryInfo } from "./category_info.ts";
@@ -337,27 +337,61 @@ async function sendCommand(
 	{ defer = true }: { defer?: boolean } = {},
 ) {
 	if (defer) await i.defer();
-	const [title, ...description] = (await func(i)).split("\n");
-	if (description.length > 10) {
-		await i.reply(
-			"This message will be sent into many small and hidden chunks to prevent spam.",
-		);
-		const chunks = splitIntoChunks(description, 10);
-		for (let ii = 0; ii < chunks.length; ii++) {
-			await i.send({
-				embed: new Embed({
-					title: `${title}: ${ii + 1}/${chunks.length}`,
-					description: chunks[ii].join("\n"),
-				}),
+	try {
+		const [title, ...description] = (await func(i)).split("\n");
+		if (description.length > 10) {
+			await i.reply(
+				"This message will be sent into many small and hidden chunks to prevent spam.",
+			);
+			const chunks = splitIntoChunks(description, 10);
+			for (let ii = 0; ii < chunks.length; ii++) {
+				await i.send({
+					embed: new Embed({
+						title: `${title}: ${ii + 1}/${chunks.length}`,
+						description: chunks[ii].join("\n"),
+					}),
+					ephemeral: true,
+				});
+			}
+		} else {
+			const embed = new Embed({
+				title,
+				description: description.join("\n"),
+			});
+			await i.reply({ embeds: [embed] });
+		}
+	} catch (err: unknown) {
+		const command = `/${i.data.name} ${
+			i.data.options.map((opt) => `${opt.name}:${opt.value}`)
+		}`;
+		if (err instanceof CommandError) {
+			console.debug(err);
+			await i.reply(`Error: ${err.message}`);
+		} else if (err instanceof Error) {
+			console.error(err);
+			await i.reply({
+				embeds: [
+					new Embed({
+						description:
+							`Unexpected Error, please report this to a developer: ${command}\n\`/${i.data.name} ${
+								i.data.options.map((opt) => `${opt.name}:${opt.value}`)
+							}`,
+						color: 16711680,
+					}),
+					new Embed({
+						title: err.message,
+						description: `\`\`\`ts\n${err.stack}\n\`\`\``,
+						color: 16711680,
+					}),
+				],
 				ephemeral: true,
 			});
+		} else {
+			console.error(err);
+			await i.reply(
+				`Critical error, please report this to a developer: \`${command}\``,
+			);
 		}
-	} else {
-		const embed = new Embed({
-			title,
-			description: description.join("\n"),
-		});
-		await i.reply({ embeds: [embed] });
 	}
 }
 
