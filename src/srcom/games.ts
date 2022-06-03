@@ -39,7 +39,7 @@ export async function games(
 
 	if (outputType === "object") return { games: games.length };
 
-	output.push(`${fmt.bold("Games Played")}: ${user.names.international}`);
+	output.push(`Games Played: ${user.names.international}`);
 	output.push(`${games.length}`);
 	return output.join("\n");
 }

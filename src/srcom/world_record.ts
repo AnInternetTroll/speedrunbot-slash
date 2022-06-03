@@ -7,6 +7,7 @@ import {
 	sec2time,
 	SRC_API,
 } from "./utils.ts";
+import { Format } from "./fmt.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -21,6 +22,7 @@ export async function worldRecord(
 	{ outputType = "markdown" }: Opts = {},
 ): Promise<string> {
 	const output: string[] = [];
+	const fmt = new Format(outputType);
 
 	const gameObj = await getGame(game);
 	if (!gameObj) throw new CommandError(`No game '${game}' found`);
@@ -130,7 +132,9 @@ export async function worldRecord(
 	}
 	const playersTasks: Promise<string>[] = wr.players.map((player) =>
 		player.rel === "user"
-			? getUser(player.id).then((user) => user ? user.names.international : "")
+			? getUser(player.id).then((user) =>
+				user ? fmt.link(user.weblink, user.names.international) : ""
+			)
 			: // @ts-ignore A player can be a guest
 				player.name
 	);
@@ -142,15 +146,17 @@ export async function worldRecord(
 		}`,
 	);
 	output.push(
-		`${sec2time(wr.times.primary_t)}  ${players.join(", ")}`,
+		`${fmt.bold("Time")}: ${sec2time(wr.times.primary_t)} ${
+			players.join(" and ")
+		}`,
 	);
 
-	output.push(wr.weblink);
+	output.push(fmt.link(wr.weblink, fmt.bold("Weblink")));
 
 	output.push(
 		`${
-			Array.isArray(wr.videos.links)
-				? wr.videos.links.map((link) => `<${link.uri}>`)
+			wr.videos?.links && Array.isArray(wr.videos.links)
+				? wr.videos.links.map((link) => link.uri)
 				: "No video available."
 		}`,
 	);
@@ -161,6 +167,6 @@ export async function worldRecord(
 if (import.meta.main) {
 	const [game, category, subcategory] = Deno.args;
 	console.log(
-		await worldRecord(game, category, subcategory, { outputType: "markdown" }),
+		await worldRecord(game, category, subcategory, { outputType: "terminal" }),
 	);
 }

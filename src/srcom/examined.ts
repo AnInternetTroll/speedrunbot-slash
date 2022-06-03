@@ -91,15 +91,15 @@ export async function examined(
 		};
 	}
 
-	output.push(`${fmt.bold("Examined Count")}: ${user.names.international}`);
+	output.push(`Examined Count: ${user.names.international}`);
 	if (warning) output.push(fmt.bold(warning));
-	output.push(`Fullgame: ${fullGameRuns}`);
-	output.push(`Individual Level: ${individualLevelRuns}`);
+	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
+	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
 	output.push("");
-	output.push(`Verified: ${verifiedRuns}`);
-	output.push(`Rejected: ${rejectedRuns}`);
+	output.push(`${fmt.bold("Verified")}: ${verifiedRuns}`);
+	output.push(`${fmt.bold("Rejected")}: ${rejectedRuns}`);
 	output.push("");
-	output.push(`Total: ${total}`);
+	output.push(`${fmt.bold("Total")}: ${total}`);
 	return output.join("\n");
 }
 

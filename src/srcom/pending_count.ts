@@ -41,16 +41,22 @@ export async function pendingCount(
 		}
 	});
 	output.push(`${fmt.bold("Pending count")}: ${games.join(" and ")}`);
-	output.push(`Fullgame: ${fullGameRuns}`);
-	output.push(`Individual Level: ${individualLevelRuns}`);
+	if (fullGameRuns) output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
+	if (individualLevelRuns) {
+		output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
+	}
 
 	if (Object.keys(gameCount).length) {
 		output.push("");
-		for (const game in gameCount) output.push(`${game}: ${gameCount[game]}`);
+		for (const game in gameCount) {
+			output.push(`${fmt.bold(game)}: ${gameCount[game]}`);
+		}
 		output.push("");
 	}
 
-	output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
+	if (fullGameRuns && individualLevelRuns) {
+		output.push(`${fmt.bold("Total")}: ${fullGameRuns + individualLevelRuns}`);
+	} else output.push("No pending runs");
 	return output.join("\n");
 }
 

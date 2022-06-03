@@ -40,11 +40,17 @@ export async function categoryInfo(
 			.json()).data as SpeedrunCom.Variable[];
 
 	output.push(`${gameObj.names.international} - ${categoryObj.name}`);
-	output.push(`Weblink: ${fmt.link(categoryObj.weblink, categoryObj.name)}`);
-	output.push(`ID: ${categoryObj.id}`);
-	output.push(`Rules: ${categoryObj.rules}`);
 	output.push(
-		`Variables: ${variables.map((variable) => variable.name).join(", ")}`,
+		`${fmt.bold("Weblink")}: ${
+			fmt.link(categoryObj.weblink, categoryObj.name)
+		}`,
+	);
+	output.push(`${fmt.bold("ID")}: ${categoryObj.id}`);
+	output.push(`${fmt.bold("Rules")}: ${categoryObj.rules}`);
+	output.push(
+		`${fmt.bold("Variables")}: ${
+			variables.map((variable) => variable.name).join(", ")
+		}`,
 	);
 
 	return output.join("\n");
@@ -54,5 +60,5 @@ export default categoryInfo;
 
 if (import.meta.main) {
 	const [game, category] = Deno.args;
-	console.log(await categoryInfo(game, category, { outputType: "markdown" }));
+	console.log(await categoryInfo(game, category, { outputType: "terminal" }));
 }

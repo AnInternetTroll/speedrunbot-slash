@@ -37,22 +37,34 @@ export async function gameInfo(
 
 	output.push(gameObj.names.international);
 
-	output.push(`Weblink: ${fmt.link(gameObj.weblink, gameObj.abbreviation)}`);
-	output.push(`ID: ${gameObj.id}`);
-	if (gameObj.discord) output.push(`Discord invite: ${gameObj.discord}`);
+	output.push(
+		`${fmt.bold("Weblink")}: ${
+			fmt.link(gameObj.weblink, gameObj.abbreviation)
+		}`,
+	);
+	output.push(`${fmt.bold("ID")}: ${gameObj.id}`);
+	if (gameObj.discord) {
+		output.push(`${fmt.bold("Discord invite")}: ${gameObj.discord}`);
+	}
 
 	output.push(
-		`Release date: ${new Date(gameObj["release-date"]).toDateString()}`,
+		`${fmt.bold("Release date")}: ${
+			new Date(gameObj["release-date"]).toDateString()
+		}`,
 	);
 
 	output.push(
-		`Added on speedrun.com: ${new Date(gameObj.created).toDateString()}`,
+		`${fmt.bold("Added on speedrun.com")}: ${
+			new Date(gameObj.created).toDateString()
+		}`,
 	);
-	output.push(`Genres: ${genres.join(", ")}`);
+	output.push(`${fmt.bold("Genres")}: ${genres.join(", ")}`);
 
-	output.push(`Moderators: ${moderators.join(", ")}`);
+	output.push(`${fmt.bold("Moderators")}: ${moderators.join(", ")}`);
 	output.push(
-		`Rules: Timing method - ${gameObj.ruleset["default-time"]}, ${
+		`${fmt.bold("Rules")}: Timing method - ${
+			gameObj.ruleset["default-time"]
+		}, ${
 			gameObj.ruleset["emulators-allowed"]
 				? "Allows emulators"
 				: "No emulators allowed"
@@ -74,5 +86,5 @@ export async function gameInfo(
 export default gameInfo;
 
 if (import.meta.main) {
-	console.log(await gameInfo(Deno.args[0], { outputType: "markdown" }));
+	console.log(await gameInfo(Deno.args[0], { outputType: "terminal" }));
 }

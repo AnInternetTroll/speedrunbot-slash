@@ -46,17 +46,19 @@ export async function runs(
 		}
 	});
 
-	output.push(`${fmt.bold("Run Count")}: ${user.names.international}`);
-	output.push(`Fullgame: ${fullGameRuns}`);
-	output.push(`Individual Level: ${individualLevelRuns}`);
+	output.push(`Run Count: ${user.names.international}`);
+	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
+	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
 
 	if (Object.keys(gameCount).length) {
 		output.push("");
-		for (const game in gameCount) output.push(`${game}: ${gameCount[game]}`);
+		for (const game in gameCount) {
+			output.push(`${fmt.bold(game)}: ${gameCount[game]}`);
+		}
 		output.push("");
 	}
 
-	output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
+	output.push(`${fmt.bold("Total")}: ${fullGameRuns + individualLevelRuns}`);
 	return output.join("\n");
 }
 

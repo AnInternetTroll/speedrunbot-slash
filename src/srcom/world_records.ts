@@ -38,11 +38,11 @@ export async function worldRecords(
 		}
 	});
 
-	output.push(`${fmt.bold("World Record Count")}: ${user.names.international}`);
-	output.push(`Fullgame: ${fullGameRuns}`);
-	output.push(`Individual Level: ${individualLevelRuns}`);
+	output.push(`World Record Count: ${user.names.international}`);
+	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
+	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
 
-	output.push(`Total: ${fullGameRuns + individualLevelRuns}`);
+	output.push(`${fmt.bold("Total")}: ${fullGameRuns + individualLevelRuns}`);
 	return output.join("\n");
 }
 

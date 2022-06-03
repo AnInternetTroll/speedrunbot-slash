@@ -37,44 +37,38 @@ export async function pendingUsers(
 
 	const runs = (await Promise.all(urls.map((url) => getAll<Run>(url)))).flat();
 
-	output.push(`${fmt.bold("Pending")}: ${users.join(" and ")}`);
-	if (outputType === "markdown") {
+	output.push(`Pending: ${users.join(" and ")}`);
+
+	if (runs.length) {
 		runs.forEach((run) => {
 			output.push(
-				`[${
-					run.level?.data.name ||
-					run.category.data.name
-				}](${run.weblink}) in \`${sec2time(run.times.primary_t)}\` by ${
+				`${
+					fmt.link(
+						run.weblink,
+						fmt.bold(run.level?.data.name || run.category.data.name),
+					)
+				} in ${sec2time(run.times.primary_t)} by ${
 					run.players.data.map((p) =>
 						// @ts-ignore A user can be a guest
-						`[${p.rel === "guest" ? p.name : p.names.international}](${
-							// @ts-ignore A user can be a guest
-							p.rel === "guest"
+						`${
+							fmt.link(
 								// @ts-ignore A user can be a guest
-								? p.uri
-								: p.weblink
-						})`
+								p.rel === "guest"
+									// @ts-ignore A user can be a guest
+									? p.uri
+									: p.weblink,
+								// @ts-ignore A user can be a guest
+								p.rel === "guest" ? p.name : p.names.international,
+							)
+						}`
 					).join(" and ")
 				}`,
 			);
 		});
-	} else {
-		runs.forEach((run) => {
-			output.push(
-				`${run.level?.data.name || run.category.data.name} in ${
-					sec2time(run.times.primary_t)
-				} by ${
-					run.players.data.map((p) =>
-						// @ts-ignore A user can be a guest
-						p.rel === "guest" ? p.name : p.names.international
-					).join(" and ")
-				}`,
-			);
-		});
-	}
+	} else output.push("No pending runs");
 	return output.join("\n");
 }
 
 if (import.meta.main) {
-	console.log(await pendingUsers(Deno.args, { outputType: "markdown" }));
+	console.log(await pendingUsers(Deno.args, { outputType: "terminal" }));
 }

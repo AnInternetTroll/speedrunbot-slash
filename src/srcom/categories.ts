@@ -40,10 +40,12 @@ export async function categories(
 			individualLevelCategories.push(category.name);
 		}
 	});
-	output.push(`${fmt.bold(`Categories - ${game}`)}`);
-	output.push(`Fullgame: ${fullGameCategories.join(", ")}`);
-	output.push(`Individual Level: ${individualLevelCategories.join(", ")}`);
-	output.push(`Miscellaneous: ${miscCategories.join(", ")}`);
+	output.push(`Categories - ${game}`);
+	output.push(`${fmt.bold("Fullgame")}: ${fullGameCategories.join(", ")}`);
+	output.push(
+		`${fmt.bold("Individual Level")}: ${individualLevelCategories.join(", ")}`,
+	);
+	output.push(`${fmt.bold("Miscellaneous")}: ${miscCategories.join(", ")}`);
 
 	return output.join("\n");
 }

@@ -147,6 +147,6 @@ export default leaderboard;
 if (import.meta.main) {
 	const [game, category, subcategory] = Deno.args;
 	console.log(
-		await leaderboard(game, category, subcategory, { outputType: "markdown" }),
+		await leaderboard(game, category, subcategory, { outputType: "terminal" }),
 	);
 }

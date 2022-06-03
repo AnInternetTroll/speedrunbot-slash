@@ -4,16 +4,25 @@ import { CommandError, getAll, getGames, sec2time, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
-// @ts-ignore how are you supposed to do this?
-interface Run extends SpeedrunCom.Run {
+type User = SpeedrunCom.User & {
+	rel: "user";
+};
+
+type Guest = SpeedrunCom.Guest & {
+	rel: "guest";
+};
+
+type Run = SpeedrunCom.Run & {
 	category: {
 		data: SpeedrunCom.Category;
 	};
 	level: {
 		data: SpeedrunCom.Level;
 	};
-	players: { data: SpeedrunCom.User[] };
-}
+	players: {
+		data: (User | Guest)[];
+	};
+};
 
 export async function pendingGames(
 	games: string[] = [],
@@ -37,44 +46,35 @@ export async function pendingGames(
 
 	const runs = (await Promise.all(urls.map((url) => getAll<Run>(url)))).flat();
 
-	output.push(`${fmt.bold("Pending")}: ${games.join(" and ")}`);
-	if (outputType === "markdown") {
+	output.push(`Pending: ${games.join(" and ")}`);
+	if (runs.length) {
 		runs.forEach((run) => {
 			output.push(
-				`[${
-					run.level?.data.name ||
-					run.category.data.name
-				}](${run.weblink}) in \`${sec2time(run.times.primary_t)}\` by ${
+				`${
+					fmt.link(
+						run.weblink,
+						fmt.bold(
+							run.level?.data.name || run.category.data.name,
+						),
+					)
+				} in ${sec2time(run.times.primary_t)} by ${
 					run.players.data.map((p) =>
-						// @ts-ignore A user can be a guest
-						`[${p.rel === "guest" ? p.name : p.names.international}](${
-							// @ts-ignore A user can be a guest
-							p.rel === "guest"
-								// @ts-ignore A user can be a guest
-								? p.uri
-								: p.weblink
-						})`
+						`${
+							p.rel === "user"
+								? fmt.link(
+									p.weblink,
+									p.names.international,
+								)
+								: p.name
+						}`
 					).join(" and ")
 				}`,
 			);
 		});
-	} else {
-		runs.forEach((run) => {
-			output.push(
-				`${run.level?.data.name || run.category.data.name} in ${
-					sec2time(run.times.primary_t)
-				} by ${
-					run.players.data.map((p) =>
-						// @ts-ignore A user can be a guest
-						p.rel === "guest" ? p.name : p.names.international
-					).join(" and ")
-				}`,
-			);
-		});
-	}
+	} else output.push("No pending runs");
 	return output.join("\n");
 }
 
 if (import.meta.main) {
-	console.log(await pendingGames(Deno.args, { outputType: "markdown" }));
+	console.log(await pendingGames(Deno.args, { outputType: "terminal" }));
 }

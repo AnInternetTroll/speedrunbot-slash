@@ -78,6 +78,7 @@ export namespace SpeedrunCom {
 
 	export interface Videos {
 		links: Link[];
+		text?: string;
 	}
 
 	export interface Status {
@@ -87,7 +88,7 @@ export namespace SpeedrunCom {
 	}
 
 	export interface Player {
-		rel: string;
+		rel: "user";
 		id: string;
 		uri: string;
 	}
@@ -122,10 +123,10 @@ export namespace SpeedrunCom {
 		game: string;
 		level?: any;
 		category: string;
-		videos: Videos;
+		videos: Videos | null;
 		comment: string;
 		status: Status;
-		players: (Player | Guest)[];
+		players: (Player | Guest & { rel: "guest" })[];
 		date: string;
 		submitted?: any;
 		times: Times;

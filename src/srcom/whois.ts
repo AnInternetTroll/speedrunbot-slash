@@ -69,5 +69,5 @@ export async function whois(
 export default whois;
 
 if (import.meta.main) {
-	console.log(await whois(Deno.args[0], { outputType: "markdown" }));
+	console.log(await whois(Deno.args[0], { outputType: "terminal" }));
 }

@@ -122,7 +122,8 @@ export async function unofficialGetUserStats(
 }
 
 export function sec2time(timeInSeconds: number): string {
-	return new TimeDelta({ seconds: timeInSeconds }).toString().replaceAll(
+	const time = new TimeDelta({ seconds: timeInSeconds });
+	return `${time}`.replaceAll(
 		"000",
 		"",
 	);

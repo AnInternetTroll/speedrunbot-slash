@@ -36,9 +36,11 @@ export async function levelInfo(
 
 	output.push(`${gameObj.names.international} - ${levelObj.name}`);
 
-	output.push(`Weblink: ${fmt.link(levelObj.weblink, levelObj.name)}`);
-	output.push(`ID: ${levelObj.id}`);
-	if (levelObj.rules) output.push(`Rules: ${levelObj.rules}`);
+	output.push(
+		`${fmt.bold("Weblink")}: ${fmt.link(levelObj.weblink, levelObj.name)}`,
+	);
+	output.push(`${fmt.bold("ID")}: ${levelObj.id}`);
+	if (levelObj.rules) output.push(`${fmt.bold("Rules")}: ${levelObj.rules}`);
 
 	return output.join("\n");
 }
@@ -47,5 +49,5 @@ export default levelInfo;
 
 if (import.meta.main) {
 	const [game, level] = Deno.args;
-	console.log(await levelInfo(game, level, { outputType: "markdown" }));
+	console.log(await levelInfo(game, level, { outputType: "terminal" }));
 }

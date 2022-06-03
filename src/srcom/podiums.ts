@@ -61,15 +61,17 @@ export async function podiums(
 
 	if (outputType === "object") return { podiums: total };
 
-	output.push(`${fmt.bold("Podium Count")}: ${user.names.international}`);
+	output.push(`Podium Count: ${user.names.international}`);
 
 	if (Object.keys(gameCount).length) {
 		output.push("");
-		for (const game in gameCount) output.push(`${game}: ${gameCount[game]}`);
+		for (const game in gameCount) {
+			output.push(`${fmt.bold(game)}: ${gameCount[game]}`);
+		}
 		output.push("");
 	}
 
-	output.push(`Top three runs: ${total}`);
+	output.push(`${fmt.bold("Top three runs")}: ${total}`);
 	return output.join("\n");
 }
 

@@ -68,18 +68,20 @@ export async function examinedLeaderboard(
 	if (outputType === "object") return leaderboard;
 	leaderboard.sort((a, b) => b.count - a.count);
 	output.push(
-		`${fmt.bold("Examiner leaderboard")} for ${
+		`Examiner leaderboard for ${
 			gameObjs.map((a) => a.names.international).join(" and ")
 		}`,
 	);
 	for (const modIndex in leaderboard) {
 		output.push(
-			`${leaderboard[modIndex].username}: ${leaderboard[modIndex].count}`,
+			`${fmt.bold(leaderboard[modIndex].username)}: ${
+				leaderboard[modIndex].count
+			}`,
 		);
 	}
 	return output.join("\n");
 }
 
 if (import.meta.main) {
-	console.log(await examinedLeaderboard(Deno.args, { outputType: "markdown" }));
+	console.log(await examinedLeaderboard(Deno.args, { outputType: "terminal" }));
 }

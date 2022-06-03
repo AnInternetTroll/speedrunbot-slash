@@ -52,7 +52,7 @@ export async function categoriesPlayed(
 
 	if (outputType === "object") return { categoriesPlayed: categories.length };
 
-	output.push(`${fmt.bold("Categories Played")}: ${username}`);
+	output.push(`Categories Played: ${username}`);
 	output.push(`${categories.length}`);
 	return output.join("\n");
 }

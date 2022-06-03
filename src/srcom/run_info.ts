@@ -67,10 +67,10 @@ export async function runInfo(
 		} - ${game}`,
 	);
 
-	output.push(`Run ID: ${runObj.id}`);
+	output.push(`${fmt.bold("Run ID")}: ${runObj.id}`);
 
 	output.push(
-		`Status: ${runObj.status.status}${
+		`${fmt.bold("Status")}: ${runObj.status.status}${
 			runObj.status.status !== "new"
 				? (runObj.status.examiner
 					? ` - ${
@@ -84,25 +84,27 @@ export async function runInfo(
 
 	if (runObj.date) {
 		output.push(
-			`Date: ${dateFormat(new Date(runObj.date))}`,
+			`${fmt.bold("Date")}: ${dateFormat(new Date(runObj.date))}`,
 		);
 	}
 
-	if (level) output.push(`Level: ${level}`);
+	if (level) output.push(`${fmt.bold("Level")}: ${level}`);
 
 	output.push(
-		`Category: ${
+		`${fmt.bold("Category")}: ${
 			(runObj.category as unknown as { data: SpeedrunCom.Category }).data.name
 		}`,
 	);
 	if (platform) {
 		output.push(
-			`Platform: ${platform.name} ${platform.emulated ? "(Emulated)" : ""}`,
+			`${fmt.bold("Platform")}: ${platform.name} ${
+				platform.emulated ? "(Emulated)" : ""
+			}`,
 		);
 	}
 
 	output.push(
-		`Player${playersObjs.length > 1 ? "s" : ""}: ${
+		`${fmt.bold(`Player${playersObjs.length > 1 ? "s" : ""}`)}: ${
 			playersObjs.map((player) =>
 				// @ts-ignore If a player has a weblink then they have an account
 				// Otherwise they are a guest
@@ -115,14 +117,24 @@ export async function runInfo(
 		}`,
 	);
 
+	if (runObj.videos?.text) {
+		output.push(`${fmt.bold("Video text")}: ${runObj.videos.text}`);
+	}
+
 	output.push(
-		`Video${runObj.videos && runObj.videos.links.length > 1 ? "s" : ""}: ${
-			runObj.videos
+		`${
+			fmt.bold(`Video${
+				(runObj.videos && runObj.videos.links)
+					? runObj.videos.links.length > 1 ? "s" : ""
+					: ""
+			}`)
+		}: ${
+			(runObj.videos && runObj.videos.links)
 				? runObj.videos.links.map((link) => link.uri).join(" and ")
 				: "No video :("
 		}`,
 	);
-	output.push(`${fmt.link(runObj.weblink, "Web link")}`);
+	output.push(`${fmt.link(runObj.weblink, fmt.bold("Web link"))}`);
 
 	return output.join("\n");
 }
@@ -130,5 +142,5 @@ export async function runInfo(
 export default runInfo;
 
 if (import.meta.main) {
-	console.log(await runInfo(Deno.args[0], { outputType: "markdown" }));
+	console.log(await runInfo(Deno.args[0], { outputType: "terminal" }));
 }
