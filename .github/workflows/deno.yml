@@ -49,4 +49,4 @@ jobs:
           deno-version: v1.x
 
       - name: Update commands
-        run: ./main.ts -u
+        run: deno run -A main.ts -u
