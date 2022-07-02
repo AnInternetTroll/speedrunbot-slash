@@ -58,9 +58,10 @@ export async function gameInfo(
 			new Date(gameObj.created).toDateString()
 		}`,
 	);
-	output.push(`${fmt.bold("Genres")}: ${genres.join(", ")}`);
+	if (genres.length) output.push(`${fmt.bold("Genres")}: ${genres.join(", ")}`);
 
-	output.push(`${fmt.bold("Moderators")}: ${moderators.join(", ")}`);
+	output.push(`${fmt.bold("Moderators")}: ${moderators.length ? moderators.join(", ") : "No moderators found"}`);
+	
 	output.push(
 		`${fmt.bold("Rules")}: Timing method - ${
 			gameObj.ruleset["default-time"]

@@ -41,11 +41,11 @@ export async function categories(
 		}
 	});
 	output.push(`Categories - ${game}`);
-	output.push(`${fmt.bold("Fullgame")}: ${fullGameCategories.join(", ")}`);
+	output.push(`${fmt.bold("Fullgame")}: ${fullGameCategories.length ? fullGameCategories.join(", ") : "No Full Game categories."}`);
 	output.push(
-		`${fmt.bold("Individual Level")}: ${individualLevelCategories.join(", ")}`,
+		`${fmt.bold("Individual Level")}: ${individualLevelCategories.length ? individualLevelCategories.join(", ") : "No Individual Level categories."}`,
 	);
-	output.push(`${fmt.bold("Miscellaneous")}: ${miscCategories.join(", ")}`);
+	output.push(`${fmt.bold("Miscellaneous")}: ${miscCategories.length ? miscCategories.join(", ") : "No Miscellaneous categories."}`);
 
 	return output.join("\n");
 }
