@@ -1,18 +1,35 @@
-#!/usr/bin/env -S deno run --allow-net --allow-env --allow-read --allow-write --allow-run --no-check
-import { SpeedRunBot } from "./src/client.ts";
-import { start } from "./deps_server.ts";
-import { client } from "./src/pages/api/discord/interactions.ts";
-import routes from "./src/routes.gen.ts";
-import { SpeedrunCom } from "./src/srcom/slash_commands.ts";
+#!/usr/bin/env -S deno run --allow-net --allow-read=.env --no-check
+import { serve } from "./deps_server.ts";
+import { config } from "./src/config.ts";
+import { handler } from "./src/pages/mod.tsx";
+import { commands } from "./src/srcom/slash_commands.ts";
+import { SpeedRunBot } from "./src/standalone_client.ts";
+import { isDeployed } from "./src/utils.ts";
 
 if (import.meta.main) {
-	if (!Deno.env.get("DENO_DEPLOYMENT_ID")) {
+	if (!isDeployed) {
 		const client = new SpeedRunBot({
 			intents: [],
-			token: Deno.env.get("TOKEN"),
+			token: config.TOKEN,
 		});
-		client.connect();
+		console.log("Connecting...");
+		await client.connect();
+		console.log("Connected!");
+		console.log("Editting commands...");
+		await client.interactions.commands.bulkEdit(
+			commands,
+			config.TEST_SERVER,
+		);
+
+		console.log("Editted!");
+
+		if (Deno.args.includes("--update") || Deno.args.includes("-u")) {
+			console.log("Goodbye!");
+			await client.close();
+			Deno.exit(0);
+		}
 	}
-	start(routes);
-	client.loadModule(new SpeedrunCom());
+	if ((await Deno.permissions.query({ name: "net" })).state === "granted") {
+		serve(handler);
+	} else console.warn("Webserver is NOT running!");
 }

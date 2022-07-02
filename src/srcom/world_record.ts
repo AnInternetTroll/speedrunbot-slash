@@ -18,7 +18,6 @@ export async function worldRecord(
 	category?: string,
 	subcategory?: string,
 	// For consistency sake
-	// deno-lint-ignore no-unused-vars
 	{ outputType = "markdown" }: Opts = {},
 ): Promise<string> {
 	const output: string[] = [];
@@ -130,13 +129,12 @@ export async function worldRecord(
 			`The category '${category}' is an IL category, not level`,
 		);
 	}
-	const playersTasks: Promise<string>[] = wr.players.map((player) =>
+	const playersTasks: (Promise<string> | string)[] = wr.players.map((player) =>
 		player.rel === "user"
 			? getUser(player.id).then((user) =>
 				user ? fmt.link(user.weblink, user.names.international) : ""
 			)
-			: // @ts-ignore A player can be a guest
-				player.name
+			: player.name
 	);
 	const players = await Promise.all(playersTasks);
 

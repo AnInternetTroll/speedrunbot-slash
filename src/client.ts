@@ -1,33 +1,10 @@
-#!/usr/bin/env -S deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. --no-check
-import { commands, SpeedrunCom } from "./srcom/slash_commands.ts";
-import { Client, event } from "../deps_server.ts";
-import { parse } from "../deps_general.ts";
+import { SpeedrunCom } from "./srcom/slash_commands.ts";
+import { InteractionsClient } from "../deps_server.ts";
+import { config } from "./config.ts";
 
-export class SpeedRunBot extends Client {
-	@event()
-	ready() {
-		this.interactions.loadModule(new SpeedrunCom());
-	}
-}
+export const client = new InteractionsClient({
+	token: config.TOKEN,
+	publicKey: config.PUBLIC_KEY,
+});
 
-if (import.meta.main) {
-	const client = new SpeedRunBot({
-		intents: [],
-		token: Deno.env.get("TOKEN"),
-	});
-	console.log("Connecting...");
-	await client.connect();
-	console.log("Connected!");
-	console.log("Editting commands...");
-	await client.interactions.commands.bulkEdit(
-		commands,
-		Deno.env.get("TEST_SERVER"),
-	);
-	console.log("Editted!");
-	const args = parse(Deno.args);
-	if (args.update || args.u) {
-		console.log("Goodbye!");
-		await client.close();
-		Deno.exit(0);
-	}
-}
+client.loadModule(new SpeedrunCom());

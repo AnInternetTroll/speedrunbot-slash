@@ -1,16 +1,12 @@
 /** @jsx h */
-import { h, useEffect, useState } from "../../deps_frontend.ts";
-import { DISCORD_URL } from "../utils.ts";
+import { h } from "../../deps_server.ts";
+import { client } from "../client.ts";
+import { DISCORD_URL, renderPage } from "../utils.ts";
 
-export const config = { runtimeJS: true };
+export default () => renderPage(<Home />);
 
-export default function Home() {
-	const [id, setId] = useState("");
-	useEffect(() => {
-		fetch("/api/discord/bot_info").then((res) => res.json()).then((data) =>
-			setId(data.id)
-		);
-	}, [setId]);
+export function Home() {
+	const id = client.id;
 	return (
 		<div>
 			<h1>Speedrun.bot</h1>

@@ -1,81 +1,205 @@
 /** @jsx h */
-import { h, IS_BROWSER, useEffect, useState } from "../../deps_frontend.ts";
-import type { PageConfig } from "../../deps_frontend.ts";
-import { DISCORD_URL } from "../utils.ts";
-import type { BotInfo } from "./api/discord/bot_info.ts";
-import type { Token } from "./api/discord/token.ts";
+import {
+	deleteCookie,
+	getCookies,
+	h,
+	setCookie,
+	Status,
+} from "../../deps_server.ts";
+import { DISCORD_URL, renderPage } from "../utils.ts";
+import { client } from "../client.ts";
+import { config } from "../config.ts";
+import { SpeedRunBot } from "../standalone_client.ts";
+import { commands } from "../srcom/slash_commands.ts";
 
-export const config: PageConfig = { runtimeJS: true };
+// User structure that comes from discord
+interface User {
+	id: string;
+	username: string;
+	discriminator: string;
+	avatar: string;
+	verified: boolean;
+	email: string;
+	flags: number;
+	banner: string;
+	accent_color: number;
+	premium_type: number;
+	public_flags: number;
+}
 
-export default function Admin() {
-	const [botInfo, setBotInfo] = useState<BotInfo | null>(null);
-	const [code, setCode] = useState("");
-	const [token, setToken] = useState("");
-	const [status, setStatus] = useState("");
-	useEffect(() => {
-		setStatus("Fetching bot info");
-		fetch("/api/discord/bot_info").then((res) => res.json()).then((data) =>
-			setBotInfo(data)
-		).then(() => setStatus("Fetched bot info!"));
-	}, [setBotInfo, setStatus]);
+// Access token response from discord
+interface AccessTokenResponse {
+	access_token: string;
+	token_type: "Bearer";
+	expires_in: number;
+	refresh_token: string;
+	scope: string;
+}
 
-	useEffect(() => {
-		if (IS_BROWSER) {
-			const url = new URL(location.href);
-			if (url.searchParams.has("code")) setCode(url.searchParams.get("code")!);
+// The application has the team/owner of the bot
+// Which is used to see if the client has permission to reload the commands
+const application = await client.fetchApplication();
+
+export default async (req: Request): Promise<Response> => {
+	const { pathname, searchParams, origin } = new URL(req.url);
+	const location = `${origin}${pathname}`;
+	const code = searchParams.get("code");
+	const access_token = getCookies(req.headers).access_token;
+
+	if (req.method === "DELETE") {
+		const headers = new Headers();
+		deleteCookie(headers, "access_token");
+
+		return renderPage(
+			<Admin location={location} message={"Logged out!"} />,
+		);
+	} // The user has triggered a reload
+	else if (req.method === "POST") {
+		if (!access_token) {
+			return renderPage(
+				<Admin location={location} message={"Not logged in"} />,
+			);
 		}
-	}, [setCode]);
-
-	useEffect(() => {
-		if (!code) return;
-		setStatus("Fetching token");
-		fetch(`/api/discord/token`, {
-			method: "POST",
-			body: JSON.stringify({
-				code,
-				redirect_uri: location.origin + location.pathname,
-			}),
-		}).then(async (res) => {
-			const data = await res.json() as Token;
-			if (res.ok) {
-				setToken(data.access_token);
-			} else {
-				// @ts-ignore if it's an error the response will be unexpected
-				setStatus(`Error: ${data.error_description}`);
-				setCode("");
-			}
+		const user = await getUserFromToken(access_token);
+		if (isUserAnOwner(user)) {
+			// reload commands
+			const client = new SpeedRunBot({
+				intents: [],
+				token: config.TOKEN,
+			});
+			await client.connect();
+			await client.interactions.commands.bulkEdit(
+				commands,
+				config.TEST_SERVER,
+			);
+			return renderPage(
+				<Admin location={location} message={"Commands succesfully updated!"} />,
+			);
+		} else {
+			return renderPage(
+				<Admin location={location} message={"Access denied"} />,
+			);
+		}
+	} // The user just came back from discord
+	// And authorized the app
+	else if (code) {
+		const headers = new Headers({
+			"Location": location,
 		});
-	}, [code, setToken]);
 
-	const reload = () => {
-		if (!token) return;
-		setStatus("Reloading commands");
-		fetch("/api/discord/reload", {
-			method: "POST",
-			body: JSON.stringify({ access_token: token }),
-			headers: {
-				"Content-Type": "application/json",
-			},
-		}).then((res) => res.json()).then((data) => setStatus(data.message));
-	};
+		const access_token = await exchangeCodeForToken(code, location);
 
+		setCookie(headers, {
+			name: "access_token",
+			httpOnly: true,
+			value: access_token,
+		});
+
+		return new Response(null, {
+			headers,
+			status: Status.TemporaryRedirect,
+		});
+	} // The user is now logged in
+	else if (access_token) {
+		const user = await getUserFromToken(access_token);
+		return renderPage(<Admin location={location} user={user} />);
+	} else return renderPage(<Admin location={location} />);
+};
+
+export function Admin(
+	{ user, location, message }: {
+		user?: User;
+		location: string;
+		message?: string;
+	},
+) {
 	return (
 		<div>
-			<h1>Speedrun.bot admin panel</h1>
-			<p>{status}</p>
-			{!code
-				? (botInfo?.id
+			<h1>
+				Speedrun.bot admin panel
+			</h1>
+
+			<h2>
+				{message}
+			</h2>
+
+			{!user
+				? (client.id
 					? (
 						<a
-							href={`${DISCORD_URL}/oauth2/authorize?client_id=${botInfo.id}&scope=identify&response_type=code&redirect_uri=${
-								encodeURIComponent(location.origin + location.pathname)
+							href={`${DISCORD_URL}/oauth2/authorize?client_id=${client.id}&scope=identify&response_type=code&redirect_uri=${
+								encodeURIComponent(location)
 							}`}
 						>
 							Click here to log in
 						</a>
 					)
 					: "Loading...")
-				: <button onClick={reload}>Reload commands?</button>}
+				: (
+					// If the authorized user is in the team
+					// Or is the owner of the application
+					// Allow them to reload commands
+					isUserAnOwner(user)
+						? (
+							<form method="POST">
+								<button type="submit">
+									Reload commands?
+								</button>
+							</form>
+						)
+						: "Access denied"
+				)}
+			{user && (
+				<form action="/logout">
+					<button type="submit">
+						Log out
+					</button>
+				</form>
+			)}
 		</div>
 	);
+}
+
+async function exchangeCodeForToken(
+	code: string,
+	redirect_uri: string,
+): Promise<string> {
+	const client_secret = config.CLIENT_SECRET;
+	if (!client_secret) {
+		throw new Error(
+			"CLIENT_SECRET is not set!!! Tell an admin about this. Wait, you're the admin?",
+		);
+	}
+
+	// https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-access-token-response
+	const res = await fetch(`${DISCORD_URL}/oauth2/token`, {
+		method: "POST",
+		body: new URLSearchParams({
+			"client_id": typeof client.id === "function" ? client.id() : client.id,
+			client_secret,
+			"grant_type": "authorization_code",
+			code,
+			redirect_uri,
+		}).toString(),
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+	});
+	const data = await res.json() as AccessTokenResponse;
+	return data.access_token;
+}
+
+async function getUserFromToken(access_token: string): Promise<User> {
+	const res = await fetch(`${DISCORD_URL}/users/@me`, {
+		headers: {
+			"Authorization": `Bearer ${access_token}`,
+		},
+	});
+	const user = await res.json() as User;
+	return user;
+}
+
+function isUserAnOwner(user: User): boolean {
+	return application.team?.members.map((user) => user.id).includes(user.id) ||
+		application.owner?.id === user.id;
 }

@@ -30,14 +30,17 @@ project and put in the following
 ```sh
 TOKEN="YOUR BOT'S DISCORD TOKEN"
 TEST_SERVER="12345" # Optional discord guild/server ID
+# For the website part
+CLIENT_SECRET="abcd"
+PUBLIC_KEY="abcd"
 ```
 
 To run the discord bot development mode use the following command
 
 ```sh
-deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. src/client.ts
+deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. ./mod.ts
 # Or if on unix
-src/client.ts
+./mod.ts
 ```
 
 The permissions required are as follows:
