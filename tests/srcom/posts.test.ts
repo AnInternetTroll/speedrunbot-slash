@@ -7,7 +7,7 @@ Deno.test("Get user posts by username", async () => {
 	const expected = `Posts: 1
 Site Forums: 606
 Game Forums: 774
-Secret Forums: 1365
+Secret Forums: 0
 Total: 1365`;
 	assertEquals(res, expected);
 });
