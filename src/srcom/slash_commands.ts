@@ -483,7 +483,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		);
 	}
 
-	@slash()
+	@slash("mod-count")
 	async modCount(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
