@@ -12,6 +12,7 @@ import {
 } from "../../deps_server.ts";
 
 import { games } from "./games.ts";
+import { posts } from "./posts.ts";
 import { examined } from "./examined.ts";
 import { examinedLeaderboard } from "./examined_leaderboard.ts";
 import { categories } from "./categories.ts";
@@ -69,6 +70,16 @@ export const commands: SlashCommandPartial[] = [
 	{
 		name: "games",
 		description: "See how many games a player has submitted runs to.",
+		options: [
+			{
+				...srcUser,
+				required: true,
+			},
+		],
+	},
+	{
+		name: "posts",
+		description: "See how many posts a player has posted on the site.",
 		options: [
 			{
 				...srcUser,
@@ -480,6 +491,14 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) => games(i.option("username"), { outputType: "markdown" }),
+		);
+	}
+
+	@slash()
+	async posts(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) => posts(i.option("username"), { outputType: "markdown" }),
 		);
 	}
 
