@@ -350,12 +350,13 @@ async function sendCommand(
 ) {
 	if (defer) await i.defer();
 	try {
-		if ((await func(i) as MessageOptions).embeds) {
-			await i.send(await func(i));
+		const message = await func(i);
+		if ((message as MessageOptions).embeds) {
+			await i.send(message);
 			return;
 		}
 
-		const [title, ...description] = (await func(i) as string).split("\n");
+		const [title, ...description] = (message as string).split("\n");
 		if (description.length > 10) {
 			await i.reply(
 				"This message will be sent into many small and hidden chunks to prevent spam.",
@@ -393,8 +394,8 @@ async function sendCommand(
 				embeds: [
 					new Embed({
 						description:
-							`Unexpected Error, please report this to a [developer](https://github.com/AnInternetTroll/speedrunbot-slash):
-							${command}\n\`/${i.data.name} ${
+							`Unexpected Error, please report this to a [developer](https://github.com/AnInternetTroll/speedrunbot-slash/issues/new):
+							${command}\n\/${i.data.name} ${
 								i.data.options.map((opt) => `${opt.name}:${opt.value}`)
 							}`,
 						color: 16711680,
