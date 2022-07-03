@@ -14,6 +14,7 @@ export {
 export type {
 	ApplicationCommandChoice,
 	ApplicationCommandOption,
+	MessageOptions,
 	SlashCommandPartial,
 } from "https://code.harmony.rocks/3f591254deb572e3ffb4f2349d9a181ea49d3e33/mod.ts";
 
