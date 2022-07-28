@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import type { MarkupType } from "./fmt.ts";
+import type { Format, MarkupType } from "./fmt.ts";
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
 export const SRC_API = "https://www.speedrun.com/api/v1";
@@ -144,4 +144,130 @@ export function getCategoryObj<
 		}
 	}
 	return false;
+}
+
+type ExtensiveRun = SpeedrunCom.Run & {
+	category: {
+		data: SpeedrunCom.Category;
+	};
+	level: {
+		data: SpeedrunCom.Level;
+	};
+	players: { data: SpeedrunCom.User[] };
+};
+
+export function formatRun(
+	run: ExtensiveRun,
+	fmt: Format,
+): string {
+	return `${
+		run.level?.data.name || run.category?.data.name
+			? fmt.link(
+				run.weblink,
+				fmt.bold(run.level?.data.name || run.category.data.name),
+			) + " in"
+			: run.weblink
+	} ${sec2time(run.times.primary_t)} by ${
+		run.players.data
+			? (run.players
+				.data as (
+					| (SpeedrunCom.User & { rel: "user" })
+					| (SpeedrunCom.Guest & { rel: "guest" })
+				)[]).map((p) =>
+					`${
+						fmt.link(
+							p.rel === "guest" ? p.links[0].uri : p.names.international,
+							p.rel === "guest" ? p.name : p.names.international,
+						)
+					}`
+				).join(" and ")
+			: "no one :("
+	}`;
+}
+
+export const statuses = ["new", "verified", "rejected"];
+
+export async function getAllRuns(
+	users: undefined | SpeedrunCom.User[],
+	games: undefined | SpeedrunCom.Game[],
+	status: undefined | string,
+	examiners: undefined | SpeedrunCom.User[],
+	emulated: undefined | string | boolean,
+): Promise<ExtensiveRun[]> {
+	const url = new URL(`${SRC_API}/runs?embed=game,category,level,players`);
+
+	if (status) url.searchParams.set("status", status);
+	if (typeof emulated !== "undefined") {
+		if (["1", "yes", "true", true].includes(emulated)) {
+			url.searchParams.set("emulated", "true");
+			emulated = true;
+		} else {
+			url.searchParams.set("emulated", "false");
+			emulated = false;
+		}
+	}
+
+	const tasks: Promise<ExtensiveRun[]>[] = [];
+
+	// TODO: Less duplication here please
+	if (games && games.length) {
+		for (const game of games) {
+			if (users && users.length) {
+				for (const user of users) {
+					if (examiners && examiners.length) {
+						for (const examiner of examiners) {
+							url.searchParams.set("game", game.id);
+							url.searchParams.set("user", user.id);
+							url.searchParams.set("examiner", examiner.id);
+							tasks.push(getAll<ExtensiveRun>(url));
+						}
+					} else {
+						url.searchParams.set("game", game.id);
+						url.searchParams.set("user", user.id);
+						tasks.push(getAll<ExtensiveRun>(url));
+					}
+				}
+			} else if (examiners && examiners.length) {
+				for (const examiner of examiners) {
+					url.searchParams.set("game", game.id);
+					url.searchParams.set("examiner", examiner.id);
+					tasks.push(getAll<ExtensiveRun>(url));
+				}
+			} else {
+				url.searchParams.set("game", game.id);
+				tasks.push(getAll<ExtensiveRun>(url));
+			}
+		}
+	} else if (users && users.length) {
+		for (const user of users) {
+			if (examiners && examiners.length) {
+				for (const examiner of examiners) {
+					url.searchParams.set("user", user.id);
+					url.searchParams.set("examiner", examiner.id);
+					tasks.push(getAll<ExtensiveRun>(url));
+				}
+			} else {
+				url.searchParams.set("user", user.id);
+				tasks.push(getAll<ExtensiveRun>(url));
+			}
+		}
+	} else if (examiners && examiners.length) {
+		for (const examiner of examiners) {
+			url.searchParams.set("examiner", examiner.id);
+			tasks.push(getAll<ExtensiveRun>(url));
+		}
+	}
+	return (await Promise.all(tasks)).flat();
+}
+
+export function getUsersGamesExaminers(
+	user?: string,
+	game?: string,
+	examiner?: string,
+): Promise<[SpeedrunCom.User[], SpeedrunCom.Game[], SpeedrunCom.User[]]> {
+	return Promise.all([
+		getUsers((user ? user.split(",") : []).filter((a) => !!a)),
+		getGames((game ? game.split(",") : []).filter((a) => !!a)),
+		getUsers((examiner ? examiner.split(",") : []).filter((a) => !!a)),
+	]);
 }

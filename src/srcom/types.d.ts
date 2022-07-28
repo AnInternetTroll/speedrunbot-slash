@@ -87,11 +87,9 @@ export namespace SpeedrunCom {
 		"verify-date"?: any;
 	}
 
-	export interface Player {
-		rel: "user";
-		id: string;
-		uri: string;
-	}
+	export type Player =
+		| (SpeedrunCom.User & { rel: "user" })
+		| (SpeedrunCom.Guest & { rel: "guest" });
 
 	export interface Times {
 		primary: string;

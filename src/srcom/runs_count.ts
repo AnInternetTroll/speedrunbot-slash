@@ -2,14 +2,13 @@
 import { Format } from "./fmt.ts";
 import {
 	CommandError,
-	formatRun,
 	getAllRuns,
 	getUsersGamesExaminers,
 	statuses,
 } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 
-export async function runs(
+export async function runsCount(
 	user?: string,
 	game?: string,
 	status?: string,
@@ -43,7 +42,27 @@ export async function runs(
 	const output: string[] = [];
 
 	const runs = await getAllRuns(users, games, status, examiners, emulated);
+	let fullGameRuns = 0;
+	let individualLevelRuns = 0;
+	let verifiedRuns = 0;
+	let rejectedRuns = 0;
+	const gameCount: Record<string, number> = {};
 
+	runs.forEach((run) => {
+		if (
+			typeof run.level === "string" || typeof run.level.data.name === "string"
+		) {
+			individualLevelRuns++;
+		} else fullGameRuns++;
+		if (games.length && games.length !== 1) {
+			// @ts-ignore If I put in the link `embed=game` then this will exist
+			const name = run.game.data.names.international;
+			if (isNaN(gameCount[name])) gameCount[name] = 1;
+			else gameCount[name]++;
+		}
+		if (run.status.status === "verified") verifiedRuns++;
+		else if (run.status.status === "rejected") rejectedRuns++;
+	});
 	output.push(
 		`Run Count:${
 			users.length
@@ -51,7 +70,7 @@ export async function runs(
 				: ""
 		}${
 			games.length
-				? "- " + games.map((game) => game.names.international).join(" and ")
+				? " - " + games.map((game) => game.names.international).join(" and ")
 				: ""
 		}${
 			examiners.length
@@ -67,13 +86,25 @@ export async function runs(
 				: ""
 		}`,
 	);
-	if (runs.length) {
-		runs.forEach((run) => {
-			output.push(
-				formatRun(run, fmt),
-			);
-		});
-	} else output.push("No runs found");
+	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
+	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
+
+	if (Object.keys(gameCount).length) {
+		output.push("");
+		for (const game in gameCount) {
+			output.push(`${fmt.bold(game)}: ${gameCount[game]}`);
+		}
+		output.push("");
+	}
+
+	if (examiners.length && !status) {
+		output.push("");
+		output.push(`Verified: ${verifiedRuns.toString()}`);
+		output.push(`Rejected: ${rejectedRuns.toString()}`);
+		output.push("");
+	}
+
+	output.push(`${fmt.bold("Total")}: ${fullGameRuns + individualLevelRuns}`);
 	return output.join("\n");
 }
 
@@ -81,7 +112,7 @@ if (import.meta.main) {
 	const [users, games, status, examiner, emulated] = Deno.args;
 	try {
 		console.log(
-			await runs(users, games, status, examiner, emulated, {
+			await runsCount(users, games, status, examiner, emulated, {
 				outputType: "terminal",
 			}),
 		);
