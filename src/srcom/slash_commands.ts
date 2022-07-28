@@ -6,6 +6,7 @@ import {
 	autocomplete,
 	AutocompleteInteraction,
 	Embed,
+	MessageOptions,
 	slash,
 	SlashCommandOptionType,
 	SlashCommandPartial,
@@ -308,12 +309,18 @@ function splitIntoChunks(array: string[], perChunk: number): string[][] {
 
 async function sendCommand(
 	i: ApplicationCommandInteraction,
-	func: (i: ApplicationCommandInteraction) => Promise<string>,
+	func: (i: ApplicationCommandInteraction) => Promise<string | MessageOptions>,
 	{ defer = true }: { defer?: boolean } = {},
 ) {
 	if (defer) await i.defer();
 	try {
-		const [title, ...description] = (await func(i)).split("\n");
+		const message = await func(i);
+		if ((message as MessageOptions).embeds) {
+			await i.send(message);
+			return;
+		}
+
+		const [title, ...description] = (message as string).split("\n");
 		if (description.length > 10) {
 			await i.reply(
 				"This message will be sent into many small and hidden chunks to prevent spam.",
@@ -329,11 +336,14 @@ async function sendCommand(
 				});
 			}
 		} else {
-			const embed = new Embed({
-				title,
-				description: description.join("\n"),
+			await i.reply({
+				embeds: [
+					new Embed({
+						title,
+						description: description.join("\n"),
+					}),
+				],
 			});
-			await i.reply({ embeds: [embed] });
 		}
 	} catch (err: unknown) {
 		const command = `/${i.data.name} ${
@@ -348,7 +358,8 @@ async function sendCommand(
 				embeds: [
 					new Embed({
 						description:
-							`Unexpected Error, please report this to a developer: ${command}\n\`/${i.data.name} ${
+							`Unexpected Error, please report this to a [developer](https://github.com/AnInternetTroll/speedrunbot-slash/issues/new):
+							${command}\n\/${i.data.name} ${
 								i.data.options.map((opt) => `${opt.name}:${opt.value}`)
 							}`,
 						color: 16711680,
