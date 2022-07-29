@@ -2,6 +2,8 @@
 
 A speedrun bot but using slash commands instead of traditional commands.
 
+Join the [Development Discord server](https://discord.gg/dvCAhEC2e5)
+
 # Why
 
 In April 2022 bots in over 100 servers will not be able to read messages

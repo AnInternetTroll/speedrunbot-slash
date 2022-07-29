@@ -7,7 +7,7 @@
 	├── client.ts # Discord bot
 	├── deploy.ts # Deno deploy file
 	└── srcom # Where speedrun.com commands go
-		├── slashCommands.ts # Commands definitons and a `ApplicationCommandsModule` to be loaded by `client.ts` or `deploy.ts`
+		├── slash_commands.ts # Commands definitons and a `ApplicationCommandsModule` to be loaded by `client.ts` or `deploy.ts`
 		├── types.d.ts # Types of the REST API of speedrun.com
 		├── utils.ts # General utilities, such as `SRC_API` or functions used in other commands
 ```
@@ -21,6 +21,10 @@ a discord bot, such as `./src/srcom/whois.ts aninternettroll`.
 It is strongly prefered that commands don't use any `Deno` APIs, as most
 commands could be executed in the context of a browser. An exception to this can
 be if the `Deno` API works on [Deno Deploy](https://deno.com/deploy) as well.
+
+# Development Discord server
+
+https://discord.gg/dvCAhEC2e5
 
 # Running the code
 
