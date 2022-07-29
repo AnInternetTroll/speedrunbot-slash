@@ -35,3 +35,17 @@ export function renderPage(page: JSX.IntrinsicElements, init?: ResponseInit) {
 		},
 	);
 }
+
+export function fetchJSON(
+	input: Request | string,
+	init?: RequestInit,
+): Promise<any> {
+	return fetch(input, init).then((res) => res.json());
+}
+
+export function fetchText(
+	input: Request | string,
+	init?: RequestInit,
+): Promise<string> {
+	return fetch(input, init).then((res) => res.text());
+}

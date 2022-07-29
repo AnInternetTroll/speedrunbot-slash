@@ -5,7 +5,10 @@ import {
 	ApplicationCommandsModule,
 	autocomplete,
 	AutocompleteInteraction,
+	Client,
+	customValidation,
 	Embed,
+	MessageComponentType,
 	MessageOptions,
 	slash,
 	SlashCommandOptionType,
@@ -15,9 +18,9 @@ import {
 import { games } from "./games.ts";
 import { posts } from "./posts.ts";
 import { examined } from "./examined.ts";
-import { examinedLeaderboard } from "./examined_leaderboard.ts";
 import { categories } from "./categories.ts";
-import { runs } from "./runs.ts";
+import { examinedLeaderboard } from "./examined_leaderboard.ts";
+import { userRuns } from "./user_runs.ts";
 import { whois } from "./whois.ts";
 import { worldRecords } from "./world_records.ts";
 import { worldRecord } from "./world_record.ts";
@@ -26,14 +29,17 @@ import { pendingGames } from "./pending_games.ts";
 import { pendingCount } from "./pending_count.ts";
 import { podiums } from "./podiums.ts";
 import { modCount } from "./mod_count.ts";
-import { pendingUsers } from "./pending_users.ts";
-import { CommandError, getGame, SRC_API } from "./utils.ts";
+import { CommandError, getGame, SRC_API, SRC_URL } from "./utils.ts";
+import { fetchJSON } from "../utils.ts";
 import { runInfo } from "./run_info.ts";
 import { levelInfo } from "./level_info.ts";
 import { categoryInfo } from "./category_info.ts";
 import { leaderboard } from "./leaderboard.ts";
 
-import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
+import type {
+	SpeedrunCom as ISpeedrunCom,
+	SpeedrunComUnofficial,
+} from "./types.d.ts";
 import gameInfo from "./game_info.ts";
 import { Moogle } from "../../deps_general.ts";
 
@@ -183,20 +189,6 @@ export const commands: SlashCommandPartial[] = [
 		],
 	},
 	{
-		name: "pending-users",
-		description: "See all pending runs for one or more users.",
-		options: [
-			{
-				...srcUser,
-				required: true,
-			},
-			{
-				...srcUser,
-				name: "username2",
-			},
-		],
-	},
-	{
 		name: "pending-count",
 		description: "See how many pending runs a game has.",
 		options: [
@@ -211,18 +203,21 @@ export const commands: SlashCommandPartial[] = [
 		],
 	},
 	{
-		name: "runs",
-		description: "See how many runs a player has submitted.",
+		name: "user-runs",
+		description:
+			"See the runs of a certain status that a player has submitted.",
 		options: [
 			{
 				...srcUser,
 				required: true,
 			},
-			srcGame,
 			{
-				...srcGame,
-				name: "game2",
+				name: "status",
+				type: SlashCommandOptionType.STRING,
+				description: "The status of the runs",
+				autocomplete: true,
 			},
+			srcGame,
 		],
 	},
 	{
@@ -411,34 +406,94 @@ async function sendCommand(
 		} else {
 			console.error(err);
 			await i.reply(
-				`Critical error, please report this to a developer: \`${command}\``,
+				`Critical error, please report this to a [developer](https://github.com/AnInternetTroll/speedrunbot-slash/issues/new): \`${command}\``,
 			);
 		}
 	}
 }
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-	@autocomplete("*", "*")
-	async autoComplete(d: AutocompleteInteraction) {
+	@autocomplete("*", "game")
+	@autocomplete("*", "game2")
+	async autoCompleteGames(d: AutocompleteInteraction) {
 		const completions: ApplicationCommandChoice[] = [];
-		if (
-			d.focusedOption.name.includes("user") ||
-			d.focusedOption.name.includes("username")
-		) {
-			const res = await fetch(`${SRC_API}/users?name=${d.focusedOption.value}`);
-			const body = await res.json();
-			completions.push(...(body.data as ISpeedrunCom.User[]).map((user) => ({
-				name: user.names.international,
-				value: user.names.international,
-			})));
-		} else if (d.focusedOption.name.includes("game")) {
-			const res = await fetch(`${SRC_API}/games?name=${d.focusedOption.value}`);
-			const body = await res.json();
-			completions.push(...(body.data as ISpeedrunCom.Game[]).map((game) => ({
+		if (d.focusedOption.value.length <= 1) {
+			const body =
+				(await fetchJSON(`${SRC_API}/games?name=${d.focusedOption.value}`))
+					.data as ISpeedrunCom.Game[];
+			completions.push(...body.map((game) => ({
 				name: game.names.international,
 				value: game.abbreviation,
 			})));
-		} else if (d.focusedOption.name.includes("level")) {
+		} else {
+			const body = (await fetchJSON(
+				`${SRC_URL}/ajax_search.php?type=games&showall=true&term=${d.focusedOption.value}`,
+			)) as SpeedrunComUnofficial.Search[];
+			completions.push(
+				...body.slice(0, 25).map((game) => ({
+					name: game.label,
+					value: game.url,
+				})),
+			);
+		}
+		return d.autocomplete(
+			completions,
+		);
+	}
+
+	@autocomplete("*", "username")
+	async autoCompleteUsers(d: AutocompleteInteraction) {
+		const completions: ApplicationCommandChoice[] = [];
+		if (d.focusedOption.value.length <= 1) {
+			const body = (await fetchJSON(
+				`${SRC_API}/users?lookup=${d.focusedOption.value}`,
+			)).data as ISpeedrunCom.User[];
+			completions.push(...body.map((user) => ({
+				name: user.names.international,
+				value: user.names.international,
+			})));
+		} else {
+			const body = (await fetchJSON(
+				`${SRC_URL}/ajax_search.php?type=users&showall=true&term=${d.focusedOption.value}`,
+			)) as SpeedrunComUnofficial.Search[];
+			completions.push(
+				...body.slice(0, 25).map((user) => ({
+					name: user.label,
+					value: user.url.split("/")[1],
+				})),
+			);
+		}
+		return d.autocomplete(
+			completions,
+		);
+	}
+
+	@autocomplete("user-runs", "status")
+	autoCompleteStatus(d: AutocompleteInteraction) {
+		return d.autocomplete([
+			{
+				name: "All",
+				value: "all",
+			},
+			{
+				name: "Verified",
+				value: "verified",
+			},
+			{
+				name: "Rejected",
+				value: "rejected",
+			},
+			{
+				name: "Pending",
+				value: "pending",
+			},
+		]);
+	}
+
+	@autocomplete("*", "*")
+	async autoComplete(d: AutocompleteInteraction) {
+		const completions: ApplicationCommandChoice[] = [];
+		if (d.focusedOption.name.includes("level")) {
 			const game = d.option("game");
 			const level = d.option("level");
 			if (
@@ -577,15 +632,14 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		);
 	}
 
-	@slash()
-	async runs(i: ApplicationCommandInteraction) {
+	@slash("user-runs")
+	async userRuns(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
 			(i) =>
-				runs(i.option("username"), [
-					i.option("game"),
-					i.option("game2"),
-				], { outputType: "markdown" }),
+				userRuns(i.option("username"), i.option("status"), i.option("game"), {
+					outputType: "markdown",
+				}),
 		);
 	}
 
@@ -597,18 +651,6 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				pendingGames([
 					i.option("game"),
 					i.option("game2"),
-				], { outputType: "markdown" }),
-		);
-	}
-
-	@slash("pending-users")
-	async pendingUsers(i: ApplicationCommandInteraction) {
-		await sendCommand(
-			i,
-			(i) =>
-				pendingUsers([
-					i.option("username"),
-					i.option("username2"),
 				], { outputType: "markdown" }),
 		);
 	}

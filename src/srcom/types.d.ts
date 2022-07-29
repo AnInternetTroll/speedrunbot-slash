@@ -276,20 +276,23 @@ export namespace SpeedrunCom {
 	export interface Variable {
 		id: string;
 		name: string;
-		category?: any;
+		category: string;
 		scope: Scope;
 		mandatory: boolean;
 		"user-defined": boolean;
 		obsoletes: boolean;
 		values: {
 			values: {
-				[k: string]: {
+				[id: string]: {
 					label: string;
 					rules: string;
 					flags: {
 						miscellaneous: boolean;
 					};
 				};
+			};
+			choices: {
+				[id: string]: [label: string];
 			};
 			default: string;
 		};
@@ -355,6 +358,8 @@ export namespace SpeedrunComUnofficial {
 		isGameModerator: boolean;
 		isTranslator: boolean;
 		bio: string;
+		isSupporter: boolean;
+		isBoosted: boolean;
 	}
 
 	export interface UserStats {
@@ -451,5 +456,24 @@ export namespace SpeedrunComUnofficial {
 		followStats: FollowStat[];
 		gameStats: GameStat[];
 		modStats: ModStat[];
+	}
+
+	export interface Search {
+		label: string;
+		url: string;
+		category:
+			| "Series"
+			| "Games"
+			| "Users"
+			| "Marathons"
+			| "Teams"
+			| "No results";
+		desc: string;
+	}
+
+	export interface Areas {
+		id: string;
+		name: string;
+		flagIcon: string;
 	}
 }

@@ -1,8 +1,10 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import type { MarkupType } from "./fmt.ts";
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
-import { delay, TimeDelta } from "../../deps_general.ts";
-export const SRC_API = "https://www.speedrun.com/api/v1";
+import { delay } from "../../deps_general.ts";
+import { fetchJSON } from "../utils.ts";
+export const SRC_URL = "https://www.speedrun.com";
+export const SRC_API = `${SRC_URL}/api/v1`;
 
 export interface Opts {
 	outputType?: MarkupType;
@@ -27,36 +29,18 @@ export async function getUser(
 	query: string,
 ): Promise<SpeedrunCom.User | false> {
 	if (!query.length) return false;
-	let res: Response;
-	res = await fetch(`${SRC_API}/users?lookup=${encodeURI(query)}`);
-	const data = (await res.json()).data as SpeedrunCom.User[];
-	if (res.ok && data[0]) return data[0];
-	else {
-		res = await fetch(`${SRC_API}/users/${encodeURI(query)}`);
-		const data = (await res.json()).data as SpeedrunCom.User;
-		return (res.ok && data) ? data : false;
-	}
+	const user = (await fetchJSON(`${SRC_API}/users/${query}`)).data as SpeedrunCom.User;
+	if (user) return user;
+	return (await fetchJSON(`${SRC_API}/users?name=${query}&max=1`)).data[0] as SpeedrunCom.User || false;
 }
 
 export async function getGame(
 	query: string,
 ): Promise<SpeedrunCom.Game | false> {
 	if (!query.length) return false;
-	let res: Response;
-	res = await fetch(`${SRC_API}/games?abbreviation=${query}`);
-	const data = (await res.json()).data as SpeedrunCom.Game[];
-	if (data[0]) return data[0];
-	else {
-		res = await fetch(`${SRC_API}/games?name=${query}`);
-		const data = (await res.json()).data as SpeedrunCom.Game[];
-		if (data[0]) return data[0];
-		else {
-			res = await fetch(`${SRC_API}/games/${query}`);
-			const data = (await res.json()).data as SpeedrunCom.Game;
-			if (data) return data;
-		}
-	}
-	return false;
+	const game = (await fetchJSON(`${SRC_API}/games/${query}`)).data as SpeedrunCom.Game;
+	if (game) return game;
+	return (await fetchJSON(`${SRC_API}/games?name=${query}&max=1`)).data[0] as SpeedrunCom.Game || false;
 }
 
 export async function getGames(games: string[]): Promise<SpeedrunCom.Game[]> {
@@ -112,21 +96,31 @@ export async function unofficialGetUserStats(
 	userId: string,
 ): Promise<SpeedrunComUnofficial.Stats> {
 	const res = await fetch(
-		"https://www.speedrun.com/_fedata/user/stats?" + new URLSearchParams({
+		`${SRC_URL}/_fedata/user/stats?${new URLSearchParams({
 			userId,
 			ver: "3",
-		}),
+		})}`,
 	);
-	const data = await res.json();
-	return data;
+	return await res.json();
 }
 
 export function sec2time(timeInSeconds: number): string {
-	const time = new TimeDelta({ seconds: timeInSeconds });
-	return `${time}`.replaceAll(
-		"000",
-		"",
-	);
+	//Stolen from speedrun.com
+	let t = timeInSeconds || 0;
+	const n = Math.floor(t / 3600);
+	t = t - n * 3600;
+	const r = Math.floor(t / 60);
+	t = t - r * 60;
+	const i = Math.floor(t);
+	t = t - i;
+	const a = Math.round(t * 1e3),
+		o = [];
+	n > 0 && o.push(n.toString()),
+		o.push(r.toString().padStart(1, "0")),
+		o.push(i.toString().padStart(2, "0"));
+	let s = o.join(":");
+	if (a > 0) s += `.${a.toString().padStart(3, "0")}`;
+	return s;
 }
 
 // Adapted from

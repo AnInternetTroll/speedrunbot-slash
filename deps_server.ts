@@ -5,18 +5,20 @@ export {
 	autocomplete,
 	AutocompleteInteraction,
 	Client,
+	customValidation,
 	Embed,
 	event,
 	InteractionsClient,
+	MessageComponentType,
 	slash,
 	SlashCommandOptionType,
-} from "https://code.harmony.rocks/3f591254deb572e3ffb4f2349d9a181ea49d3e33/mod.ts";
+} from "https://code.harmony.rocks/v2.6.0/mod.ts";
 export type {
 	ApplicationCommandChoice,
 	ApplicationCommandOption,
 	MessageOptions,
 	SlashCommandPartial,
-} from "https://code.harmony.rocks/3f591254deb572e3ffb4f2349d9a181ea49d3e33/mod.ts";
+} from "https://code.harmony.rocks/v2.6.0/mod.ts";
 
 export { config } from "https://deno.land/std@0.146.0/dotenv/mod.ts";
 

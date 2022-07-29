@@ -29,7 +29,7 @@ if (import.meta.main) {
 			Deno.exit(0);
 		}
 	}
-	if ((await Deno.permissions.query({ name: "net" })).state === "granted") {
+	if ((await Deno.permissions.query({ name: "net" })).state == "granted") {
 		serve(handler);
 	} else console.warn("Webserver is NOT running!");
 }
