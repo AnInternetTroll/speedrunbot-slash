@@ -2,7 +2,8 @@
 export namespace SpeedrunCom {
 	export interface Names {
 		international: string;
-		japanese?: string;
+		japanese: string | null;
+		twitch?: string;
 	}
 
 	export interface ColorFrom {

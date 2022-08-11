@@ -23,7 +23,14 @@ import { categoriesPlayed } from "./categories_played.ts";
 import { podiums } from "./podiums.ts";
 import { modCount } from "./mod_count.ts";
 import { runsCount } from "./runs_count.ts";
-import { CommandError, getGame, SRC_API } from "./utils.ts";
+import {
+	CommandError,
+	getGame,
+	searchGames,
+	searchUsers,
+	SRC_API,
+	SRC_URL,
+} from "./utils.ts";
 import { runInfo } from "./run_info.ts";
 import { levelInfo } from "./level_info.ts";
 import { categoryInfo } from "./category_info.ts";
@@ -49,7 +56,20 @@ const srcStatus: ApplicationCommandOption = {
 	name: "status",
 	description: "The status of a run.",
 	type: SlashCommandOptionType.STRING,
-	autocomplete: true,
+	choices: [
+		{
+			name: "Verified",
+			value: "verified",
+		},
+		{
+			name: "Rejected",
+			value: "rejected",
+		},
+		{
+			name: "Pending",
+			value: "new",
+		},
+	],
 };
 const srcExaminer: ApplicationCommandOption = {
 	name: "examiner",
@@ -374,23 +394,19 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	static async #userCompletions(
 		d: AutocompleteInteraction,
 	): Promise<ApplicationCommandChoice[]> {
-		const res = await fetch(`${SRC_API}/users?name=${d.focusedOption.value}`);
-		const body = await res.json();
-		return (body.data as ISpeedrunCom.User[]).map((user) => ({
-			name: user.names.international,
-			value: user.names.international,
+		const users = await searchUsers(d.focusedOption.value);
+
+		return users.map((user) => ({
+			name: user.name,
+			value: user.name,
 		}));
 	}
 
 	static async #gamesCompletions(
 		d: AutocompleteInteraction,
 	): Promise<ApplicationCommandChoice[]> {
-		const res = await fetch(`${SRC_API}/games?name=${d.focusedOption.value}`);
-		const body = await res.json();
-		return (body.data as ISpeedrunCom.Game[]).map((game) => ({
-			name: game.names.international,
-			value: game.abbreviation,
-		}));
+		const games = await searchGames(d.focusedOption.value);
+		return games.map((game) => ({ name: game.name, value: game.abbreviation }));
 	}
 
 	static async #levelCompletions(
@@ -471,21 +487,6 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			completions.push(...await SpeedrunCom.#levelCompletions(d));
 		} else if (d.focusedOption.name.includes("category")) {
 			completions.push(...await SpeedrunCom.#categoryCompletion(d));
-		} else if (d.focusedOption.name.includes("status")) {
-			completions.push(...[
-				{
-					name: "Approvals",
-					value: "verified",
-				},
-				{
-					name: "Rejections",
-					value: "rejected",
-				},
-				{
-					name: "Pending",
-					value: "new",
-				},
-			]);
 		}
 		return d.autocomplete(
 			completions,

@@ -2,7 +2,8 @@
 import type { Format, MarkupType } from "./fmt.ts";
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
-export const SRC_API = "https://www.speedrun.com/api/v1";
+export const SRC_URL = "https://www.speedrun.com";
+export const SRC_API = `${SRC_URL}/api/v1`;
 
 export interface Opts {
 	outputType?: MarkupType;
@@ -270,4 +271,110 @@ export function getUsersGamesExaminers(
 		getGames((game ? game.split(",") : []).filter((a) => !!a)),
 		getUsers((examiner ? examiner.split(",") : []).filter((a) => !!a)),
 	]);
+}
+
+interface GameBulk {
+	id: string;
+	names: SpeedrunCom.Names;
+	"abbreviation": "sms";
+	"weblink": "https://www.speedrun.com/sms";
+}
+
+export async function searchGames(name: string): Promise<{
+	name: string;
+	abbreviation: string;
+}[]> {
+	// This is super un official way and can break at any time
+	// Which is why we fall back on the normal API
+	try {
+		const gamesRes = await fetch(
+			`${SRC_URL}/ajax_search.php?type=games&showall=true&term=${
+				encodeURIComponent(name)
+			}`,
+		);
+		if (!gamesRes.ok) {
+			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
+		}
+		const games = await gamesRes.json() as {
+			label: string;
+			url: string;
+			category: string;
+		}[];
+		return games.map((game) => ({
+			name: game.label,
+			abbreviation: game.url,
+		}));
+	} catch (err: unknown) {
+		console.error(err);
+		const gamesRes = await fetch(`${SRC_API}/games?name=${name}&_bulk=true`);
+		if (!gamesRes.ok) {
+			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
+		}
+		const games = (await gamesRes.json()).data as {
+			id: string;
+			names: SpeedrunCom.Names;
+			abbreviation: string;
+			weblink: string;
+		}[];
+		return games.map((game) => ({
+			name: game.names.international,
+			abbreviation: game.abbreviation,
+		}));
+	}
+}
+
+export async function searchUsers(name: string): Promise<{
+	name: string;
+}[]> {
+	if (!name) return [];
+	const output: { name: string }[] = [];
+	let shortName: Promise<{ name: string } | false> | false = false;
+
+	if (name.length <= 3) {
+		shortName = fetch(`${SRC_API}/users?lookup=${encodeURIComponent(name)}`)
+			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
+				name: user.data[0].names.international,
+			}), (_) => false);
+	}
+
+	// This is super un official way and can break at any time
+	// Which is why we fall back on the normal API
+	try {
+		if (name.length <= 1) throw new Error("Short name");
+		const usersRes = await fetch(
+			`${SRC_URL}/ajax_search.php?type=users&showall=true&term=${
+				encodeURIComponent(name)
+			}`,
+		);
+		if (!usersRes.ok) {
+			throw new Error(`Got an unexpected status: ${usersRes.status}`);
+		}
+		const users = await usersRes.json() as {
+			label: string;
+			url: string;
+			category: string;
+		}[];
+
+		output.push(...users.map((user) => ({
+			name: user.label,
+		})));
+	} catch (err: unknown) {
+		if (!(err instanceof Error && err.message === "Short name")) {
+			console.error(err);
+		}
+		const usersRes = await fetch(`${SRC_API}/users?name=${name}`);
+		if (!usersRes.ok) {
+			throw new Error(`Got an unexpected status: ${usersRes.status}`);
+		}
+		const users = (await usersRes.json()).data as SpeedrunCom.User[];
+		output.push(...users.map((user) => ({
+			name: user.names.international,
+		})));
+	}
+	if (shortName) {
+		const name = await shortName;
+		if (name) output.splice(0, 0, name);
+	}
+
+	return output;
 }
