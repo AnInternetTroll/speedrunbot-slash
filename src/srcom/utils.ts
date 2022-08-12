@@ -7,6 +7,7 @@ export const SRC_API = `${SRC_URL}/api/v1`;
 
 export interface Opts {
 	outputType?: MarkupType;
+	signal?: AbortSignal;
 }
 
 interface ApiArrayResponse {
@@ -26,14 +27,15 @@ export class CommandError extends Error {}
 
 export async function getUser(
 	query: string,
+	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<SpeedrunCom.User | false> {
 	if (!query.length) return false;
 	let res: Response;
-	res = await fetch(`${SRC_API}/users?lookup=${encodeURI(query)}`);
+	res = await fetch(`${SRC_API}/users?lookup=${encodeURI(query)}`, { signal });
 	const data = (await res.json()).data as SpeedrunCom.User[];
 	if (res.ok && data[0]) return data[0];
 	else {
-		res = await fetch(`${SRC_API}/users/${encodeURI(query)}`);
+		res = await fetch(`${SRC_API}/users/${encodeURI(query)}`, { signal });
 		const data = (await res.json()).data as SpeedrunCom.User;
 		return (res.ok && data) ? data : false;
 	}
@@ -70,7 +72,9 @@ export async function getGames(games: string[]): Promise<SpeedrunCom.Game[]> {
 export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
 	// The filter function should filter out all the `false` stuff.
 	// Trust me bro I got this
-	return (await Promise.all(users.filter((usr) => !!usr).map(getUser))).filter((
+	return (await Promise.all(
+		users.filter((usr) => !!usr).map((username) => getUser(username)),
+	)).filter((
 		user,
 	) => !!user) as SpeedrunCom.User[];
 }

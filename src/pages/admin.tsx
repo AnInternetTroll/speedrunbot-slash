@@ -10,7 +10,7 @@ import { DISCORD_URL, renderPage } from "../utils.ts";
 import { client } from "../client.ts";
 import { config } from "../config.ts";
 import { SpeedRunBot } from "../standalone_client.ts";
-import { commands } from "../srcom/slash_commands.ts";
+import { commands } from "../srcom/slash_commands.tsx";
 
 // User structure that comes from discord
 interface User {

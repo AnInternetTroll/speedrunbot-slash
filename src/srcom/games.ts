@@ -10,22 +10,24 @@ interface GamesObject {
 
 export async function games(
 	username: string,
-	{ outputType }: { outputType: "object" },
+	{ outputType, signal }: Opts & { outputType: "object" },
 ): Promise<GamesObject>;
 export async function games(
 	username: string,
-	{ outputType }: { outputType?: MarkupType },
+	{ outputType, signal }: Opts & { outputType?: MarkupType },
 ): Promise<string>;
 export async function games(
 	username: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | GamesObject> {
 	const output: string[] = [];
 	const games: string[] = [];
-	const user = await getUser(username);
+	const user = await getUser(username, { signal });
 	if (!user) throw new CommandError(`${username} user not found.`);
 
-	const res = await fetch(`${SRC_API}/users/${user.id}/personal-bests`);
+	const res = await fetch(`${SRC_API}/users/${user.id}/personal-bests`, {
+		signal,
+	});
 	const runs = (await res.json()).data as {
 		place: number;
 		run: SpeedrunCom.Run;

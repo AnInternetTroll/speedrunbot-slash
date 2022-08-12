@@ -8,14 +8,22 @@ export {
 	Embed,
 	event,
 	InteractionsClient,
+	MessageComponentType,
 	slash,
 	SlashCommandOptionType,
-} from "https://code.harmony.rocks/3f591254deb572e3ffb4f2349d9a181ea49d3e33/mod.ts";
+	ButtonStyle,
+	ActionRow,
+	Button,
+	fragment,
+	BotUI,
+} from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
 export type {
 	ApplicationCommandChoice,
 	ApplicationCommandOption,
+	MessageComponentInteraction,
 	SlashCommandPartial,
-} from "https://code.harmony.rocks/3f591254deb572e3ffb4f2349d9a181ea49d3e33/mod.ts";
+	Interaction,
+} from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
 
 export { config } from "https://deno.land/std@0.146.0/dotenv/mod.ts";
 

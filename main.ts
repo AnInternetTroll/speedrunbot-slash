@@ -1,8 +1,8 @@
-#!/usr/bin/env -S deno run --allow-net --allow-read=.env --no-check
+#!/usr/bin/env -S deno run --allow-net --allow-read=.env --no-check --watch
 import { serve } from "./deps_server.ts";
 import { config } from "./src/config.ts";
 import { handler } from "./src/pages/mod.tsx";
-import { commands } from "./src/srcom/slash_commands.ts";
+import { commands } from "./src/srcom/slash_commands.tsx";
 import { SpeedRunBot } from "./src/standalone_client.ts";
 import { isDeployed } from "./src/utils.ts";
 

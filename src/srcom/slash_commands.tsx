@@ -1,14 +1,21 @@
+/** @jsx BotUI.createElement */
+/** @jsxFrag fragment */
 import {
+	ActionRow,
 	ApplicationCommandChoice,
 	ApplicationCommandInteraction,
 	ApplicationCommandOption,
 	ApplicationCommandsModule,
 	autocomplete,
 	AutocompleteInteraction,
+	Button,
 	Embed,
+	fragment,
+	MessageComponentInteraction,
 	slash,
 	SlashCommandOptionType,
 	SlashCommandPartial,
+	BotUI
 } from "../../deps_server.ts";
 
 import { games } from "./games.ts";
@@ -29,7 +36,6 @@ import {
 	searchGames,
 	searchUsers,
 	SRC_API,
-	SRC_URL,
 } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
 import { levelInfo } from "./level_info.ts";
@@ -38,7 +44,7 @@ import { leaderboard } from "./leaderboard.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
-import { Moogle } from "../../deps_general.ts";
+import { delay, Moogle } from "../../deps_general.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -328,38 +334,75 @@ function splitIntoChunks(array: string[], perChunk: number): string[][] {
 
 async function sendCommand(
 	i: ApplicationCommandInteraction,
-	func: (i: ApplicationCommandInteraction) => Promise<string>,
+	func: (
+		i: ApplicationCommandInteraction,
+		signal: AbortSignal,
+	) => Promise<string>,
 	{ defer = true }: { defer?: boolean } = {},
 ) {
-	if (defer) await i.defer();
+	let stop = false;
+	const controller = new AbortController();
+	const cancelButtonId = crypto.randomUUID();
+	runningTasks.set(cancelButtonId, controller);
+
+	await i.reply("Loading, please wait...", {
+		components: (
+			<>
+				<ActionRow>
+					<Button style="danger" label="Cancel" id={cancelButtonId} />
+				</ActionRow>
+			</>
+		),
+	}).catch(console.error);
+
+	controller.signal.addEventListener("abort", () => {
+		i.deleteResponse().then(() => runningTasks.delete(cancelButtonId)).catch(console.error);
+		stop = true;
+		console.log("event: ", stop);
+	});
+
 	try {
-		const [title, ...description] = (await func(i)).split("\n");
+		const [title, ...description] = (await func(i, controller.signal)).split(
+			"\n",
+		);
+		await delay(3000).then(() => console.log("delay: ", stop));
+		console.log("delayAfter: ", stop, controller.signal.aborted);
+		controller.signal.throwIfAborted();
+		if (stop) return;
+		console.log("pls stop")
+
 		if (description.length > 10) {
-			await i.reply(
+			await i.editResponse(
 				"This message will be sent into many small and hidden chunks to prevent spam.",
 			);
 			const chunks = splitIntoChunks(description, 10);
 			for (let ii = 0; ii < chunks.length; ii++) {
+				if (stop) return;
 				await i.send({
-					embed: new Embed({
-						title: `${title}: ${ii + 1}/${chunks.length}`,
-						description: chunks[ii].join("\n"),
-					}),
+					embeds: [
+						new Embed({
+							title: `${title}: ${ii + 1}/${chunks.length}`,
+							description: chunks[ii].join("\n"),
+						}),
+					],
 					ephemeral: true,
 				});
 			}
 		} else {
+			if (stop) return;
 			const embed = new Embed({
-				title,
+				title: title + "Pls stop already",
 				description: description.join("\n"),
 			});
-			await i.reply({ embeds: [embed] });
+			await i.editResponse({ embeds: [embed], components: [] }).catch(console.error);
+			console.log("after editResponse", stop);
 		}
 	} catch (err: unknown) {
 		const command = `/${i.data.name} ${
 			i.data.options.map((opt) => `${opt.name}:${opt.value}`)
 		}`;
-		if (err instanceof CommandError) {
+		if (err instanceof DOMException && err.name === "AbortError") await i.deleteResponse();
+		else if (err instanceof CommandError) {
 			console.debug(err);
 			await i.reply(`Error: ${err.message}`);
 		} else if (err instanceof Error) {
@@ -388,9 +431,20 @@ async function sendCommand(
 			);
 		}
 	}
+	console.log("the end: ", stop)
 }
 
+const runningTasks = new Map<string, AbortController>();
+
 export class SpeedrunCom extends ApplicationCommandsModule {
+
+	static handleCancelButton(i: MessageComponentInteraction) {
+		console.log("Aborting: ", i.customID);
+		const task = runningTasks.get(i.customID)!;
+		task.abort();
+		console.log("Aborted: ", i.customID);
+	}
+
 	static async #userCompletions(
 		d: AutocompleteInteraction,
 	): Promise<ApplicationCommandChoice[]> {
@@ -497,7 +551,8 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	async games(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
-			(i) => games(i.option("username"), { outputType: "markdown" }),
+			(i, signal) =>
+				games(i.option("username"), { outputType: "markdown", signal }),
 		);
 	}
 
