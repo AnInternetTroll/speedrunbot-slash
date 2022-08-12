@@ -401,10 +401,10 @@ async function sendCommand(
 			await i.deleteResponse();
 		} else if (err instanceof CommandError) {
 			console.debug(err);
-			await i.reply(`Error: ${err.message}`);
+			await i.editResponse(`Error: ${err.message}`);
 		} else if (err instanceof Error) {
 			console.error(err);
-			await i.reply({
+			await i.send({
 				embeds: [
 					new Embed({
 						description:
@@ -437,16 +437,30 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	static async handleCancelButton(i: MessageComponentInteraction) {
 		const task = runningTasks.get(i.customID)!;
 		if (!task) {
-			return await i.respond({
-				content: "Sorry, but I couldn't find the running task to cancel.",
+			try {
+				await i.respond({
+					content: "Sorry, but I couldn't find the running task to cancel.",
+					ephemeral: true,
+				});
+			} catch {
+				await i.editResponse({
+					content: "Sorry, but I couldn't find the running task to cancel.",
+					ephemeral: true,
+				});
+			}
+		}
+		task.abort();
+		try {
+			await i.respond({
+				content: "Canceled",
+				ephemeral: true,
+			});
+		} catch {
+			await i.editResponse({
+				content: "Canceled",
 				ephemeral: true,
 			});
 		}
-		task.abort();
-		await i.respond({
-			content: "Canceled",
-			ephemeral: true,
-		});
 		runningTasks.delete(i.customID);
 	}
 

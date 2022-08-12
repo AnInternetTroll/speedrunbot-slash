@@ -300,8 +300,8 @@ export function getUsersGamesExaminers(
 interface GameBulk {
 	id: string;
 	names: SpeedrunCom.Names;
-	"abbreviation": "sms";
-	"weblink": "https://www.speedrun.com/sms";
+	abbreviation: string;
+	weblink: string;
 }
 
 export async function searchGames(name: string): Promise<{
