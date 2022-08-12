@@ -340,7 +340,6 @@ async function sendCommand(
 	) => Promise<string>,
 	{ defer = true }: { defer?: boolean } = {},
 ) {
-	let stop = false;
 	const controller = new AbortController();
 	const cancelButtonId = crypto.randomUUID();
 	runningTasks.set(cancelButtonId, controller);
@@ -357,10 +356,7 @@ async function sendCommand(
 	}).catch(console.error);
 
 	controller.signal.addEventListener("abort", () => {
-		i.deleteResponse().then(() => runningTasks.delete(cancelButtonId)).catch(
-			console.error,
-		);
-		stop = true;
+		i.deleteResponse();
 	});
 
 	try {
@@ -368,7 +364,6 @@ async function sendCommand(
 			"\n",
 		);
 		controller.signal.throwIfAborted();
-		if (stop) return;
 
 		if (description.length > 10) {
 			await i.editResponse(
@@ -376,7 +371,7 @@ async function sendCommand(
 			);
 			const chunks = splitIntoChunks(description, 10);
 			for (let ii = 0; ii < chunks.length; ii++) {
-				if (stop) return;
+				controller.signal.throwIfAborted();
 				await i.send({
 					embeds: [
 						new Embed({
@@ -389,9 +384,9 @@ async function sendCommand(
 				});
 			}
 		} else {
-			if (stop) return;
+			controller.signal.throwIfAborted();
 			const embed = new Embed({
-				title: title + "Pls stop already",
+				title,
 				description: description.join("\n"),
 			});
 			await i.editResponse({ embeds: [embed], components: [] }).catch(
@@ -449,9 +444,9 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		task.abort();
 		await i.respond({
 			content: "Canceled",
+			ephemeral: true,
 		});
-		await delay(5000);
-		await i.deleteResponse();
+		runningTasks.delete(i.customID);
 	}
 
 	static async #userCompletions(

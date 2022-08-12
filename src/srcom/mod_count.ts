@@ -6,19 +6,21 @@ import type { SpeedrunCom } from "./types.d.ts";
 
 export async function modCount(
 	username: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	const user = await getUser(username);
+	const user = await getUser(username, { signal });
 	if (!user) throw new CommandError(`${username} user not found.`);
 
 	const games = await getAll(
 		`${SRC_API}/games?moderator=${user.id}&_bulk=true`,
+		{ signal },
 	) as SpeedrunCom.Game[];
 	const series = await getAll(
 		`${SRC_API}/series?moderator=${user.id}&_bulk=true`,
+		{ signal },
 	) as SpeedrunCom.Game[];
 
 	output.push(`Mod Count: ${user.names.international}`);

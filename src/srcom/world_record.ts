@@ -18,17 +18,19 @@ export async function worldRecord(
 	category?: string,
 	subcategory?: string,
 	// For consistency sake
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const output: string[] = [];
 	const fmt = new Format(outputType);
 
-	const gameObj = await getGame(game);
+	const gameObj = await getGame(game, { signal });
 	if (!gameObj) throw new CommandError(`No game '${game}' found`);
 
 	// Get the games categories
 	const categories: SpeedrunCom.Category[] =
-		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`)).json())
+		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`, {
+			signal,
+		})).json())
 			.data;
 	let categoryObj: SpeedrunCom.Category | SpeedrunCom.Level | false = false,
 		levelFlag = false;
@@ -38,7 +40,9 @@ export async function worldRecord(
 		// No matching fullgame cat, so check ILs.
 		if (!categoryObj) {
 			const categories: SpeedrunCom.Level[] =
-				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`))
+				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`, {
+					signal,
+				}))
 					.json()).data;
 			categoryObj = getCategoryObj(category, categories);
 			if (!categoryObj) throw new CommandError("No category found");
@@ -91,7 +95,9 @@ export async function worldRecord(
 	// ILs.
 	if (levelFlag) {
 		const categories: SpeedrunCom.Category[] =
-			(await (await fetch(`${SRC_API}/levels/${categoryObj.id}/categories`))
+			(await (await fetch(`${SRC_API}/levels/${categoryObj.id}/categories`, {
+				signal,
+			}))
 				.json()).data;
 		const individualLevel = categories[0];
 		leaderboard = (await (await fetch(
@@ -114,6 +120,7 @@ export async function worldRecord(
 						: "",
 				},
 			)}`,
+			{ signal },
 		)).json()).data;
 	}
 
@@ -131,7 +138,7 @@ export async function worldRecord(
 	}
 	const playersTasks: (Promise<string> | string)[] = wr.players.map((player) =>
 		player.rel === "user"
-			? getUser(player.id).then((user) =>
+			? getUser(player.id, { signal }).then((user) =>
 				user ? fmt.link(user.weblink, user.names.international) : ""
 			)
 			: player.name
@@ -159,6 +166,7 @@ export async function worldRecord(
 		}`,
 	);
 
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

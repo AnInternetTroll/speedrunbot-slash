@@ -6,13 +6,13 @@ import { SpeedrunCom } from "./types.d.ts";
 
 export async function gameInfo(
 	game: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	if (!game) throw new CommandError("No game found");
 
-	const gameObj = await getGame(game);
+	const gameObj = await getGame(game, { signal });
 
 	if (!gameObj) throw new CommandError(`No game '${game}' found`);
 
@@ -26,7 +26,7 @@ export async function gameInfo(
 
 	const moderators = await Promise.all(
 		Object.entries(gameObj.moderators).map(([userId, _status]) =>
-			(getUser(userId) as Promise<SpeedrunCom.User>).then((user) =>
+			(getUser(userId, { signal }) as Promise<SpeedrunCom.User>).then((user) =>
 				// As much as I would like to show the moderator status
 				// The API will return "super-moderator" for verifiers and super moderators
 				// So that is too confusing
@@ -85,6 +85,7 @@ export async function gameInfo(
 	);
 	if (gameObj.romhack) output.push("Romhack");
 
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

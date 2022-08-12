@@ -29,16 +29,17 @@ export async function posts(
 ): Promise<string>;
 export async function posts(
 	username: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | Posts> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	const user = await getUser(username);
+	const user = await getUser(username, { signal });
 	if (!user) throw new CommandError(`No user with the username "${username}"`);
 
 	const userAllPostsRes = await fetch(
 		`https://www.speedrun.com/${user.names.international}/allposts`,
+		{ signal },
 	);
 	const userAllPostsText = await userAllPostsRes.text();
 	const numberOfPages = parseInt(
@@ -58,6 +59,7 @@ export async function posts(
 		fetchPageTasks.push(
 			fetch(
 				`https://www.speedrun.com/${user.names.international}/allposts`,
+				{ signal },
 			).then((res) => res.text()),
 		);
 	} else {
@@ -65,6 +67,7 @@ export async function posts(
 			fetchPageTasks.push(
 				fetch(
 					`https://www.speedrun.com/${user.names.international}/allposts/${i}`,
+					{ signal },
 				).then((res) => res.text()),
 			);
 		}
@@ -94,6 +97,7 @@ export async function posts(
 
 	const userInfoRes = await fetch(
 		`https://www.speedrun.com/user/${user.names.international}/info`,
+		{ signal },
 	);
 	const userInfoText = await userInfoRes.text();
 
@@ -109,6 +113,7 @@ export async function posts(
 
 	const secret = total - site - game;
 
+	signal?.throwIfAborted();
 	if (outputType === "object") {
 		return {
 			game,
@@ -124,6 +129,7 @@ export async function posts(
 	if (secret) output.push(`Secret Forums: ${secret}`);
 	output.push(`Total: ${total}`);
 
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

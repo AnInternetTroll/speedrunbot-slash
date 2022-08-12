@@ -43,18 +43,19 @@ export async function getUser(
 
 export async function getGame(
 	query: string,
+	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<SpeedrunCom.Game | false> {
 	if (!query.length) return false;
 	let res: Response;
-	res = await fetch(`${SRC_API}/games?abbreviation=${query}`);
+	res = await fetch(`${SRC_API}/games?abbreviation=${query}`, { signal });
 	const data = (await res.json()).data as SpeedrunCom.Game[];
 	if (data[0]) return data[0];
 	else {
-		res = await fetch(`${SRC_API}/games?name=${query}`);
+		res = await fetch(`${SRC_API}/games?name=${query}`, { signal });
 		const data = (await res.json()).data as SpeedrunCom.Game[];
 		if (data[0]) return data[0];
 		else {
-			res = await fetch(`${SRC_API}/games/${query}`);
+			res = await fetch(`${SRC_API}/games/${query}`, { signal });
 			const data = (await res.json()).data as SpeedrunCom.Game;
 			if (data) return data;
 		}
@@ -62,24 +63,37 @@ export async function getGame(
 	return false;
 }
 
-export async function getGames(games: string[]): Promise<SpeedrunCom.Game[]> {
-	// The filter function should filter out all the `false` stuff.
-	// Trust me bro I got this
-	return (await Promise.all(games.filter((game) => !!game).map(getGame)))
-		.filter((game) => !!game) as SpeedrunCom.Game[];
-}
-
-export async function getUsers(users: string[]): Promise<SpeedrunCom.User[]> {
+export async function getGames(
+	games: string[],
+	{ signal }: { signal?: AbortSignal } = {},
+): Promise<SpeedrunCom.Game[]> {
 	// The filter function should filter out all the `false` stuff.
 	// Trust me bro I got this
 	return (await Promise.all(
-		users.filter((usr) => !!usr).map((username) => getUser(username)),
+		games.filter((game) => !!game).map((game) => getGame(game, { signal })),
+	))
+		.filter((game) => !!game) as SpeedrunCom.Game[];
+}
+
+export async function getUsers(
+	users: string[],
+	{ signal }: { signal?: AbortSignal } = {},
+): Promise<SpeedrunCom.User[]> {
+	// The filter function should filter out all the `false` stuff.
+	// Trust me bro I got this
+	return (await Promise.all(
+		users.filter((usr) => !!usr).map((username) =>
+			getUser(username, { signal })
+		),
 	)).filter((
 		user,
 	) => !!user) as SpeedrunCom.User[];
 }
 
-export async function getAll<T>(url: URL | string): Promise<T[]> {
+export async function getAll<T>(
+	url: URL | string,
+	{ signal }: { signal?: AbortSignal } = {},
+): Promise<T[]> {
 	url = new URL(url.toString());
 	url.searchParams.set("max", "200");
 	let data: unknown[] = [];
@@ -87,8 +101,9 @@ export async function getAll<T>(url: URL | string): Promise<T[]> {
 	let tmpSize;
 	let attempts = 0;
 	do {
+		signal?.throwIfAborted();
 		url.searchParams.set("offset", size.toString());
-		const res = await fetch(url.toString());
+		const res = await fetch(url.toString(), { signal });
 		if (!res.ok) {
 			if (res.status === 420) {
 				console.warn("We are being throttled " + res.status);
@@ -117,10 +132,10 @@ export async function unofficialGetUserStats(
 	userId: string,
 ): Promise<SpeedrunComUnofficial.Stats> {
 	const res = await fetch(
-		"https://www.speedrun.com/_fedata/user/stats?" + new URLSearchParams({
+		`${SRC_URL}/_fedata/user/stats?${new URLSearchParams({
 			userId,
 			ver: "3",
-		}),
+		})}`,
 	);
 	const data = await res.json();
 	return data;
@@ -198,6 +213,7 @@ export async function getAllRuns(
 	status: undefined | string,
 	examiners: undefined | SpeedrunCom.User[],
 	emulated: undefined | string | boolean,
+	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<ExtensiveRun[]> {
 	const url = new URL(`${SRC_API}/runs?embed=game,category,level,players`);
 
@@ -224,23 +240,23 @@ export async function getAllRuns(
 							url.searchParams.set("game", game.id);
 							url.searchParams.set("user", user.id);
 							url.searchParams.set("examiner", examiner.id);
-							tasks.push(getAll<ExtensiveRun>(url));
+							tasks.push(getAll<ExtensiveRun>(url, { signal }));
 						}
 					} else {
 						url.searchParams.set("game", game.id);
 						url.searchParams.set("user", user.id);
-						tasks.push(getAll<ExtensiveRun>(url));
+						tasks.push(getAll<ExtensiveRun>(url, { signal }));
 					}
 				}
 			} else if (examiners && examiners.length) {
 				for (const examiner of examiners) {
 					url.searchParams.set("game", game.id);
 					url.searchParams.set("examiner", examiner.id);
-					tasks.push(getAll<ExtensiveRun>(url));
+					tasks.push(getAll<ExtensiveRun>(url, { signal }));
 				}
 			} else {
 				url.searchParams.set("game", game.id);
-				tasks.push(getAll<ExtensiveRun>(url));
+				tasks.push(getAll<ExtensiveRun>(url, { signal }));
 			}
 		}
 	} else if (users && users.length) {
@@ -249,19 +265,20 @@ export async function getAllRuns(
 				for (const examiner of examiners) {
 					url.searchParams.set("user", user.id);
 					url.searchParams.set("examiner", examiner.id);
-					tasks.push(getAll<ExtensiveRun>(url));
+					tasks.push(getAll<ExtensiveRun>(url, { signal }));
 				}
 			} else {
 				url.searchParams.set("user", user.id);
-				tasks.push(getAll<ExtensiveRun>(url));
+				tasks.push(getAll<ExtensiveRun>(url, { signal }));
 			}
 		}
 	} else if (examiners && examiners.length) {
 		for (const examiner of examiners) {
 			url.searchParams.set("examiner", examiner.id);
-			tasks.push(getAll<ExtensiveRun>(url));
+			tasks.push(getAll<ExtensiveRun>(url, { signal }));
 		}
 	}
+	signal?.throwIfAborted();
 	return (await Promise.all(tasks)).flat();
 }
 
@@ -269,11 +286,14 @@ export function getUsersGamesExaminers(
 	user?: string,
 	game?: string,
 	examiner?: string,
+	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<[SpeedrunCom.User[], SpeedrunCom.Game[], SpeedrunCom.User[]]> {
 	return Promise.all([
-		getUsers((user ? user.split(",") : []).filter((a) => !!a)),
-		getGames((game ? game.split(",") : []).filter((a) => !!a)),
-		getUsers((examiner ? examiner.split(",") : []).filter((a) => !!a)),
+		getUsers((user ? user.split(",") : []).filter((a) => !!a), { signal }),
+		getGames((game ? game.split(",") : []).filter((a) => !!a), { signal }),
+		getUsers((examiner ? examiner.split(",") : []).filter((a) => !!a), {
+			signal,
+		}),
 	]);
 }
 
@@ -314,12 +334,7 @@ export async function searchGames(name: string): Promise<{
 		if (!gamesRes.ok) {
 			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
 		}
-		const games = (await gamesRes.json()).data as {
-			id: string;
-			names: SpeedrunCom.Names;
-			abbreviation: string;
-			weblink: string;
-		}[];
+		const games = (await gamesRes.json()).data as GameBulk[];
 		return games.map((game) => ({
 			name: game.names.international,
 			abbreviation: game.abbreviation,

@@ -10,11 +10,11 @@ interface GamesObject {
 
 export async function games(
 	username: string,
-	{ outputType, signal }: Opts & { outputType: "object" },
+	{ outputType }: Opts & { outputType: "object" },
 ): Promise<GamesObject>;
 export async function games(
 	username: string,
-	{ outputType, signal }: Opts & { outputType?: MarkupType },
+	{ outputType }: Opts & { outputType?: MarkupType },
 ): Promise<string>;
 export async function games(
 	username: string,

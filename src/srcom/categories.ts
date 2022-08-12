@@ -11,19 +11,19 @@ interface CategoriesObject {
 
 export async function categories(
 	game: string,
-	{ outputType }: { outputType: "object" },
+	{ outputType }: Opts & { outputType: "object" },
 ): Promise<CategoriesObject>;
 export async function categories(
 	game: string,
-	{ outputType }: { outputType?: MarkupType },
+	{ outputType }: Opts & { outputType?: MarkupType },
 ): Promise<string>;
 export async function categories(
 	game: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | CategoriesObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
-	const gameObj = await getGame(game);
+	const gameObj = await getGame(game, { signal });
 
 	if (!gameObj) throw new CommandError(`${game} game not found.`);
 

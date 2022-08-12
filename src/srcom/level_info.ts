@@ -8,19 +8,20 @@ import { SpeedrunCom } from "./types.d.ts";
 export async function levelInfo(
 	game: string,
 	level: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	if (!game) throw new CommandError("No game found");
 	if (!level) throw new CommandError("No level found");
 
-	const gameObj = await getGame(game);
+	const gameObj = await getGame(game, { signal });
 
 	if (!gameObj) throw new CommandError("No game found");
 
 	const levels = (await (await fetch(
 		`${SRC_API}/games/${gameObj.id}/levels`,
+		{ signal },
 	)).json()).data as SpeedrunCom.Level[];
 	if (!levels.length) throw new CommandError("No levels found");
 	const searchService = new Moogle<SpeedrunCom.Level>();

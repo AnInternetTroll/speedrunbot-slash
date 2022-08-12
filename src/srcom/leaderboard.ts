@@ -17,16 +17,18 @@ export async function leaderboard(
 	game: string,
 	category: string,
 	subcategory: string,
-	{ outputType = "markdown" }: Opts,
+	{ outputType = "markdown", signal }: Opts,
 ): Promise<string> {
 	if (!game) throw new CommandError("No game found");
 	const output: string[] = [];
 	const fmt = new Format(outputType);
-	const gameObj = await getGame(game);
+	const gameObj = await getGame(game, { signal });
 	if (!gameObj) throw new CommandError(`No game '${game}' found`);
 
 	const categories =
-		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`)).json())
+		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`, {
+			signal,
+		})).json())
 			.data as SpeedrunCom.Category[];
 	let levelFlag = false;
 	let categoryObj: SpeedrunCom.Level | SpeedrunCom.Category | false = false;
@@ -53,7 +55,9 @@ export async function leaderboard(
 		categoryObj = categories[0];
 		if ((categoryObj as SpeedrunCom.Category)?.type === "per-level") {
 			const levels =
-				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`)).json())
+				(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`, {
+					signal,
+				})).json())
 					.data as SpeedrunCom.Level[];
 			if (!levels.length) {
 				throw new CommandError("Game has no categories or levels");
@@ -68,6 +72,7 @@ export async function leaderboard(
 		`${SRC_API}/${
 			levelFlag ? "levels" : "categories"
 		}/${categoryObj.id}/variables`,
+		{ signal },
 	)).json()).data as SpeedrunCom.Variable[];
 
 	const categoryNameLowercase = subcategory ? subcategory.toLowerCase() : "";
@@ -95,7 +100,9 @@ export async function leaderboard(
 	if (levelFlag) {
 		// ILs
 		const categories =
-			(await (await fetch(`${SRC_API}/levels/${categoryObj.id}/categories`))
+			(await (await fetch(`${SRC_API}/levels/${categoryObj.id}/categories`, {
+				signal,
+			}))
 				.json()).data as SpeedrunCom.Category[];
 		leaderboard = (await (await fetch(
 			`${SRC_API}/leaderboards/${gameObj.id}/level/${categoryObj.id}/${
@@ -104,6 +111,7 @@ export async function leaderboard(
 				top: "10",
 				[`var-${subcategoryObj ? subcategoryObj.id : ""}`]: subCategoryValue,
 			})}`,
+			{ signal },
 		)).json()).data as SpeedrunCom.Leaderboard;
 	} else {
 		leaderboard = (await (await fetch(
@@ -113,6 +121,7 @@ export async function leaderboard(
 					[`var-${subcategoryObj ? subcategoryObj.id : ""}`]: subCategoryValue,
 				},
 			)}`,
+			{ signal },
 		)).json()).data as SpeedrunCom.Leaderboard;
 	}
 	// Get first runs
@@ -123,7 +132,9 @@ export async function leaderboard(
 			} ${await Promise.all(
 				run.run.players.map(async (player) => {
 					if (player.rel === "user") {
-						const user = await getUser(player.id) as SpeedrunCom.User;
+						const user = await getUser(player.id, {
+							signal,
+						}) as SpeedrunCom.User;
 						return fmt.link(user.weblink, user.names.international);
 					} else return (player.name as string).replace(/^\[.*\]/, "");
 				}),
@@ -139,6 +150,7 @@ export async function leaderboard(
 		output.push(...rows);
 	}
 
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

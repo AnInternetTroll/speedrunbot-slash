@@ -21,18 +21,19 @@ export async function podiums(
 export async function podiums(
 	username: string,
 	games: string[] = [],
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | PodiumsObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	const user = await getUser(username);
+	const user = await getUser(username, { signal });
 	if (!user) throw new CommandError(`${username} user not found.`);
 
-	const gameObjs = await getGames(games);
+	const gameObjs = await getGames(games, { signal });
 
 	const res = await fetch(
 		`${SRC_API}/users/${user.id}/personal-bests?embed=game`,
+		{ signal },
 	);
 	const runs = (await res.json()).data as {
 		place: number;
@@ -59,6 +60,7 @@ export async function podiums(
 		}
 	}
 
+	signal?.throwIfAborted();
 	if (outputType === "object") return { podiums: total };
 
 	output.push(`Podium Count: ${user.names.international}`);
@@ -72,6 +74,8 @@ export async function podiums(
 	}
 
 	output.push(`${fmt.bold("Top three runs")}: ${total}`);
+
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

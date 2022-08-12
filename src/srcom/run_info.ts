@@ -13,7 +13,7 @@ export const dateFormat = Intl.DateTimeFormat("en-uk", {
 
 export async function runInfo(
 	run: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -23,6 +23,7 @@ export async function runInfo(
 		`${SRC_API}/runs/${
 			encodeURIComponent(run.split("/").at(-1)!)
 		}?embed=players,game,category,level`,
+		{ signal },
 	);
 
 	if (!runRequest.ok) {
@@ -34,7 +35,9 @@ export async function runInfo(
 
 	let platform: { name: string; emulated: boolean } | null = null;
 	if (runObj.system.platform) {
-		const res = await fetch(`${SRC_API}/platforms/${runObj.system.platform}`);
+		const res = await fetch(`${SRC_API}/platforms/${runObj.system.platform}`, {
+			signal,
+		});
 		const data = (await res.json()).data as SpeedrunCom.Platform;
 		platform = { name: data.name, emulated: runObj.system.emulated };
 	}
@@ -136,6 +139,7 @@ export async function runInfo(
 	);
 	output.push(`${fmt.link(runObj.weblink, fmt.bold("Web link"))}`);
 
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

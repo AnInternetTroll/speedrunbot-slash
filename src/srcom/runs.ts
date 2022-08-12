@@ -15,7 +15,7 @@ export async function runs(
 	status?: string,
 	examiner?: string,
 	emulated?: boolean | string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	if (!user && !game && !examiner) {
 		throw new CommandError("A user or a game is required.");
@@ -25,6 +25,7 @@ export async function runs(
 		user,
 		game,
 		examiner,
+		{ signal },
 	);
 
 	if (!users.length && !games.length && !examiners.length) {
@@ -42,7 +43,9 @@ export async function runs(
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	const runs = await getAllRuns(users, games, status, examiners, emulated);
+	const runs = await getAllRuns(users, games, status, examiners, emulated, {
+		signal,
+	});
 
 	output.push(
 		`Run Count:${

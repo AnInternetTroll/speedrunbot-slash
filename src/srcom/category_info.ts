@@ -8,19 +8,21 @@ import { SpeedrunCom } from "./types.d.ts";
 export async function categoryInfo(
 	game: string,
 	category: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 	if (!game) throw new CommandError("No game found");
 	if (!category) throw new CommandError("No category found");
 
-	const gameObj = await getGame(game);
+	const gameObj = await getGame(game, { signal });
 
 	if (!gameObj) throw new CommandError("No game found");
 
 	const categories =
-		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`)).json())
+		(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`, {
+			signal,
+		})).json())
 			.data as SpeedrunCom.Category[];
 
 	if (!categories.length) throw new CommandError("No categories found");
@@ -36,7 +38,9 @@ export async function categoryInfo(
 
 	const categoryObj = [...searchResult][0][1].item;
 	const variables =
-		(await (await fetch(`${SRC_API}/categories/${categoryObj.id}/variables`))
+		(await (await fetch(`${SRC_API}/categories/${categoryObj.id}/variables`, {
+			signal,
+		}))
 			.json()).data as SpeedrunCom.Variable[];
 
 	output.push(`${gameObj.names.international} - ${categoryObj.name}`);
@@ -52,7 +56,7 @@ export async function categoryInfo(
 			variables.map((variable) => variable.name).join(", ")
 		}`,
 	);
-
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

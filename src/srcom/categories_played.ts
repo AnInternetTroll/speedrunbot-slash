@@ -11,22 +11,22 @@ interface CategoriesObject {
 export async function categoriesPlayed(
 	username: string,
 	games: string[],
-	{ outputType }: { outputType: "object" },
+	{ outputType }: Opts & { outputType: "object" },
 ): Promise<CategoriesObject>;
 export async function categoriesPlayed(
 	username: string,
 	games: string[],
-	{ outputType }: { outputType?: MarkupType },
+	{ outputType }: Opts & { outputType?: MarkupType },
 ): Promise<string>;
 export async function categoriesPlayed(
 	username: string,
 	games: string[] = [],
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | CategoriesObject> {
 	games = games.filter((a) => !!a);
 	const output: string[] = [];
 	const categories: string[] = [];
-	const user = await getUser(username);
+	const user = await getUser(username, { signal });
 
 	if (!user) throw new CommandError(`${username} user not found.`);
 
@@ -53,6 +53,7 @@ export async function categoriesPlayed(
 
 	output.push(`Categories Played: ${username}`);
 	output.push(`${categories.length}`);
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 

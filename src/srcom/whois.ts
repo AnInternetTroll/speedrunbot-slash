@@ -12,12 +12,12 @@ export const dateFormat = Intl.DateTimeFormat("en-uk", {
 
 export async function whois(
 	username: string,
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	const user = await getUser(username);
+	const user = await getUser(username, { signal });
 	if (!user) throw new CommandError(`No user with the username "${username}"`);
 
 	output.push(`${fmt.bold("Username")}: ${user.names.international}`);

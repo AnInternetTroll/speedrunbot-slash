@@ -32,14 +32,14 @@ export async function examinedLeaderboard(
 ): Promise<LeaderboardMod[]>;
 export async function examinedLeaderboard(
 	games: string[],
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | LeaderboardMod[]> {
 	games = games.filter((a) => !!a);
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
 	const urlT = new URL(`${SRC_API}/runs`);
-	const gameObjs = await getGames(games);
+	const gameObjs = await getGames(games, { signal });
 
 	if (!games.length) throw new CommandError("No games found.");
 
@@ -54,7 +54,7 @@ export async function examinedLeaderboard(
 						// @ts-ignore The user exists or else they wouldn't be a mod
 						const user: SpeedrunCom.User = await getUser(mod);
 						url.searchParams.set("examiner", mod);
-						const runs = await getAll<SpeedrunCom.Run>(url);
+						const runs = await getAll<SpeedrunCom.Run>(url, { signal });
 						return {
 							username: user.names.international,
 							count: runs.length,
@@ -79,6 +79,7 @@ export async function examinedLeaderboard(
 			}`,
 		);
 	}
+	signal?.throwIfAborted();
 	return output.join("\n");
 }
 
