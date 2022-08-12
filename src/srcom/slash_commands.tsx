@@ -439,6 +439,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		if (!task) {
 			return await i.respond({
 				content: "Sorry, but I couldn't find the running task to cancel.",
+				ephemeral: true,
 			});
 		}
 		task.abort();
