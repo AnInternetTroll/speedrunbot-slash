@@ -8,6 +8,7 @@ import {
 	ApplicationCommandsModule,
 	autocomplete,
 	AutocompleteInteraction,
+	BotUI,
 	Button,
 	Embed,
 	fragment,
@@ -15,7 +16,6 @@ import {
 	slash,
 	SlashCommandOptionType,
 	SlashCommandPartial,
-	BotUI
 } from "../../deps_server.ts";
 
 import { games } from "./games.ts";
@@ -344,32 +344,31 @@ async function sendCommand(
 	const controller = new AbortController();
 	const cancelButtonId = crypto.randomUUID();
 	runningTasks.set(cancelButtonId, controller);
+	const CancelButton = (
+		<>
+			<ActionRow>
+				<Button style="danger" label="Cancel" id={cancelButtonId} />
+			</ActionRow>
+		</>
+	);
 
 	await i.reply("Loading, please wait...", {
-		components: (
-			<>
-				<ActionRow>
-					<Button style="danger" label="Cancel" id={cancelButtonId} />
-				</ActionRow>
-			</>
-		),
+		components: CancelButton,
 	}).catch(console.error);
 
 	controller.signal.addEventListener("abort", () => {
-		i.deleteResponse().then(() => runningTasks.delete(cancelButtonId)).catch(console.error);
+		i.deleteResponse().then(() => runningTasks.delete(cancelButtonId)).catch(
+			console.error,
+		);
 		stop = true;
-		console.log("event: ", stop);
 	});
 
 	try {
 		const [title, ...description] = (await func(i, controller.signal)).split(
 			"\n",
 		);
-		await delay(3000).then(() => console.log("delay: ", stop));
-		console.log("delayAfter: ", stop, controller.signal.aborted);
 		controller.signal.throwIfAborted();
 		if (stop) return;
-		console.log("pls stop")
 
 		if (description.length > 10) {
 			await i.editResponse(
@@ -385,6 +384,7 @@ async function sendCommand(
 							description: chunks[ii].join("\n"),
 						}),
 					],
+					components: CancelButton,
 					ephemeral: true,
 				});
 			}
@@ -394,15 +394,17 @@ async function sendCommand(
 				title: title + "Pls stop already",
 				description: description.join("\n"),
 			});
-			await i.editResponse({ embeds: [embed], components: [] }).catch(console.error);
-			console.log("after editResponse", stop);
+			await i.editResponse({ embeds: [embed], components: [] }).catch(
+				console.error,
+			);
 		}
 	} catch (err: unknown) {
 		const command = `/${i.data.name} ${
 			i.data.options.map((opt) => `${opt.name}:${opt.value}`)
 		}`;
-		if (err instanceof DOMException && err.name === "AbortError") await i.deleteResponse();
-		else if (err instanceof CommandError) {
+		if (err instanceof DOMException && err.name === "AbortError") {
+			await i.deleteResponse();
+		} else if (err instanceof CommandError) {
 			console.debug(err);
 			await i.reply(`Error: ${err.message}`);
 		} else if (err instanceof Error) {
@@ -431,18 +433,25 @@ async function sendCommand(
 			);
 		}
 	}
-	console.log("the end: ", stop)
+	runningTasks.delete(cancelButtonId);
 }
 
 const runningTasks = new Map<string, AbortController>();
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-
-	static handleCancelButton(i: MessageComponentInteraction) {
-		console.log("Aborting: ", i.customID);
+	static async handleCancelButton(i: MessageComponentInteraction) {
 		const task = runningTasks.get(i.customID)!;
+		if (!task) {
+			return await i.respond({
+				content: "Sorry, but I couldn't find the running task to cancel.",
+			});
+		}
 		task.abort();
-		console.log("Aborted: ", i.customID);
+		await i.respond({
+			content: "Canceled",
+		});
+		await delay(5000);
+		await i.deleteResponse();
 	}
 
 	static async #userCompletions(

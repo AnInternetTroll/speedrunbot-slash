@@ -1,28 +1,28 @@
 // Discord library
 export {
+	ActionRow,
 	ApplicationCommandInteraction,
 	ApplicationCommandsModule,
 	autocomplete,
 	AutocompleteInteraction,
+	BotUI,
+	Button,
+	ButtonStyle,
 	Client,
 	Embed,
 	event,
+	fragment,
 	InteractionsClient,
 	MessageComponentType,
 	slash,
 	SlashCommandOptionType,
-	ButtonStyle,
-	ActionRow,
-	Button,
-	fragment,
-	BotUI,
 } from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
 export type {
 	ApplicationCommandChoice,
 	ApplicationCommandOption,
+	Interaction,
 	MessageComponentInteraction,
 	SlashCommandPartial,
-	Interaction,
 } from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
 
 export { config } from "https://deno.land/std@0.146.0/dotenv/mod.ts";
