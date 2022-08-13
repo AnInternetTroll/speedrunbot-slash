@@ -54,7 +54,7 @@ export async function runs(
 				: ""
 		}${
 			games.length
-				? "- " + games.map((game) => game.names.international).join(" and ")
+				? " - " + games.map((game) => game.names.international).join(" and ")
 				: ""
 		}${
 			examiners.length
@@ -66,7 +66,7 @@ export async function runs(
 			typeof emulated === "boolean"
 				? (emulated === true
 					? " Played on an emulator"
-					: " Not played on an emulatoor")
+					: " Not played on an emulator")
 				: ""
 		}`,
 	);

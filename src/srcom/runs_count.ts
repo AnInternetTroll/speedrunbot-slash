@@ -85,7 +85,7 @@ export async function runsCount(
 			typeof emulated === "boolean"
 				? (emulated === true
 					? " Played on an emulator"
-					: " Not played on an emulatoor")
+					: " Not played on an emulator")
 				: ""
 		}`,
 	);

@@ -342,7 +342,7 @@ async function sendCommand(
 ) {
 	const controller = new AbortController();
 	const cancelButtonId = crypto.randomUUID();
-	runningTasks.set(cancelButtonId, controller);
+	runningTasks.set(cancelButtonId, { signal: controller, user: i.user.id });
 	const CancelButton = (
 		<>
 			<ActionRow>
@@ -354,10 +354,6 @@ async function sendCommand(
 	await i.reply("Loading, please wait...", {
 		components: CancelButton,
 	}).catch(console.error);
-
-	controller.signal.addEventListener("abort", () => {
-		i.deleteResponse();
-	});
 
 	try {
 		const [title, ...description] = (await func(i, controller.signal)).split(
@@ -431,7 +427,10 @@ async function sendCommand(
 	runningTasks.delete(cancelButtonId);
 }
 
-const runningTasks = new Map<string, AbortController>();
+const runningTasks = new Map<
+	string,
+	{ signal: AbortController; user: string }
+>();
 
 export class SpeedrunCom extends ApplicationCommandsModule {
 	static async handleCancelButton(i: MessageComponentInteraction) {
@@ -449,7 +448,14 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				});
 			}
 		}
-		task.abort();
+		if (task.user !== i.user.id) {
+			i.send({
+				content: "You are not allowed to cancel this.",
+				ephemeral: true,
+			});
+			return;
+		}
+		task.signal.abort();
 		try {
 			await i.respond({
 				content: "Canceled",
