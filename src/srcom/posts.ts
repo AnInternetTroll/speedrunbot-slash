@@ -63,7 +63,7 @@ export async function posts(
 			).then((res) => res.text()),
 		);
 	} else {
-		for (let i = 0; i < numberOfPages; i++) {
+		for (let i = 1; i < numberOfPages + 1; i++) {
 			fetchPageTasks.push(
 				fetch(
 					`https://www.speedrun.com/${user.names.international}/allposts/${i}`,
