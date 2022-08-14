@@ -311,6 +311,7 @@ export async function searchGames(name: string): Promise<{
 	// This is super un official way and can break at any time
 	// Which is why we fall back on the normal API
 	try {
+		if (name.length <= 2) throw new Error("shortName");
 		const gamesRes = await fetch(
 			`${SRC_URL}/ajax_search.php?type=games&showall=true&term=${
 				encodeURIComponent(name)
@@ -329,8 +330,12 @@ export async function searchGames(name: string): Promise<{
 			abbreviation: game.url,
 		}));
 	} catch (err: unknown) {
-		console.error(err);
-		const gamesRes = await fetch(`${SRC_API}/games?name=${name}&_bulk=true`);
+		if (!(err instanceof Error && err.message === "shortName")) {
+			console.error(err);
+		}
+		const gamesRes = await fetch(
+			`${SRC_API}/games?name=${name}&_bulk=true&max=20`,
+		);
 		if (!gamesRes.ok) {
 			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
 		}
@@ -349,7 +354,7 @@ export async function searchUsers(name: string): Promise<{
 	const output: { name: string }[] = [];
 	let shortName: Promise<{ name: string } | false> | false = false;
 
-	if (name.length <= 3) {
+	if (name.length <= 2) {
 		shortName = fetch(`${SRC_API}/users?lookup=${encodeURIComponent(name)}`)
 			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
 				name: user.data[0].names.international,

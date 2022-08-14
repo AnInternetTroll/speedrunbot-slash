@@ -186,10 +186,7 @@ export const commands: SlashCommandPartial[] = [
 				...srcGame,
 				required: true,
 			},
-			{
-				...srcGame,
-				name: "game2",
-			},
+			srcStatus,
 		],
 	},
 	{
@@ -634,10 +631,11 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) =>
-				examinedLeaderboard([
+				examinedLeaderboard(
 					i.option("game"),
-					i.option("game2"),
-				], { outputType: "markdown" }),
+					i.option("status"),
+					{ outputType: "markdown" },
+				),
 		);
 	}
 
