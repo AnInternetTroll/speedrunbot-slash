@@ -460,6 +460,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				ephemeral: true,
 			});
 		}
+		await i.deleteResponse();
 		runningTasks.delete(i.customID);
 	}
 
