@@ -339,6 +339,9 @@ async function sendCommand(
 ) {
 	const controller = new AbortController();
 	const cancelButtonId = crypto.randomUUID();
+
+	controller.signal.addEventListener("abort", () => i.deleteResponse());
+
 	runningTasks.set(cancelButtonId, { signal: controller, user: i.user.id });
 	const CancelButton = (
 		<>
@@ -391,7 +394,7 @@ async function sendCommand(
 			i.data.options.map((opt) => `${opt.name}:${opt.value}`)
 		}`;
 		if (err instanceof DOMException && err.name === "AbortError") {
-			await i.deleteResponse();
+			// Command canceled so just don't do anything
 		} else if (err instanceof CommandError) {
 			console.debug(err);
 			await i.editResponse(`Error: ${err.message}`);
@@ -460,7 +463,6 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				ephemeral: true,
 			});
 		}
-		await i.deleteResponse();
 		runningTasks.delete(i.customID);
 	}
 
