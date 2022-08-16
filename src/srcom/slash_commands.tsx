@@ -430,23 +430,17 @@ const runningTasks = new Map<
 >();
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-	static async handleCancelButton(i: MessageComponentInteraction) {
+	static async handleCancelButton(i: MessageComponentInteraction): Promise<void> {
 		const task = runningTasks.get(i.customID)!;
 		if (!task) {
-			try {
-				await i.respond({
-					content: "Sorry, but I couldn't find the running task to cancel.",
-					ephemeral: true,
-				});
-			} catch {
-				await i.editResponse({
-					content: "Sorry, but I couldn't find the running task to cancel.",
-					ephemeral: true,
-				});
-			}
+			await i.respond({
+				content: "Sorry, but I couldn't find the running task to cancel.",
+				ephemeral: true,
+			});
+			return;
 		}
 		if (task.user !== i.user.id) {
-			i.send({
+			await i.send({
 				content: "You are not allowed to cancel this.",
 				ephemeral: true,
 			});
