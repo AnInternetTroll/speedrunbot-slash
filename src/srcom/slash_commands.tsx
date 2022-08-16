@@ -430,7 +430,9 @@ const runningTasks = new Map<
 >();
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-	static async handleCancelButton(i: MessageComponentInteraction): Promise<void> {
+	static async handleCancelButton(
+		i: MessageComponentInteraction,
+	): Promise<void> {
 		const task = runningTasks.get(i.customID)!;
 		if (!task) {
 			await i.respond({
