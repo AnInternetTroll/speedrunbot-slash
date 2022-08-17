@@ -110,6 +110,17 @@ export async function getAll<T>(
 				attempts++;
 				if (attempts > 5) break;
 				await delay(30_000);
+			} else if (res.status === 400) {
+				const body = await res.json();
+				// Above 10k speedrun.com just breaks
+				// With this error message
+				if (body.message === "Invalid pagination values.") break;
+				else {
+					// This is an unexpected error
+					// So try to walk it off
+					console.error(body);
+					break;
+				}
 			}
 			continue;
 		} else attempts = 0;
