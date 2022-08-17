@@ -186,10 +186,7 @@ export const commands: SlashCommandPartial[] = [
 				...srcGame,
 				required: true,
 			},
-			{
-				...srcGame,
-				name: "game2",
-			},
+			srcStatus,
 		],
 	},
 	{
@@ -342,6 +339,9 @@ async function sendCommand(
 ) {
 	const controller = new AbortController();
 	const cancelButtonId = crypto.randomUUID();
+
+	controller.signal.addEventListener("abort", () => i.deleteResponse());
+
 	runningTasks.set(cancelButtonId, { signal: controller, user: i.user.id });
 	const CancelButton = (
 		<>
@@ -394,7 +394,7 @@ async function sendCommand(
 			i.data.options.map((opt) => `${opt.name}:${opt.value}`)
 		}`;
 		if (err instanceof DOMException && err.name === "AbortError") {
-			await i.deleteResponse();
+			// Command canceled so just don't do anything
 		} else if (err instanceof CommandError) {
 			console.debug(err);
 			await i.editResponse(`Error: ${err.message}`);
@@ -433,23 +433,19 @@ const runningTasks = new Map<
 >();
 
 export class SpeedrunCom extends ApplicationCommandsModule {
-	static async handleCancelButton(i: MessageComponentInteraction) {
+	static async handleCancelButton(
+		i: MessageComponentInteraction,
+	): Promise<void> {
 		const task = runningTasks.get(i.customID)!;
 		if (!task) {
-			try {
-				await i.respond({
-					content: "Sorry, but I couldn't find the running task to cancel.",
-					ephemeral: true,
-				});
-			} catch {
-				await i.editResponse({
-					content: "Sorry, but I couldn't find the running task to cancel.",
-					ephemeral: true,
-				});
-			}
+			await i.respond({
+				content: "Sorry, but I couldn't find the running task to cancel.",
+				ephemeral: true,
+			});
+			return;
 		}
 		if (task.user !== i.user.id) {
-			i.send({
+			await i.send({
 				content: "You are not allowed to cancel this.",
 				ephemeral: true,
 			});
@@ -634,10 +630,11 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) =>
-				examinedLeaderboard([
+				examinedLeaderboard(
 					i.option("game"),
-					i.option("game2"),
-				], { outputType: "markdown" }),
+					i.option("status"),
+					{ outputType: "markdown" },
+				),
 		);
 	}
 

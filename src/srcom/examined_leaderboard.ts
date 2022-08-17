@@ -1,6 +1,13 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
 import { Format } from "./fmt.ts";
-import { CommandError, getAll, getGames, getUser, SRC_API } from "./utils.ts";
+import {
+	CommandError,
+	getAll,
+	getGames,
+	getUser,
+	SRC_API,
+	statuses,
+} from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 import { groupBy } from "../../deps_general.ts";
@@ -23,22 +30,35 @@ function mergeMods(users: LeaderboardMod[]): LeaderboardMod[] {
 }
 
 export async function examinedLeaderboard(
-	games: string[],
+	game: string,
+	status: string | undefined,
 	{ outputType }: Opts,
 ): Promise<string>;
 export async function examinedLeaderboard(
-	games: string[],
+	game: string,
+	status: string | undefined,
 	{ outputType }: { outputType: "object" },
 ): Promise<LeaderboardMod[]>;
 export async function examinedLeaderboard(
-	games: string[],
+	game: string,
+	status: string | undefined,
 	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | LeaderboardMod[]> {
-	games = games.filter((a) => !!a);
+	const games = game.split(",");
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	const urlT = new URL(`${SRC_API}/runs`);
+	if (status && !statuses.includes(status)) {
+		throw new CommandError(
+			`Invalid status provided. The only valid status values are ${
+				statuses.join(", ")
+			}`,
+		);
+	}
+
+	const urlT = new URL(
+		`${SRC_API}/runs${status ? `?status=${encodeURIComponent(status)}` : ""}`,
+	);
 	const gameObjs = await getGames(games, { signal });
 
 	if (!games.length) throw new CommandError("No games found.");
@@ -70,7 +90,7 @@ export async function examinedLeaderboard(
 	output.push(
 		`Examiner leaderboard for ${
 			gameObjs.map((a) => a.names.international).join(" and ")
-		}`,
+		} ${status ? ` - ${status}` : ""}`,
 	);
 	for (const modIndex in leaderboard) {
 		output.push(
@@ -84,5 +104,8 @@ export async function examinedLeaderboard(
 }
 
 if (import.meta.main) {
-	console.log(await examinedLeaderboard(Deno.args, { outputType: "terminal" }));
+	const [game, status] = Deno.args;
+	console.log(
+		await examinedLeaderboard(game, status, { outputType: "terminal" }),
+	);
 }
