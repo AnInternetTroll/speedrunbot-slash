@@ -11,6 +11,19 @@ export type MarkupType =
 	| "terminal"
 	| "object";
 
+export const markupTypes = [
+	"browser",
+	"plain",
+	"markdown",
+	"terminal",
+	"object",
+];
+
+export function isMarkupType(type: unknown): type is MarkupType {
+	if (typeof type === "string" && markupTypes.includes(type)) return true;
+	else return false;
+}
+
 export class Format {
 	markup: MarkupType;
 	constructor(markup: MarkupType) {
