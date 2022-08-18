@@ -438,7 +438,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	): Promise<void> {
 		const task = runningTasks.get(i.customID)!;
 		if (!task) {
-			await i.respond({
+			await i.send({
 				content: "Sorry, but I couldn't find the running task to cancel.",
 				ephemeral: true,
 			});
