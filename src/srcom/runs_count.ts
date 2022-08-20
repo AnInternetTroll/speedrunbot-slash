@@ -58,10 +58,9 @@ export async function runsCount(
 			individualLevelRuns++;
 		} else fullGameRuns++;
 		if (games.length && games.length !== 1) {
-			// @ts-ignore If I put in the link `embed=game` then this will exist
-			const name = run.game.data.names.international;
-			if (isNaN(gameCount[name])) gameCount[name] = 1;
-			else gameCount[name]++;
+			const gameId = run.game;
+			if (isNaN(gameCount[gameId])) gameCount[gameId] = 1;
+			else gameCount[gameId]++;
 		}
 		if (run.status.status === "verified") verifiedRuns++;
 		else if (run.status.status === "rejected") rejectedRuns++;
@@ -95,7 +94,13 @@ export async function runsCount(
 	if (Object.keys(gameCount).length) {
 		output.push("");
 		for (const game in gameCount) {
-			output.push(`${fmt.bold(game)}: ${gameCount[game]}`);
+			output.push(
+				`${
+					fmt.bold(
+						games.find((gameObj) => gameObj.id === game)!.names.international,
+					)
+				}: ${gameCount[game]}`,
+			);
 		}
 		output.push("");
 	}

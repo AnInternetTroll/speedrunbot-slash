@@ -10,8 +10,12 @@ export interface Opts {
 	signal?: AbortSignal;
 }
 
+type ApiData = {
+	id: string;
+};
+
 interface ApiArrayResponse {
-	data: unknown[];
+	data: (ApiData & unknown)[];
 	pagination: {
 		size: number;
 		max: number;
@@ -90,13 +94,17 @@ export async function getUsers(
 	) => !!user) as SpeedrunCom.User[];
 }
 
-export async function getAll<T>(
+export async function getAll<T extends ApiData>(
 	url: URL | string,
-	{ signal }: { signal?: AbortSignal } = {},
+	{ signal, lastId }: { signal?: AbortSignal; lastId?: string } = {},
 ): Promise<T[]> {
 	url = new URL(url.toString());
+	url.searchParams.set("orderby", "date");
+	if (lastId) {
+		url.searchParams.set("direction", "desc");
+	}
 	url.searchParams.set("max", "200");
-	let data: unknown[] = [];
+	let data: ApiData[] = [];
 	let size = 0;
 	let tmpSize;
 	let attempts = 0;
@@ -114,21 +122,34 @@ export async function getAll<T>(
 				const body = await res.json();
 				// Above 10k speedrun.com just breaks
 				// With this error message
-				if (body.message === "Invalid pagination values.") break;
-				else {
+				if (body.message === "Invalid pagination values.") {
+					lastId = data.at(-1)?.id;
+					break;
+				} else {
 					// This is an unexpected error
 					// So try to walk it off
-					console.error(body);
 					break;
 				}
 			}
 			continue;
 		} else attempts = 0;
 		const resJSON = await res.json() as ApiArrayResponse;
-		data = data.concat(resJSON.data);
+		const lastIdIndex = resJSON.data.findIndex((entry) => {
+			return entry.id === lastId;
+		});
+		const lastIdFound = lastIdIndex !== -1;
+		data = data.concat(
+			lastIdFound ? resJSON.data.slice(-(lastIdIndex)) : resJSON.data,
+		);
+		if (lastIdFound) {
+			lastId = undefined;
+			break;
+		}
 		size += resJSON.pagination.size;
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
+	if (lastId) data = data.concat(await getAll<T>(url, { signal, lastId }));
+
 	return data as T[];
 }
 
@@ -226,7 +247,7 @@ export async function getAllRuns(
 	emulated: undefined | string | boolean,
 	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<ExtensiveRun[]> {
-	const url = new URL(`${SRC_API}/runs?embed=game,category,level,players`);
+	const url = new URL(`${SRC_API}/runs?embed=category,level,players`);
 
 	if (status) url.searchParams.set("status", status);
 	if (typeof emulated !== "undefined") {
