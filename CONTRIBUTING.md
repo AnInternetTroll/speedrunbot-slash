@@ -24,7 +24,7 @@ be if the `Deno` API works on [Deno Deploy](https://deno.com/deploy) as well.
 
 # Running the code
 
-Join the Discord server: https://discord.gg/dvCAhEC2e5
+Join the Discord server: https://discord.gg/P4FbDQywua
 
 Before running the bot you must first make a `.env` file in the root of the
 project and put in the following

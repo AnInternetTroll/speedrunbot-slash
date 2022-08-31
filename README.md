@@ -13,7 +13,7 @@ tells deno deploy what command it wants and deno deploy responds.
 
 # Development
 
-Join the Discord server: https://discord.gg/dvCAhEC2e5
+Join the Discord server: https://discord.gg/P4FbDQywua
 
 To run the discord bot development mode use the following command
 
