@@ -1,17 +1,32 @@
 import { examinedLeaderboard } from "../../../srcom/examined_leaderboard.ts";
 import { isMarkupType } from "../../../srcom/fmt.ts";
+import { statuses } from "../../../srcom/utils.ts";
 import { ApiError, apiResponse } from "../../../utils.ts";
 
 export default async function (req: Request): Promise<Response> {
 	if (req.method === "GET") {
 		const { searchParams } = new URL(req.url);
 		const {
-			games = undefined,
+			game = undefined,
+			status = undefined,
 			outputType = "plain",
 		} = Object.fromEntries(searchParams.entries());
 
-		if (!games) {
-			throw new ApiError("No games query parameter found");
+		if (!game) {
+			throw new ApiError("No game query parameter found", {
+				status: 400,
+			});
+		}
+
+		if (status && !statuses.includes(status)) {
+			throw new ApiError(
+				`Invalid status provided. The only valid status values are ${
+					statuses.join(", ")
+				}`,
+				{
+					status: 400,
+				},
+			);
 		}
 
 		if (!isMarkupType(outputType)) {
@@ -21,7 +36,8 @@ export default async function (req: Request): Promise<Response> {
 		}
 
 		const output = await examinedLeaderboard(
-			games.split(" ").map((game) => game.split(",")).flat(),
+			game,
+			status,
 			{
 				outputType,
 			},

@@ -15,7 +15,7 @@ const routes: Record<
 	(req: Request) => Response | Promise<Response>
 > = {
 	"/api/discord/interactions": DiscordInteractions,
-	"/api/srcom/examined_leaderboard": ExaminedLeaderboard,
+	"/api/srcom/examined-leaderboard": ExaminedLeaderboard,
 	"/": Index,
 	"/admin": Admin,
 	"/logout": logout,

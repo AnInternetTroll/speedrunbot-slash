@@ -61,6 +61,7 @@ export class ApiError extends Error {
 	readonly status: number;
 	constructor(msg?: string, options?: ErrorOptions & { status: number }) {
 		super(msg, options);
+		console.log(options);
 		this.status = options?.status || 500;
 	}
 }
