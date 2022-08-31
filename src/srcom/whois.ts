@@ -46,22 +46,24 @@ export async function whois(
 		}
 		output.push(`${fmt.bold("Socials")}: ${socials.join(", ")}`);
 	}
-	if (user.location.region) {
-		output.push(
-			`${fmt.bold("Region")}: ${user.location.region.names.international} ${
-				user.location.region.names.japanese
-					? `(${user.location.region.names.japanese})`
-					: ""
-			}/${user.location.region.code}`,
-		);
-	} else if (user.location.country) {
-		output.push(
-			`${fmt.bold("Country")}: ${user.location.country.names.international} ${
-				user.location.country.names.japanese
-					? `(${user.location.country.names.japanese})`
-					: ""
-			}(${user.location.country.code})`,
-		);
+	if (user.location) {
+		if (user.location.region) {
+			output.push(
+				`${fmt.bold("Region")}: ${user.location.region.names.international} ${
+					user.location.region.names.japanese
+						? `(${user.location.region.names.japanese})`
+						: ""
+				}/${user.location.region.code}`,
+			);
+		} else if (user.location.country) {
+			output.push(
+				`${fmt.bold("Country")}: ${user.location.country.names.international} ${
+					user.location.country.names.japanese
+						? `(${user.location.country.names.japanese})`
+						: ""
+				}(${user.location.country.code})`,
+			);
+		}
 	}
 	return output.join("\n");
 }
