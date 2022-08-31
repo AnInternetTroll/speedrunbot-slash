@@ -99,10 +99,17 @@ export async function getAll<T extends ApiData>(
 	{ signal, lastId }: { signal?: AbortSignal; lastId?: string } = {},
 ): Promise<T[]> {
 	url = new URL(url.toString());
-	url.searchParams.set("orderby", "date");
+	if (url.pathname.startsWith("/api/v1/runs")) {
+		url.searchParams.set("orderby", "date");
+	}
+	if (url.pathname.startsWith("/api/v1/games")) {
+		url.searchParams.set("orderby", "released");
+	}
+
 	if (lastId) {
 		url.searchParams.set("direction", "desc");
 	}
+
 	url.searchParams.set("max", "200");
 	let data: ApiData[] = [];
 	let size = 0;
