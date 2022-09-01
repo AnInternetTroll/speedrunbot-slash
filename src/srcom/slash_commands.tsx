@@ -400,7 +400,7 @@ async function sendCommand(
 			await i.editResponse(`Error: ${err.message}`);
 		} else if (err instanceof Error) {
 			console.error(err);
-			await i.send({
+			await i.editResponse({
 				embeds: [
 					new Embed({
 						description:
@@ -439,35 +439,28 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		const task = runningTasks.get(i.customID)!;
 		try {
 			if (!task) {
-				await i.send({
+				await i.respond({
 					content: "Sorry, but I couldn't find the running task to cancel.",
 					ephemeral: true,
 				});
 				return;
 			}
 			if (task.user !== i.user.id) {
-				await i.send({
+				await i.respond({
 					content: "You are not allowed to cancel this.",
 					ephemeral: true,
 				});
 				return;
 			}
 			task.signal.abort();
-			try {
-				await i.respond({
-					content: "Canceled",
-					ephemeral: true,
-				});
-			} catch {
-				await i.editResponse({
-					content: "Canceled",
-					ephemeral: true,
-				});
-			}
+			await i.respond({
+				content: "Canceled",
+				ephemeral: true,
+			});
+			runningTasks.delete(i.customID);
 		} catch (err) {
 			console.error(err);
 		}
-		runningTasks.delete(i.customID);
 	}
 
 	static async #userCompletions(
