@@ -348,7 +348,7 @@ async function sendCommand(
 	const CancelButton = (
 		<>
 			<ActionRow>
-				<Button style="danger" label="Cancel" id={cancelButtonId} />
+				<Button style="danger" label="Cancel" id={`cancel.${cancelButtonId}`} />
 			</ActionRow>
 		</>
 	);
@@ -448,7 +448,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	static async handleCancelButton(
 		i: MessageComponentInteraction,
 	): Promise<void> {
-		const task = runningTasks.get(i.customID)!;
+		const task = runningTasks.get(`cancel.${i.customID}`)!;
 		try {
 			if (!task) {
 				await i.respond({

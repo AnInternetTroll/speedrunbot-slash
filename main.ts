@@ -2,7 +2,8 @@
 import { serve } from "./deps_server.ts";
 import { config } from "./src/config.ts";
 import { handler } from "./src/pages/mod.tsx";
-import { commands } from "./src/srcom/slash_commands.tsx";
+import { commands as srcCommands } from "./src/srcom/slash_commands.tsx";
+import { commands as generalCommands } from "./src/general/slash_commands.ts";
 import { SpeedRunBot } from "./src/standalone_client.ts";
 import { isDeployed } from "./src/utils.ts";
 
@@ -17,7 +18,7 @@ if (import.meta.main) {
 		console.log("Connected!");
 		console.log("Editting commands...");
 		await client.interactions.commands.bulkEdit(
-			commands,
+			[...srcCommands, ...generalCommands],
 			config.TEST_SERVER,
 		);
 
