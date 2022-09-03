@@ -615,10 +615,10 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) =>
-				podiums(i.option("username"), [
+				{return podiums(i.option("username"), [
 					i.option("game"),
 					i.option("game2"),
-				], { outputType: "markdown" }),
+				], { outputType: "markdown" })},
 		);
 	}
 
