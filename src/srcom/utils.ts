@@ -28,6 +28,25 @@ interface ApiArrayResponse {
 }
 
 export class CommandError extends Error {}
+export class SpeedrunComError extends Error {}
+
+export async function fetch(
+	input: string | URL | Request,
+	init?: RequestInit | undefined,
+): Promise<Response> {
+	const res = await globalThis.fetch(input, {
+		...init,
+		headers: {
+			...init?.headers,
+			"User-Agent": "aninternettroll/speedrunbot-slash",
+		},
+	});
+	if (res.status >= 500) {
+		throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
+	} else {
+		return res;
+	}
+}
 
 export async function getUser(
 	query: string,

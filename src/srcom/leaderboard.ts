@@ -2,6 +2,7 @@
 import { Format } from "./fmt.ts";
 import {
 	CommandError,
+	fetch,
 	getCategoryObj,
 	getGame,
 	getUser,

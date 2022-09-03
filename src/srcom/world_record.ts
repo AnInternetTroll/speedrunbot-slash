@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import {
 	CommandError,
+	fetch,
 	getCategoryObj,
 	getGame,
 	getUser,

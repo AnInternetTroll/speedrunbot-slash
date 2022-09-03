@@ -32,9 +32,11 @@ import { modCount } from "./mod_count.ts";
 import { runsCount } from "./runs_count.ts";
 import {
 	CommandError,
+	fetch,
 	getGame,
 	searchGames,
 	searchUsers,
+	SpeedrunComError,
 	SRC_API,
 } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
@@ -44,7 +46,7 @@ import { leaderboard } from "./leaderboard.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
-import { delay, Moogle } from "../../deps_general.ts";
+import { Moogle } from "../../deps_general.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -397,7 +399,12 @@ async function sendCommand(
 			// Command canceled so just don't do anything
 		} else if (err instanceof CommandError) {
 			console.debug(err);
-			await i.editResponse(`Error: ${err.message}`);
+			await i.editResponse({
+				content: `Error: ${err.message}`,
+				components: [],
+			});
+		} else if (err instanceof SpeedrunComError) {
+			await i.editResponse({ content: err.message, components: [] });
 		} else if (err instanceof Error) {
 			console.error(err);
 			await i.editResponse({
@@ -415,12 +422,17 @@ async function sendCommand(
 						color: 16711680,
 					}),
 				],
+				components: [],
 				ephemeral: true,
 			});
 		} else {
 			console.error(err);
-			await i.reply(
-				`Critical error, please report this to a developer: \`${command}\``,
+			await i.editResponse(
+				{
+					content:
+						`Critical error, please report this to a developer: \`${command}\``,
+					components: [],
+				},
 			);
 		}
 	}
