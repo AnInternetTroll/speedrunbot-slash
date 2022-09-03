@@ -18,9 +18,9 @@ Join the Discord server: https://discord.gg/P4FbDQywua
 To run the discord bot development mode use the following command
 
 ```sh
-deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. src/client.ts
+deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. ./main.ts
 # Or if on unix
-src/client.ts
+./main.ts
 ```
 
 For more info read [CONTRIBUTING.md](CONTRIBUTING.md)
