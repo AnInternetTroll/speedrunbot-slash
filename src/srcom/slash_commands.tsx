@@ -361,7 +361,7 @@ async function sendCommand(
 		);
 		controller.signal.throwIfAborted();
 
-		if (description.length > 10) {
+		if (description.join("\n").length > 4000) {
 			await i.editResponse(
 				"This message will be sent into many small and hidden chunks to prevent spam.",
 			);
@@ -615,10 +615,10 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i) =>
-				{return podiums(i.option("username"), [
+				podiums(i.option("username"), [
 					i.option("game"),
 					i.option("game2"),
-				], { outputType: "markdown" })},
+				], { outputType: "markdown" }),
 		);
 	}
 
