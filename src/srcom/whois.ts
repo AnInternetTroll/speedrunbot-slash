@@ -21,6 +21,7 @@ export async function whois(
 	if (!user) throw new CommandError(`No user with the username "${username}"`);
 
 	output.push(`${fmt.bold("Username")}: ${user.names.international}`);
+	output.push(`${fmt.bold("ID")}: ${user.id}`);
 	if (user.pronouns) output.push(`${fmt.bold("Pronouns")}: ${user.pronouns}`);
 	output.push(
 		`${fmt.bold("Signed up")}: ${dateFormat(new Date(user.signup))}`,
