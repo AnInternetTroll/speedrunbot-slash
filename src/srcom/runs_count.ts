@@ -80,7 +80,7 @@ export async function runsCount(
 					user.names.international
 				).join(" and ")
 				: ""
-		}${
+		}${status?.length ? ` ${status} runs only` : ""}${
 			typeof emulated === "boolean"
 				? (emulated === true
 					? " Played on an emulator"
