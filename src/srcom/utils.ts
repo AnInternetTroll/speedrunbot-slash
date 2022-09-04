@@ -174,7 +174,9 @@ export async function getAll<T extends ApiData>(
 		size += resJSON.pagination.size;
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
-	if (lastId) data = data.concat(await getAll<T>(url, { signal, lastId }));
+	if (lastId && url.searchParams.get("direction") !== "desc") {
+		data = data.concat(await getAll<T>(url, { signal, lastId }));
+	}
 
 	return data as T[];
 }
