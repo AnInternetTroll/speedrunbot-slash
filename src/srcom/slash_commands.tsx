@@ -203,6 +203,46 @@ export const commands: SlashCommandPartial[] = [
 		],
 	},
 	{
+		name: "pending-runs",
+		description: "DEPRECATED: Use /runs status:Pending instead.",
+		options: [
+			srcGame,
+			srcUser,
+			srcExaminer,
+			srcEmulated,
+		],
+	},
+	{
+		name: "rejected-runs",
+		description: "DEPRECATED: Use /runs status:Rejected instead.",
+		options: [
+			srcGame,
+			srcUser,
+			srcExaminer,
+			srcEmulated,
+		],
+	},
+	{
+		name: "runsqueue",
+		description: "DEPRECATED: Use /runs-count status:Pending instead.",
+		options: [
+			srcGame,
+			srcUser,
+			srcExaminer,
+			srcEmulated,
+		],
+	},
+	{
+		name: "verified",
+		description: "DEPRECATED: Use /runs-count status:Verified instead.",
+		options: [
+			srcUser,
+			srcGame,
+			srcExaminer,
+			srcEmulated,
+		],
+	},
+	{
 		name: "runs-count",
 		description: "See how many runs given the parameters.",
 		options: [
@@ -663,6 +703,69 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		);
 	}
 
+	@slash("pending-runs")
+	async pendingRuns(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runs(
+					i.option("username"),
+					i.option("game"),
+					"new",
+					i.option("examiner"),
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash("rejected-runs")
+	async rejectedRuns(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runs(
+					i.option("username"),
+					i.option("game"),
+					"rejected",
+					i.option("examiner"),
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash()
+	async runsqueue(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runsCount(
+					i.option("username"),
+					i.option("game"),
+					"new",
+					i.option("examiner"),
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash()
+	async verified(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runsCount(
+					i.option("username"),
+					i.option("game"),
+					"verified",
+					i.option("examiner"),
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
 	@slash("runs-count")
 	async runsCount(i: ApplicationCommandInteraction) {
 		await sendCommand(
