@@ -114,8 +114,8 @@ export async function runInfo(
 				player?.weblink
 					// @ts-ignore same thing
 					? fmt.link(player.weblink, player.names.international)
-					: // @ts-ignore same thing
-						player.name
+					// @ts-ignore same thing
+					: player.name
 			).join(" and ")
 		}`,
 	);
