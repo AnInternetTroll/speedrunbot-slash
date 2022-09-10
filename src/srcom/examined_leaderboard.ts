@@ -48,7 +48,6 @@ export async function examinedLeaderboard(
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-
 	if (status) {
 		if (!Object.keys(statuses).includes(status)) {
 			throw new CommandError(
