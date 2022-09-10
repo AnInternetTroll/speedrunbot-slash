@@ -32,12 +32,14 @@ export async function runs(
 		throw new CommandError(`User not found`);
 	}
 
-	if (status && !statuses.includes(status)) {
-		throw new CommandError(
-			`Invalid status provided. The only valid status values are ${
-				statuses.join(", ")
-			}`,
-		);
+	if (status) {
+		if (!Object.keys(statuses).includes(status)) {
+			throw new CommandError(
+				`Invalid status provided. The only valid status values are ${
+					Object.keys(statuses).join(", ")
+				}`,
+			);
+		}
 	}
 
 	const fmt = new Format(outputType);
@@ -62,7 +64,11 @@ export async function runs(
 					user.names.international
 				).join(" and ")
 				: ""
-		}${status?.length ? ` ${status} runs only` : ""}${
+		}${
+			status?.length
+				? ` - Status ${statuses[status as keyof (typeof statuses)]}`
+				: ""
+		}${
 			typeof emulated === "boolean"
 				? (emulated === true
 					? " Played on an emulator"

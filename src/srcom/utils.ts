@@ -265,7 +265,11 @@ export function formatRun(
 	}`;
 }
 
-export const statuses = ["new", "verified", "rejected"];
+export const statuses = {
+	"new": "Pending",
+	"verified": "Verified",
+	"rejected": "Rejected",
+};
 
 export async function getAllRuns(
 	users: undefined | SpeedrunCom.User[],
