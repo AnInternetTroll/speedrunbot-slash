@@ -344,7 +344,10 @@ async function sendCommand(
 
 	controller.signal.addEventListener("abort", () => i.deleteResponse());
 
-	runningTasks.set(cancelButtonId, { signal: controller, user: i.user.id });
+	runningTasks.set(`cancel.${cancelButtonId}`, {
+		signal: controller,
+		user: i.user.id,
+	});
 	const CancelButton = (
 		<>
 			<ActionRow>
@@ -448,7 +451,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	static async handleCancelButton(
 		i: MessageComponentInteraction,
 	): Promise<void> {
-		const task = runningTasks.get(`cancel.${i.customID}`)!;
+		const task = runningTasks.get(i.customID);
 		try {
 			if (!task) {
 				await i.respond({
