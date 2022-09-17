@@ -416,14 +416,6 @@ export async function searchUsers(name: string): Promise<{
 }[]> {
 	if (!name) return [];
 	const output: { name: string }[] = [];
-	let shortName: Promise<{ name: string } | false> | false = false;
-
-	if (name.length <= 2) {
-		shortName = fetch(`${SRC_API}/users?lookup=${encodeURIComponent(name)}`)
-			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
-				name: user.data[0].names.international,
-			}), (_) => false);
-	}
 
 	// This is super un official way and can break at any time
 	// Which is why we fall back on the normal API
@@ -459,9 +451,16 @@ export async function searchUsers(name: string): Promise<{
 			name: user.names.international,
 		})));
 	}
-	if (shortName) {
-		const name = await shortName;
-		if (name) output.splice(0, 0, name);
+
+	// If the name still hasn't been found then try to get it directly
+	if (!output.find((user) => user.name.toLowerCase() === name.toLowerCase())) {
+		const shortName: false | { name: string } = await fetch(
+			`${SRC_API}/users?lookup=${encodeURIComponent(name)}`,
+		)
+			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
+				name: user.data[0].names.international,
+			}), (_) => false);
+		if (shortName) output.unshift(shortName)
 	}
 
 	return output;
