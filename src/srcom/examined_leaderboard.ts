@@ -32,16 +32,19 @@ function mergeMods(users: LeaderboardMod[]): LeaderboardMod[] {
 export async function examinedLeaderboard(
 	game: string,
 	status: string | undefined,
+	selfExamined: boolean,
 	{ outputType }: Opts,
 ): Promise<string>;
 export async function examinedLeaderboard(
 	game: string,
 	status: string | undefined,
+	selfExamined: boolean,
 	{ outputType }: { outputType: "object" },
 ): Promise<LeaderboardMod[]>;
 export async function examinedLeaderboard(
 	game: string,
 	status: string | undefined,
+	selfExamined: boolean,
 	{ outputType = "markdown", signal }: Opts = {},
 ): Promise<string | LeaderboardMod[]> {
 	const games = game.split(",");
@@ -77,9 +80,14 @@ export async function examinedLeaderboard(
 						const user: SpeedrunCom.User = await getUser(mod);
 						url.searchParams.set("examiner", mod);
 						const runs = await getAll<SpeedrunCom.Run>(url, { signal });
+						const noSelfExaminedRuns = runs.filter((run) =>
+							run.players.findIndex((player) =>
+								player.rel === "user" && player.id === mod
+							) === -1
+						);
 						return {
 							username: user.names.international,
-							count: runs.length,
+							count: selfExamined ? runs.length : noSelfExaminedRuns.length,
 						};
 					},
 				);
@@ -106,8 +114,10 @@ export async function examinedLeaderboard(
 }
 
 if (import.meta.main) {
-	const [game, status] = Deno.args;
+	const [game, status, selfExamined] = Deno.args;
 	console.log(
-		await examinedLeaderboard(game, status, { outputType: "terminal" }),
+		await examinedLeaderboard(game, status, !!selfExamined, {
+			outputType: "terminal",
+		}),
 	);
 }
