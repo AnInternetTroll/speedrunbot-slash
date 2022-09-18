@@ -208,7 +208,6 @@ export const commands: SlashCommandPartial[] = [
 		options: [
 			srcGame,
 			srcUser,
-			srcExaminer,
 			srcEmulated,
 		],
 	},
@@ -706,7 +705,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("username"),
 					i.option("game"),
 					"new",
-					i.option("examiner"),
+					undefined,
 					i.option<string | undefined>("emulated"),
 					{ outputType: "markdown" },
 				),
