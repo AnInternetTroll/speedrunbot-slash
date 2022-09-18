@@ -460,7 +460,7 @@ export async function searchUsers(name: string): Promise<{
 			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
 				name: user.data[0].names.international,
 			}), (_) => false);
-		if (shortName) output.unshift(shortName)
+		if (shortName) output.unshift(shortName);
 	}
 
 	return output;

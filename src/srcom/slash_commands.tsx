@@ -511,7 +511,8 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	static async #userCompletions(
 		d: AutocompleteInteraction,
 	): Promise<ApplicationCommandChoice[]> {
-		const users = await searchUsers(d.focusedOption.value);
+		const query = d.focusedOption.value || d.member?.nick || d.user.username;
+		const users = await searchUsers(query);
 
 		return users.map((user) => ({
 			name: user.name,
