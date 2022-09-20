@@ -35,3 +35,33 @@ export function renderPage(page: JSX.IntrinsicElements, init?: ResponseInit) {
 		},
 	);
 }
+export type Json<T> = T extends boolean | number | string | null ? T
+	: T extends Array<(infer U)> ? JsonArray<U>
+	// deno-lint-ignore ban-types
+	: T extends object ? { [K in keyof T]: Json<T[K]> }
+	: never;
+
+// deno-lint-ignore no-empty-interface
+interface JsonArray<T> extends Array<Json<T>> {}
+
+export function apiResponse(obj: JSON | string) {
+	let output: string;
+	if (typeof obj === "string") output = JSON.stringify({ message: obj });
+	else if (typeof obj === "object") output = JSON.stringify(obj);
+	else throw new Error("Unexpected output");
+
+	return new Response(output, {
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+}
+
+export class ApiError extends Error {
+	readonly status: number;
+	constructor(msg?: string, options?: ErrorOptions & { status: number }) {
+		super(msg, options);
+		console.log(options);
+		this.status = options?.status || 500;
+	}
+}
