@@ -6,6 +6,6 @@ Deno.test("Get how many runs a user has examined by username", async () => {
 		outputType: "plain",
 	});
 	const expected = `Categories Played: 1
-30`;
+29`;
 	assertEquals(res, expected);
 });

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { CommandError, getUser, sec2time, SRC_API } from "./utils.ts";
+import { CommandError, fetch, getUser, sec2time, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
@@ -114,8 +114,8 @@ export async function runInfo(
 				player?.weblink
 					// @ts-ignore same thing
 					? fmt.link(player.weblink, player.names.international)
-					: // @ts-ignore same thing
-						player.name
+					// @ts-ignore same thing
+					: player.name
 			).join(" and ")
 		}`,
 	);

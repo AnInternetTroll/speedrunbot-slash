@@ -48,12 +48,14 @@ export async function examinedLeaderboard(
 	const fmt = new Format(outputType);
 	const output: string[] = [];
 
-	if (status && !statuses.includes(status)) {
-		throw new CommandError(
-			`Invalid status provided. The only valid status values are ${
-				statuses.join(", ")
-			}`,
-		);
+	if (status) {
+		if (!Object.keys(statuses).includes(status)) {
+			throw new CommandError(
+				`Invalid status provided. The only valid status values are ${
+					Object.keys(statuses).join(", ")
+				}`,
+			);
+		}
 	}
 
 	const urlT = new URL(
@@ -90,7 +92,7 @@ export async function examinedLeaderboard(
 	output.push(
 		`Examiner leaderboard for ${
 			gameObjs.map((a) => a.names.international).join(" and ")
-		} ${status ? ` - ${status}` : ""}`,
+		}${status ? ` - ${statuses[status as keyof (typeof statuses)]}` : ""}`,
 	);
 	for (const modIndex in leaderboard) {
 		output.push(

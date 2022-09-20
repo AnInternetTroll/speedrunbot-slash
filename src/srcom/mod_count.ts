@@ -22,7 +22,6 @@ export async function modCount(
 		`${SRC_API}/series?moderator=${user.id}&_bulk=true`,
 		{ signal },
 	) as SpeedrunCom.Game[];
-
 	output.push(`Mod Count: ${user.names.international}`);
 	if (games.length) output.push(`${fmt.bold("Games")}: ${games.length}`);
 	if (series.length) output.push(`${fmt.bold("Series")}: ${series.length}`);

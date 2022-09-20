@@ -31,12 +31,14 @@ export async function runsCount(
 		throw new CommandError(`User not found`);
 	}
 
-	if (status && !statuses.includes(status)) {
-		throw new CommandError(
-			`Invalid status provided. The only valid status values are ${
-				statuses.join(", ")
-			}`,
-		);
+	if (status) {
+		if (!Object.keys(statuses).includes(status)) {
+			throw new CommandError(
+				`Invalid status provided. The only valid status values are ${
+					Object.keys(statuses).join(", ")
+				}`,
+			);
+		}
 	}
 
 	const fmt = new Format(outputType);
@@ -58,10 +60,9 @@ export async function runsCount(
 			individualLevelRuns++;
 		} else fullGameRuns++;
 		if (games.length && games.length !== 1) {
-			// @ts-ignore If I put in the link `embed=game` then this will exist
-			const name = run.game.data.names.international;
-			if (isNaN(gameCount[name])) gameCount[name] = 1;
-			else gameCount[name]++;
+			const gameId = run.game;
+			if (isNaN(gameCount[gameId])) gameCount[gameId] = 1;
+			else gameCount[gameId]++;
 		}
 		if (run.status.status === "verified") verifiedRuns++;
 		else if (run.status.status === "rejected") rejectedRuns++;
@@ -82,6 +83,10 @@ export async function runsCount(
 				).join(" and ")
 				: ""
 		}${
+			status?.length
+				? ` - Status ${statuses[status as keyof (typeof statuses)]}`
+				: ""
+		}${
 			typeof emulated === "boolean"
 				? (emulated === true
 					? " Played on an emulator"
@@ -89,13 +94,20 @@ export async function runsCount(
 				: ""
 		}`,
 	);
+
 	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
 	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
 
 	if (Object.keys(gameCount).length) {
 		output.push("");
 		for (const game in gameCount) {
-			output.push(`${fmt.bold(game)}: ${gameCount[game]}`);
+			output.push(
+				`${
+					fmt.bold(
+						games.find((gameObj) => gameObj.id === game)!.names.international,
+					)
+				}: ${gameCount[game]}`,
+			);
 		}
 		output.push("");
 	}

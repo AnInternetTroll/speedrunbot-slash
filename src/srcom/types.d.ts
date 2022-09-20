@@ -67,7 +67,7 @@ export namespace SpeedrunCom {
 		"name-style": NameStyle;
 		role: string;
 		signup: Date;
-		location: Location;
+		location?: Location;
 		twitch: ExternalAccount;
 		hitbox?: ExternalAccount;
 		youtube: ExternalAccount;

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format } from "./fmt.ts";
-import { CommandError, getUser } from "./utils.ts";
+import { CommandError, fetch, getUser } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 
 export const dateFormat = Intl.DateTimeFormat("en-uk", {

@@ -32,9 +32,11 @@ import { modCount } from "./mod_count.ts";
 import { runsCount } from "./runs_count.ts";
 import {
 	CommandError,
+	fetch,
 	getGame,
 	searchGames,
 	searchUsers,
+	SpeedrunComError,
 	SRC_API,
 } from "./utils.ts";
 import { runInfo } from "./run_info.ts";
@@ -44,7 +46,7 @@ import { leaderboard } from "./leaderboard.ts";
 
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
-import { delay, Moogle } from "../../deps_general.ts";
+import { Moogle } from "../../deps_general.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -201,6 +203,35 @@ export const commands: SlashCommandPartial[] = [
 		],
 	},
 	{
+		name: "pending",
+		description: "DEPRECATED: Use /runs status:Pending instead.",
+		options: [
+			srcGame,
+			srcUser,
+			srcEmulated,
+		],
+	},
+	{
+		name: "runsqueue",
+		description: "DEPRECATED: Use /runs-count status:Pending instead.",
+		options: [
+			srcGame,
+			srcUser,
+			srcExaminer,
+			srcEmulated,
+		],
+	},
+	{
+		name: "verified",
+		description: "DEPRECATED: Use /runs-count status:Verified instead.",
+		options: [
+			srcUser,
+			srcGame,
+			srcExaminer,
+			srcEmulated,
+		],
+	},
+	{
 		name: "runs-count",
 		description: "See how many runs given the parameters.",
 		options: [
@@ -342,11 +373,14 @@ async function sendCommand(
 
 	controller.signal.addEventListener("abort", () => i.deleteResponse());
 
-	runningTasks.set(cancelButtonId, { signal: controller, user: i.user.id });
+	runningTasks.set(`cancel.${cancelButtonId}`, {
+		signal: controller,
+		user: i.user.id,
+	});
 	const CancelButton = (
 		<>
 			<ActionRow>
-				<Button style="danger" label="Cancel" id={cancelButtonId} />
+				<Button style="danger" label="Cancel" id={`cancel.${cancelButtonId}`} />
 			</ActionRow>
 		</>
 	);
@@ -361,7 +395,7 @@ async function sendCommand(
 		);
 		controller.signal.throwIfAborted();
 
-		if (description.length > 10) {
+		if (description.join("\n").length > 4000) {
 			await i.editResponse(
 				"This message will be sent into many small and hidden chunks to prevent spam.",
 			);
@@ -397,10 +431,15 @@ async function sendCommand(
 			// Command canceled so just don't do anything
 		} else if (err instanceof CommandError) {
 			console.debug(err);
-			await i.editResponse(`Error: ${err.message}`);
+			await i.editResponse({
+				content: `Error: ${err.message}`,
+				components: [],
+			});
+		} else if (err instanceof SpeedrunComError) {
+			await i.editResponse({ content: err.message, components: [] });
 		} else if (err instanceof Error) {
 			console.error(err);
-			await i.send({
+			await i.editResponse({
 				embeds: [
 					new Embed({
 						description:
@@ -415,12 +454,17 @@ async function sendCommand(
 						color: 16711680,
 					}),
 				],
+				components: [],
 				ephemeral: true,
 			});
 		} else {
 			console.error(err);
-			await i.reply(
-				`Critical error, please report this to a developer: \`${command}\``,
+			await i.editResponse(
+				{
+					content:
+						`Critical error, please report this to a developer: \`${command}\``,
+					components: [],
+				},
 			);
 		}
 	}
@@ -436,40 +480,38 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	static async handleCancelButton(
 		i: MessageComponentInteraction,
 	): Promise<void> {
-		const task = runningTasks.get(i.customID)!;
-		if (!task) {
-			await i.respond({
-				content: "Sorry, but I couldn't find the running task to cancel.",
-				ephemeral: true,
-			});
-			return;
-		}
-		if (task.user !== i.user.id) {
-			await i.send({
-				content: "You are not allowed to cancel this.",
-				ephemeral: true,
-			});
-			return;
-		}
-		task.signal.abort();
+		const task = runningTasks.get(i.customID);
 		try {
+			if (!task) {
+				await i.respond({
+					content: "Sorry, but I couldn't find the running task to cancel.",
+					ephemeral: true,
+				});
+				return;
+			}
+			if (task.user !== i.user.id) {
+				await i.respond({
+					content: "You are not allowed to cancel this.",
+					ephemeral: true,
+				});
+				return;
+			}
+			task.signal.abort();
 			await i.respond({
 				content: "Canceled",
 				ephemeral: true,
 			});
-		} catch {
-			await i.editResponse({
-				content: "Canceled",
-				ephemeral: true,
-			});
+			runningTasks.delete(i.customID);
+		} catch (err) {
+			console.error(err);
 		}
-		runningTasks.delete(i.customID);
 	}
 
 	static async #userCompletions(
 		d: AutocompleteInteraction,
 	): Promise<ApplicationCommandChoice[]> {
-		const users = await searchUsers(d.focusedOption.value);
+		const query = d.focusedOption.value || d.member?.nick || d.user.username;
+		const users = await searchUsers(query);
 
 		return users.map((user) => ({
 			name: user.name,
@@ -654,6 +696,53 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		);
 	}
 
+	@slash("pending")
+	async pending(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runs(
+					i.option("username"),
+					i.option("game"),
+					"new",
+					undefined,
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash()
+	async runsqueue(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runsCount(
+					i.option("username"),
+					i.option("game"),
+					"new",
+					i.option("examiner"),
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
+
+	@slash()
+	async verified(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				runsCount(
+					i.option("username"),
+					i.option("game"),
+					"verified",
+					i.option("examiner"),
+					i.option<string | undefined>("emulated"),
+					{ outputType: "markdown" },
+				),
+		);
+	}
 	@slash("runs-count")
 	async runsCount(i: ApplicationCommandInteraction) {
 		await sendCommand(

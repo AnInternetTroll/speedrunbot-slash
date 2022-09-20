@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import { Format, MarkupType } from "./fmt.ts";
-import { CommandError, getGames, getUser, SRC_API } from "./utils.ts";
+import { CommandError, fetch, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -46,11 +46,11 @@ export async function podiums(
 	for (let i = 0; i < runs.length; i++) {
 		const run = runs[i];
 		if (run.place <= 3) {
-			if (!games.length) total++;
+			if (!gameObjs.length) total++;
 			else {
 				if (gameObjs.find((game) => game.id === run.game.data.id)) {
 					total++;
-					if (games.length && games.length !== 1) {
+					if (gameObjs.length && gameObjs.length !== 1) {
 						const name = run.game.data.names.international;
 						if (isNaN(gameCount[name])) gameCount[name] = 1;
 						else gameCount[name]++;

@@ -10,8 +10,12 @@ export interface Opts {
 	signal?: AbortSignal;
 }
 
+type ApiData = {
+	id: string;
+};
+
 interface ApiArrayResponse {
-	data: unknown[];
+	data: (ApiData & unknown)[];
 	pagination: {
 		size: number;
 		max: number;
@@ -24,6 +28,25 @@ interface ApiArrayResponse {
 }
 
 export class CommandError extends Error {}
+export class SpeedrunComError extends Error {}
+
+export async function fetch(
+	input: string | URL | Request,
+	init?: RequestInit | undefined,
+): Promise<Response> {
+	const res = await globalThis.fetch(input, {
+		...init,
+		headers: {
+			...init?.headers,
+			"User-Agent": "aninternettroll/speedrunbot-slash",
+		},
+	});
+	if (res.status >= 500) {
+		throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
+	} else {
+		return res;
+	}
+}
 
 export async function getUser(
 	query: string,
@@ -90,13 +113,24 @@ export async function getUsers(
 	) => !!user) as SpeedrunCom.User[];
 }
 
-export async function getAll<T>(
+export async function getAll<T extends ApiData>(
 	url: URL | string,
-	{ signal }: { signal?: AbortSignal } = {},
+	{ signal, lastId }: { signal?: AbortSignal; lastId?: string } = {},
 ): Promise<T[]> {
 	url = new URL(url.toString());
+	if (url.pathname.startsWith("/api/v1/runs")) {
+		url.searchParams.set("orderby", "date");
+	}
+	if (url.pathname.startsWith("/api/v1/games")) {
+		url.searchParams.set("orderby", "released");
+	}
+
+	if (lastId) {
+		url.searchParams.set("direction", "desc");
+	}
+
 	url.searchParams.set("max", "200");
-	let data: unknown[] = [];
+	let data: ApiData[] = [];
 	let size = 0;
 	let tmpSize;
 	let attempts = 0;
@@ -110,14 +144,40 @@ export async function getAll<T>(
 				attempts++;
 				if (attempts > 5) break;
 				await delay(30_000);
+			} else if (res.status === 400) {
+				const body = await res.json();
+				// Above 10k speedrun.com just breaks
+				// With this error message
+				if (body.message === "Invalid pagination values.") {
+					lastId = data.at(-1)?.id;
+					break;
+				} else {
+					// This is an unexpected error
+					// So try to walk it off
+					break;
+				}
 			}
 			continue;
 		} else attempts = 0;
 		const resJSON = await res.json() as ApiArrayResponse;
-		data = data.concat(resJSON.data);
+		const lastIdIndex = resJSON.data.findIndex((entry) => {
+			return entry.id === lastId;
+		});
+		const lastIdFound = lastIdIndex !== -1;
+		data = data.concat(
+			lastIdFound ? resJSON.data.slice(-(lastIdIndex)) : resJSON.data,
+		);
+		if (lastIdFound) {
+			lastId = undefined;
+			break;
+		}
 		size += resJSON.pagination.size;
 		tmpSize = resJSON.pagination.size;
 	} while (tmpSize === 200);
+	if (lastId && url.searchParams.get("direction") !== "desc") {
+		data = data.concat(await getAll<T>(url, { signal, lastId }));
+	}
+
 	return data as T[];
 }
 
@@ -205,7 +265,11 @@ export function formatRun(
 	}`;
 }
 
-export const statuses = ["new", "verified", "rejected"];
+export const statuses = {
+	"new": "Pending",
+	"verified": "Verified",
+	"rejected": "Rejected",
+};
 
 export async function getAllRuns(
 	users: undefined | SpeedrunCom.User[],
@@ -215,7 +279,7 @@ export async function getAllRuns(
 	emulated: undefined | string | boolean,
 	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<ExtensiveRun[]> {
-	const url = new URL(`${SRC_API}/runs?embed=game,category,level,players`);
+	const url = new URL(`${SRC_API}/runs?embed=category,level,players`);
 
 	if (status) url.searchParams.set("status", status);
 	if (typeof emulated !== "undefined") {
@@ -352,14 +416,6 @@ export async function searchUsers(name: string): Promise<{
 }[]> {
 	if (!name) return [];
 	const output: { name: string }[] = [];
-	let shortName: Promise<{ name: string } | false> | false = false;
-
-	if (name.length <= 2) {
-		shortName = fetch(`${SRC_API}/users?lookup=${encodeURIComponent(name)}`)
-			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
-				name: user.data[0].names.international,
-			}), (_) => false);
-	}
 
 	// This is super un official way and can break at any time
 	// Which is why we fall back on the normal API
@@ -395,9 +451,16 @@ export async function searchUsers(name: string): Promise<{
 			name: user.names.international,
 		})));
 	}
-	if (shortName) {
-		const name = await shortName;
-		if (name) output.splice(0, 0, name);
+
+	// If the name still hasn't been found then try to get it directly
+	if (!output.find((user) => user.name.toLowerCase() === name.toLowerCase())) {
+		const shortName: false | { name: string } = await fetch(
+			`${SRC_API}/users?lookup=${encodeURIComponent(name)}`,
+		)
+			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
+				name: user.data[0].names.international,
+			}), (_) => false);
+		if (shortName) output.unshift(shortName);
 	}
 
 	return output;
