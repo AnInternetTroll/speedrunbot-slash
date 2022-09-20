@@ -6,7 +6,7 @@ import Index from "./index.tsx";
 import Admin from "./admin.tsx";
 // API
 import DiscordInteractions from "./api/discord/interactions.ts";
-import ExaminedLeaderboard from "./api/srcom/examined_leaderboard.ts";
+import ExaminedLeaderboard from "./api/v1/srcom/examined_leaderboard.ts";
 import logout from "./logout.ts";
 import { ApiError, renderPage } from "../utils.ts";
 
@@ -15,7 +15,7 @@ const routes: Record<
 	(req: Request) => Response | Promise<Response>
 > = {
 	"/api/discord/interactions": DiscordInteractions,
-	"/api/srcom/examined-leaderboard": ExaminedLeaderboard,
+	"/api/v1/srcom/examined-leaderboard": ExaminedLeaderboard,
 	"/": Index,
 	"/admin": Admin,
 	"/logout": logout,
