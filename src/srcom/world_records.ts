@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
@@ -7,7 +7,7 @@ import type { SpeedrunCom } from "./types.d.ts";
 export async function worldRecords(
 	username: string,
 	games: string[] = [],
-	{ outputType = "markdown" }: Opts = {},
+	{ outputType = MarkupType.Markdown }: Opts = {},
 ): Promise<string> {
 	games = games.filter((a) => !!a);
 	const gameObjs = await getGames(games);
@@ -48,5 +48,7 @@ export async function worldRecords(
 
 if (import.meta.main) {
 	const [username, ...games] = Deno.args;
-	console.log(await worldRecords(username, games, { outputType: "terminal" }));
+	console.log(
+		await worldRecords(username, games, { outputType: MarkupType.Terminal }),
+	);
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import {
 	CommandError,
 	getAll,
@@ -37,12 +37,12 @@ export async function examinedLeaderboard(
 export async function examinedLeaderboard(
 	game: string,
 	status: string | undefined,
-	{ outputType }: { outputType: "object" },
+	{ outputType }: { outputType: MarkupType.Object },
 ): Promise<LeaderboardMod[]>;
 export async function examinedLeaderboard(
 	game: string,
 	status: string | undefined,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string | LeaderboardMod[]> {
 	const games = game.split(",");
 	const fmt = new Format(outputType);
@@ -87,7 +87,7 @@ export async function examinedLeaderboard(
 		),
 	);
 
-	if (outputType === "object") return leaderboard;
+	if (outputType === MarkupType.Object) return leaderboard;
 	leaderboard.sort((a, b) => b.count - a.count);
 	output.push(
 		`Examiner leaderboard for ${
@@ -108,6 +108,8 @@ export async function examinedLeaderboard(
 if (import.meta.main) {
 	const [game, status] = Deno.args;
 	console.log(
-		await examinedLeaderboard(game, status, { outputType: "terminal" }),
+		await examinedLeaderboard(game, status, {
+			outputType: MarkupType.Terminal,
+		}),
 	);
 }

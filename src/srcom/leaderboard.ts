@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import {
 	CommandError,
 	fetch,
@@ -18,7 +18,7 @@ export async function leaderboard(
 	game: string,
 	category: string,
 	subcategory: string,
-	{ outputType = "markdown", signal }: Opts,
+	{ outputType = MarkupType.Markdown, signal }: Opts,
 ): Promise<string> {
 	if (!game) throw new CommandError("No game found");
 	const output: string[] = [];
@@ -160,6 +160,8 @@ export default leaderboard;
 if (import.meta.main) {
 	const [game, category, subcategory] = Deno.args;
 	console.log(
-		await leaderboard(game, category, subcategory, { outputType: "terminal" }),
+		await leaderboard(game, category, subcategory, {
+			outputType: MarkupType.Terminal,
+		}),
 	);
 }

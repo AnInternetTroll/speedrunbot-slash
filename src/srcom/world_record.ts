@@ -8,7 +8,7 @@ import {
 	sec2time,
 	SRC_API,
 } from "./utils.ts";
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
@@ -19,7 +19,7 @@ export async function worldRecord(
 	category?: string,
 	subcategory?: string,
 	// For consistency sake
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string> {
 	const output: string[] = [];
 	const fmt = new Format(outputType);
@@ -174,6 +174,8 @@ export async function worldRecord(
 if (import.meta.main) {
 	const [game, category, subcategory] = Deno.args;
 	console.log(
-		await worldRecord(game, category, subcategory, { outputType: "terminal" }),
+		await worldRecord(game, category, subcategory, {
+			outputType: MarkupType.Terminal,
+		}),
 	);
 }

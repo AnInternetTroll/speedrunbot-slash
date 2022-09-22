@@ -18,7 +18,7 @@ export async function games(
 ): Promise<string>;
 export async function games(
 	username: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string | GamesObject> {
 	const output: string[] = [];
 	const games: string[] = [];
@@ -38,7 +38,7 @@ export async function games(
 		else games.push(run.run.game);
 	});
 
-	if (outputType === "object") return { games: games.length };
+	if (outputType === MarkupType.Object) return { games: games.length };
 
 	output.push(`Games Played: ${user.names.international}`);
 	output.push(`${games.length}`);
@@ -46,5 +46,5 @@ export async function games(
 }
 
 if (import.meta.main) {
-	console.log(await games(Deno.args[0], { outputType: "terminal" }));
+	console.log(await games(Deno.args[0], { outputType: MarkupType.Terminal }));
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getUser, sec2time, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
@@ -13,7 +13,7 @@ export const dateFormat = Intl.DateTimeFormat("en-uk", {
 
 export async function runInfo(
 	run: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -146,5 +146,5 @@ export async function runInfo(
 export default runInfo;
 
 if (import.meta.main) {
-	console.log(await runInfo(Deno.args[0], { outputType: "terminal" }));
+	console.log(await runInfo(Deno.args[0], { outputType: MarkupType.Terminal }));
 }

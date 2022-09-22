@@ -19,7 +19,7 @@ export async function categories(
 ): Promise<string>;
 export async function categories(
 	game: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string | CategoriesObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -67,5 +67,7 @@ export async function categories(
 }
 
 if (import.meta.main) {
-	console.log(await categories(Deno.args[0], { outputType: "terminal" }));
+	console.log(
+		await categories(Deno.args[0], { outputType: MarkupType.Terminal }),
+	);
 }

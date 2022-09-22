@@ -1,12 +1,12 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, getAll, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
 export async function modCount(
 	username: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -32,5 +32,7 @@ export async function modCount(
 }
 
 if (import.meta.main) {
-	console.log(await modCount(Deno.args[0], { outputType: "terminal" }));
+	console.log(
+		await modCount(Deno.args[0], { outputType: MarkupType.Terminal }),
+	);
 }
