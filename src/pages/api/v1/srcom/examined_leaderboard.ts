@@ -1,7 +1,8 @@
+import { ApiError, apiResponse } from "../../../../utils.ts";
 import { examinedLeaderboard } from "../../../../srcom/examined_leaderboard.ts";
 import { isMarkupType } from "../../../../srcom/fmt.ts";
 import { statuses } from "../../../../srcom/utils.ts";
-import { ApiError, apiResponse } from "../../../../utils.ts";
+import { Status } from "../../../../../deps_server.ts";
 
 export default async function (req: Request): Promise<Response> {
 	let game: string | undefined,
@@ -16,7 +17,7 @@ export default async function (req: Request): Promise<Response> {
 
 		if (!game) {
 			throw new ApiError("No game query parameter found", {
-				status: 400,
+				status: Status.BadRequest,
 			});
 		}
 
@@ -26,14 +27,14 @@ export default async function (req: Request): Promise<Response> {
 					Object.keys(statuses).join(", ")
 				}`,
 				{
-					status: 400,
+					status: Status.BadRequest,
 				},
 			);
 		}
 
 		if (!isMarkupType(outputType)) {
 			throw new ApiError("Unexpected output-type", {
-				status: 400,
+				status: Status.BadRequest,
 			});
 		}
 
@@ -48,7 +49,7 @@ export default async function (req: Request): Promise<Response> {
 		return apiResponse(output);
 	} else {
 		throw new ApiError("Only GET requests are allowed", {
-			status: 400,
+			status: Status.BadRequest,
 		});
 	}
 }
