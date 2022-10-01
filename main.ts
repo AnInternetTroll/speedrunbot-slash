@@ -16,13 +16,13 @@ if (import.meta.main) {
 		console.log("Connecting...");
 		await client.connect();
 		console.log("Connected!");
-		console.log("Editting commands...");
+		console.log("Editing commands...");
 		await client.interactions.commands.bulkEdit(
 			[...srcCommands, ...generalCommands],
 			config.TEST_SERVER,
 		);
 
-		console.log("Editted!");
+		console.log("Edited!");
 
 		if (Deno.args.includes("--update") || Deno.args.includes("-u")) {
 			console.log("Goodbye!");
