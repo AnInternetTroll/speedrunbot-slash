@@ -1,18 +1,23 @@
 import { examinedLeaderboard } from "../../../../srcom/examined_leaderboard.ts";
-import { isMarkupType } from "../../../../srcom/fmt.ts";
+import {
+	isMarkupType,
+	MarkupType,
+	stringToMarkup,
+} from "../../../../srcom/fmt.ts";
 import { statuses } from "../../../../srcom/utils.ts";
 import { ApiError, apiResponse } from "../../../../utils.ts";
 
 export default async function (req: Request): Promise<Response> {
 	let game: string | undefined,
 		status: string | undefined,
-		outputType = "plain";
+		outputType = MarkupType.Plain;
 
 	if (req.method === "GET") {
 		const { searchParams } = new URL(req.url);
 		game = searchParams.get("game") || undefined;
 		status = searchParams.get("status") || undefined;
-		outputType = searchParams.get("output-type") || "plain";
+		outputType = stringToMarkup(searchParams.get("output-type")) ||
+			MarkupType.Plain;
 
 		if (!game) {
 			throw new ApiError("No game query parameter found", {

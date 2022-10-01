@@ -1,8 +1,9 @@
 import { assertEquals } from "../../deps_testing.ts";
-import whois from "../../src/srcom/whois.ts";
+import { whois } from "../../src/srcom/whois.ts";
+import { MarkupType } from "../../src/srcom/fmt.ts";
 
 Deno.test("Get user by username", async () => {
-	const res = await whois("7H3", { outputType: "plain" });
+	const res = await whois("7H3", { outputType: MarkupType.Plain });
 	const expected = `Username: 7H3
 ID: v81ggnp8
 Signed up: 7 July 2019
