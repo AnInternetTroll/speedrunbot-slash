@@ -21,7 +21,7 @@ export async function categoriesPlayed(
 export async function categoriesPlayed(
 	username: string,
 	games: string[] = [],
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string | CategoriesObject> {
 	games = games.filter((a) => !!a);
 	const output: string[] = [];
@@ -49,7 +49,9 @@ export async function categoriesPlayed(
 		}
 	});
 
-	if (outputType === "object") return { categoriesPlayed: categories.length };
+	if (outputType === MarkupType.Object) {
+		return { categoriesPlayed: categories.length };
+	}
 
 	output.push(`Categories Played: ${username}`);
 	output.push(`${categories.length}`);
@@ -60,6 +62,8 @@ export async function categoriesPlayed(
 if (import.meta.main) {
 	const [username, ...games] = Deno.args;
 	console.log(
-		await categoriesPlayed(username, games, { outputType: "terminal" }),
+		await categoriesPlayed(username, games, {
+			outputType: MarkupType.Terminal,
+		}),
 	);
 }

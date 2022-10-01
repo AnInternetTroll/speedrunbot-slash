@@ -47,6 +47,7 @@ import { leaderboard } from "./leaderboard.ts";
 import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
 import { Moogle } from "../../deps_general.ts";
+import { MarkupType } from "./fmt.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -615,7 +616,10 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 		await sendCommand(
 			i,
 			(i, signal) =>
-				games(i.option("username"), { outputType: "markdown", signal }),
+				games(i.option("username"), {
+					outputType: MarkupType.Markdown,
+					signal,
+				}),
 		);
 	}
 
@@ -623,7 +627,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	async posts(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
-			(i) => posts(i.option("username"), { outputType: "markdown" }),
+			(i) => posts(i.option("username"), { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -631,7 +635,8 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	async modCount(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
-			(i) => modCount(i.option("username"), { outputType: "markdown" }),
+			(i) =>
+				modCount(i.option("username"), { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -639,7 +644,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	async categories(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
-			(i) => categories(i.option("game"), { outputType: "markdown" }),
+			(i) => categories(i.option("game"), { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -651,7 +656,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				categoriesPlayed(i.option("username"), [
 					i.option("game"),
 					i.option("game2"),
-				], { outputType: "markdown" }),
+				], { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -663,7 +668,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				podiums(i.option("username"), [
 					i.option("game"),
 					i.option("game2"),
-				], { outputType: "markdown" }),
+				], { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -675,7 +680,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				examinedLeaderboard(
 					i.option("game"),
 					i.option("status"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -691,7 +696,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("status"),
 					i.option("examiner"),
 					i.option<string | undefined>("emulated"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -707,7 +712,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					"new",
 					undefined,
 					i.option<string | undefined>("emulated"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -723,7 +728,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					"new",
 					i.option("examiner"),
 					i.option<string | undefined>("emulated"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -739,7 +744,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					"verified",
 					i.option("examiner"),
 					i.option<string | undefined>("emulated"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -754,7 +759,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("status"),
 					i.option("examiner"),
 					i.option<string | undefined>("emulated"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -763,7 +768,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	async whois(i: ApplicationCommandInteraction) {
 		await sendCommand(
 			i,
-			(i) => whois(i.option("username"), { outputType: "markdown" }),
+			(i) => whois(i.option("username"), { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -775,7 +780,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				worldRecords(i.option("username"), [
 					i.option("game"),
 					i.option("game2"),
-				], { outputType: "markdown" }),
+				], { outputType: MarkupType.Markdown }),
 		);
 	}
 
@@ -788,7 +793,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("game"),
 					i.option("category"),
 					i.option("subcategory"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -800,7 +805,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			(i) =>
 				runInfo(
 					i.option("run"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -812,7 +817,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 			(i) =>
 				gameInfo(
 					i.option("game"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -825,7 +830,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				levelInfo(
 					i.option("game"),
 					i.option("level"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -838,7 +843,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 				categoryInfo(
 					i.option("game"),
 					i.option("category"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}
@@ -852,7 +857,7 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("game"),
 					i.option("category"),
 					i.option("subcategory"),
-					{ outputType: "markdown" },
+					{ outputType: MarkupType.Markdown },
 				),
 		);
 	}

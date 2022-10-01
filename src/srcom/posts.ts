@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getUser } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 
@@ -21,7 +21,7 @@ export interface Posts {
 // https://github.com/Mango0x45/speedrunbot-plusplus/blob/38a7231805c966d55b1e23cd7e94a7ddd042088e/src/srcom/posts.sh
 export async function posts(
 	username: string,
-	{ outputType }: { outputType?: "object" },
+	{ outputType }: { outputType?: MarkupType.Object },
 ): Promise<Posts>;
 export async function posts(
 	username: string,
@@ -29,7 +29,7 @@ export async function posts(
 ): Promise<string>;
 export async function posts(
 	username: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string | Posts> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -114,7 +114,7 @@ export async function posts(
 	const secret = total - site - game;
 
 	signal?.throwIfAborted();
-	if (outputType === "object") {
+	if (outputType === MarkupType.Object) {
 		return {
 			game,
 			site,
@@ -136,5 +136,5 @@ export async function posts(
 export default posts;
 
 if (import.meta.main) {
-	console.log(await posts(Deno.args[0], { outputType: "terminal" }));
+	console.log(await posts(Deno.args[0], { outputType: MarkupType.Terminal }));
 }

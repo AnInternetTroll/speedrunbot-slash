@@ -1,27 +1,45 @@
-import { bold as boldTerminal } from "../../deps_general.ts";
+import { bold as boldTerminal, lowerCase } from "../../deps_general.ts";
+
+export enum MarkupType {
+	Browser,
+	Markdown,
+	Object,
+	Plain,
+	Terminal,
+}
 
 export const MARKUP: MarkupType = typeof globalThis.Deno === "undefined"
-	? "browser"
-	: (Deno.noColor === true ? "plain" : "markdown");
-
-export type MarkupType =
-	| "browser"
-	| "plain"
-	| "markdown"
-	| "terminal"
-	| "object";
+	? MarkupType.Browser
+	: (Deno.noColor === true ? MarkupType.Plain : MarkupType.Markdown);
 
 export const markupTypes = [
-	"browser",
-	"plain",
-	"markdown",
-	"terminal",
-	"object",
+	MarkupType.Browser,
+	MarkupType.Markdown,
+	MarkupType.Object,
+	MarkupType.Plain,
+	MarkupType.Terminal,
 ];
 
+export function stringToMarkup(s: string | null): MarkupType | undefined {
+	if (typeof s === "string") {
+		switch (lowerCase(s)) {
+			case "browser":
+				return MarkupType.Browser;
+			case "markdown":
+				return MarkupType.Markdown;
+			case "object":
+				return MarkupType.Object;
+			case "plain":
+				return MarkupType.Plain;
+			case "terminal":
+				return MarkupType.Terminal;
+		}
+	}
+	return undefined;
+}
+
 export function isMarkupType(type: unknown): type is MarkupType {
-	if (typeof type === "string" && markupTypes.includes(type)) return true;
-	else return false;
+	return typeof type === "number" && markupTypes.includes(type);
 }
 
 export class Format {
@@ -29,13 +47,13 @@ export class Format {
 	constructor(markup: MarkupType) {
 		this.markup = markup;
 	}
-	bold(string: string, markupOpt: MarkupType = "plain"): string {
+	bold(string: string, markupOpt: MarkupType = MarkupType.Plain): string {
 		switch (this.markup || markupOpt) {
-			case "browser":
+			case MarkupType.Browser:
 				return `<b>${string}</b>`;
-			case "markdown":
+			case MarkupType.Markdown:
 				return `**${string}**`;
-			case "terminal":
+			case MarkupType.Terminal:
 				return boldTerminal(string);
 			default:
 				return string;
@@ -45,10 +63,10 @@ export class Format {
 	link(
 		link: string,
 		name: string | false = false,
-		markupOpt: MarkupType = "plain",
+		markupOpt: MarkupType = MarkupType.Plain,
 	): string {
 		switch (this.markup || markupOpt) {
-			case "markdown":
+			case MarkupType.Markdown:
 				if (name) return `[${name}](${link})`;
 				/* falls through */
 			default:

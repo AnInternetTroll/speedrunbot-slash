@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import { Moogle } from "../../deps_general.ts";
 import { CommandError, getGame, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
@@ -8,7 +8,7 @@ import { SpeedrunCom } from "./types.d.ts";
 export async function categoryInfo(
 	game: string,
 	category: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -64,5 +64,7 @@ export default categoryInfo;
 
 if (import.meta.main) {
 	const [game, category] = Deno.args;
-	console.log(await categoryInfo(game, category, { outputType: "terminal" }));
+	console.log(
+		await categoryInfo(game, category, { outputType: MarkupType.Terminal }),
+	);
 }

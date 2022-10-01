@@ -11,7 +11,7 @@ interface PodiumsObject {
 export async function podiums(
 	username: string,
 	games: string[],
-	{ id, outputType }: { id?: boolean; outputType: "object" },
+	{ id, outputType }: { id?: boolean; outputType: MarkupType.Object },
 ): Promise<PodiumsObject>;
 export async function podiums(
 	username: string,
@@ -21,7 +21,7 @@ export async function podiums(
 export async function podiums(
 	username: string,
 	games: string[] = [],
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string | PodiumsObject> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -61,7 +61,7 @@ export async function podiums(
 	}
 
 	signal?.throwIfAborted();
-	if (outputType === "object") return { podiums: total };
+	if (outputType === MarkupType.Object) return { podiums: total };
 
 	output.push(`Podium Count: ${user.names.international}`);
 
@@ -81,5 +81,7 @@ export async function podiums(
 
 if (import.meta.main) {
 	const [username, ...games] = Deno.args;
-	console.log(await podiums(username, games, { outputType: "terminal" }));
+	console.log(
+		await podiums(username, games, { outputType: MarkupType.Terminal }),
+	);
 }

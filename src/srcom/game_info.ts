@@ -1,12 +1,12 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getGame, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import { SpeedrunCom } from "./types.d.ts";
 
 export async function gameInfo(
 	game: string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string> {
 	const fmt = new Format(outputType);
 	const output: string[] = [];
@@ -92,5 +92,7 @@ export async function gameInfo(
 export default gameInfo;
 
 if (import.meta.main) {
-	console.log(await gameInfo(Deno.args[0], { outputType: "terminal" }));
+	console.log(
+		await gameInfo(Deno.args[0], { outputType: MarkupType.Terminal }),
+	);
 }

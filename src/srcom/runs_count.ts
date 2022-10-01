@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
-import { Format } from "./fmt.ts";
+import { Format, MarkupType } from "./fmt.ts";
 import {
 	CommandError,
 	getAllRuns,
@@ -14,7 +14,7 @@ export async function runsCount(
 	status?: string,
 	examiner?: string,
 	emulated?: boolean | string,
-	{ outputType = "markdown", signal }: Opts = {},
+	{ outputType = MarkupType.Markdown, signal }: Opts = {},
 ): Promise<string> {
 	if (!user && !game && !examiner) {
 		throw new CommandError("A user or a game is required.");
@@ -130,7 +130,7 @@ if (import.meta.main) {
 	try {
 		console.log(
 			await runsCount(users, games, status, examiner, emulated, {
-				outputType: "terminal",
+				outputType: MarkupType.Terminal,
 			}),
 		);
 	} catch (err) {
