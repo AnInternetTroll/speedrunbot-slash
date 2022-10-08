@@ -16,7 +16,7 @@ export function Home() {
 			{id
 				? (
 					<a
-						href={`${DISCORD_URL}/authorize?client_id=${id}&scope=applications.commands`}
+						href={`${DISCORD_URL}/oauth2/authorize?client_id=${id}&scope=applications.commands`}
 					>
 						Click here to invite the bot!
 					</a>
@@ -25,3 +25,4 @@ export function Home() {
 		</div>
 	);
 }
+
