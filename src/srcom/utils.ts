@@ -142,7 +142,7 @@ export async function getAll<T extends ApiData>(
 			if (res.status === 420) {
 				console.warn("We are being throttled " + res.status);
 				attempts++;
-				if (attempts > 5) break;
+				if (attempts > 20) break;
 				await delay(30_000);
 			} else if (res.status === 400) {
 				const body = await res.json();
