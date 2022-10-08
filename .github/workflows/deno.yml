@@ -19,17 +19,8 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Verify formatting
-        run: deno fmt --config ./deno.jsonc --check
-
-      - name: Run linter
-        run: deno lint
-
-      - name: Run type checker
-        run: deno check main.ts
-
-      - name: Run tests
-        run: deno test -A
+      - name: Run checks
+        run: deno task ci
 
   publish:
     if: github.repository == 'AnInternetTroll/speedrunbot-slash' && github.ref == 'refs/heads/master'

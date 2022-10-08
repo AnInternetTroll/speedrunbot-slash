@@ -40,7 +40,7 @@ PUBLIC_KEY="abcd"
 To run the discord bot development mode use the following command
 
 ```sh
-deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. ./mod.ts
+deno task dev
 # Or if on unix
 ./mod.ts
 ```
@@ -62,6 +62,8 @@ exception of tabs instead of spaces. To format your code accordingly you can run
 the following command:
 
 ```sh
+deno task fmt
+# Or
 deno fmt --config deno.jsonc ./
 ```
 
@@ -70,5 +72,50 @@ deno fmt --config deno.jsonc ./
 Just the default linting rules of `deno lint`
 
 ```sh
+deno task lint
+# Or
 deno lint .
+```
+
+# Testing
+
+Before pushing your code it is recommended to test it to see if everything is
+all right. There are a couple of tasks for this
+
+## Formatting
+
+```sh
+deno task fmt --check
+# Or
+deno fmt --check
+```
+
+## Linting
+
+```sh
+deno task lint
+# Or
+deno lint .
+```
+
+## Type checking
+
+```sh
+deno task check
+# Or
+deno check main.ts
+```
+
+## Tests
+
+```sh
+deno test --allow-net
+```
+
+## Ci
+
+This is the command ran on the CI pipeline for every PR and push action
+
+```sh
+deno task ci
 ```

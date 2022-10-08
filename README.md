@@ -15,15 +15,37 @@ tells deno deploy what command it wants and deno deploy responds.
 
 Join the Discord server: https://discord.gg/P4FbDQywua
 
+Before running the bot you must first make a `.env` file in the root of the
+project and put in the following
+
+```sh
+TOKEN="YOUR BOT'S DISCORD TOKEN"
+TEST_SERVER="12345" # Optional discord guild/server ID
+# For the website part
+CLIENT_SECRET="abcd"
+PUBLIC_KEY="abcd"
+```
+
 To run the discord bot development mode use the following command
 
 ```sh
-deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-env --allow-read=. ./main.ts
-# Or if on unix
-./main.ts
+# Unstable tasks
+deno task dev
 ```
 
 For more info read [CONTRIBUTING.md](CONTRIBUTING.md)
+
+# Production
+
+```sh
+# Unstable tasks
+deno task start
+# If you don't want to give too many permissions
+# Otherwise --allow.net by itself is enough
+deno run --allow-net=www.speedrun.com,gateway.discord.gg,discord.com --allow-read=.env ./main.ts
+# Or if on unix
+./main.ts
+```
 
 # Credits
 
