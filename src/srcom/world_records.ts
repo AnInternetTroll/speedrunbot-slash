@@ -38,7 +38,13 @@ export async function worldRecords(
 		}
 	});
 
-	output.push(`World Record Count: ${user.names.international}`);
+	output.push(
+		`World Record Count: ${user.names.international}${
+			gameObjs.length
+				? " - " + gameObjs.map((game) => game.names.international).join(" and ")
+				: ""
+		}`,
+	);
 	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
 	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
 
