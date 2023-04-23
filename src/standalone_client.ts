@@ -1,5 +1,4 @@
-import { MessageComponentType } from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
-import { Client, event, Interaction } from "../deps_server.ts";
+import { Client, event, Interaction, MessageComponentType } from "../deps_server.ts";
 import { General } from "./general/slash_commands.ts";
 import { SpeedrunCom } from "./srcom/slash_commands.tsx";
 

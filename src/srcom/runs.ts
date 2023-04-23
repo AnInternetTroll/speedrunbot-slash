@@ -50,7 +50,7 @@ export async function runs(
 	});
 
 	output.push(
-		`Run Count:${
+		`Runs:${
 			users.length
 				? " " + users.map((user) => user.names.international).join(" and ")
 				: ""

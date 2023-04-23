@@ -16,14 +16,16 @@ export {
 	MessageComponentType,
 	slash,
 	SlashCommandOptionType,
-} from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
+} from "https://raw.githubusercontent.com/harmonyland/harmony/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
+//} from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
 export type {
 	ApplicationCommandChoice,
 	ApplicationCommandOption,
 	Interaction,
 	MessageComponentInteraction,
 	SlashCommandPartial,
-} from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
+} from "https://raw.githubusercontent.com/harmonyland/harmony/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
+// } from "https://code.harmony.rocks/c437da5ecd0ec42b81173a7e29ccb1f4e31dad06/mod.ts";
 
 export { config } from "https://deno.land/std@0.146.0/dotenv/mod.ts";
 
