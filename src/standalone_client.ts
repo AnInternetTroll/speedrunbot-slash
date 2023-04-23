@@ -1,4 +1,9 @@
-import { Client, event, Interaction, MessageComponentType } from "../deps_server.ts";
+import {
+	Client,
+	event,
+	Interaction,
+	MessageComponentType,
+} from "../deps_server.ts";
 import { General } from "./general/slash_commands.ts";
 import { SpeedrunCom } from "./srcom/slash_commands.tsx";
 
