@@ -7,9 +7,9 @@ Deno.test("Get user runs by username", async () => {
 		outputType: MarkupType.Plain,
 	});
 	const expected = `Run Count: 1
-Fullgame: 81
+Fullgame: 82
 Individual Level: 125
-Total: 206`;
+Total: 207`;
 	assertEquals(res, expected);
 });
 
