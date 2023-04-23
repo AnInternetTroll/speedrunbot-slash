@@ -22,7 +22,7 @@ export const markupTypes = [
 
 export function stringToMarkup(s: string | null): MarkupType | undefined {
 	if (typeof s === "string") {
-		switch (s.toLowerCase()) {
+		switch (lowerCase(s)) {
 			case "browser":
 				return MarkupType.Browser;
 			case "markdown":

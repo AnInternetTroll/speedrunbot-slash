@@ -26,7 +26,7 @@ if (import.meta.main) {
 
 		if (Deno.args.includes("--update") || Deno.args.includes("-u")) {
 			console.log("Goodbye!");
-			await client.destroy();
+			await client.close();
 			Deno.exit(0);
 		}
 	}

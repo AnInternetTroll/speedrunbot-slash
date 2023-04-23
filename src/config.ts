@@ -1,4 +1,4 @@
-import { load } from "../deps_server.ts";
+import { config as dotenvConfig } from "../deps_server.ts";
 
 const variables = [
 	"TOKEN",
@@ -23,10 +23,10 @@ for (const variable of variables) {
 const variablesPermissions = await Promise.all(permissionTasks);
 // Read from .env file first
 export const config: Record<string, string | undefined> = {
-	...await load({
+	...await dotenvConfig({
 		export: false,
-		defaultsPath: null,
-		examplePath: null,
+		// @ts-ignore This can be false trust me dude
+		defaults: false,
 	}),
 };
 
