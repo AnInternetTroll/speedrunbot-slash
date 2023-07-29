@@ -438,7 +438,7 @@ async function sendCommand(
 		}
 	} catch (err: unknown) {
 		const command = `/${i.data.name} ${
-			i.data.options.map((opt) => `${opt.name}:${opt.value}`)
+			i.data.options?.map((opt) => `${opt.name}:${opt.value}`)
 		}`;
 		if (err instanceof DOMException && err.name === "AbortError") {
 			// Command canceled so just don't do anything
