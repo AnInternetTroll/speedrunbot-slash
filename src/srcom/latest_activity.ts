@@ -54,6 +54,7 @@ export async function latestActivity(
 			game: games.at(0)?.id!,
 			examiner: examiners.at(0)?.id!,
 			orderby: "verify-date",
+			direction: "desc",
 			max: "1",
 		})}`,
 	).then((r) => r.json()).then((res) => res.data);

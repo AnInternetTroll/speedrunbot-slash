@@ -9,7 +9,7 @@
 		"test": "deno test --allow-net",
 		"fmt": "deno fmt",
 		"lint": "deno lint",
-		"check": "deno task fmt --check && deno task lint && deno check main.ts",
+		"check": "deno task fmt --check && deno task lint && deno check --no-lock main.ts",
 		"ci": "deno task check"
 	},
 	"compilerOptions": {
