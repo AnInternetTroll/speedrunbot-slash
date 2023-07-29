@@ -42,3 +42,8 @@ export {
 	Helmet,
 	renderSSR,
 } from "https://deno.land/x/nano_jsx@v0.0.33/mod.ts";
+
+export {
+	GetSearch,
+	Language,
+} from "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/1a31ce46d0e4cb5de1dcc212b451c1515865d377/mod.ts";

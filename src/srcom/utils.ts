@@ -2,6 +2,7 @@
 import type { Format, MarkupType } from "./fmt.ts";
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
+import { GetSearch, Language } from "../../deps_server.ts";
 export const SRC_URL = "https://www.speedrun.com";
 export const SRC_API = `${SRC_URL}/api/v1`;
 
@@ -372,17 +373,38 @@ export async function searchGames(name: string): Promise<{
 	name: string;
 	abbreviation: string;
 }[]> {
-	const gamesRes = await fetch(
-		`${SRC_API}/games?name=${name}&_bulk=true&max=20`,
-	);
-	if (!gamesRes.ok) {
-		throw new Error(`Got an unexpected status: ${gamesRes.status}`);
+	// GetSearch is unstable, should not be relied upon!!!
+	try {
+		if (name.length <= 1) throw new Error("Short name");
+		const games = await GetSearch({
+			includeGames: true,
+			limit: 20,
+			query: name,
+			includeUsers: false,
+			includeNews: false,
+			includePages: false,
+			includeSeries: false,
+		}, { language: Language.en });
+		return games.gameList.map((game) => ({
+			name: game.name,
+			abbreviation: game.url,
+		}));
+	} catch (err: unknown) {
+		if (!(err instanceof Error && err.message === "Short name")) {
+			console.error(err);
+		}
+		const gamesRes = await fetch(
+			`${SRC_API}/games?name=${name}&_bulk=true&max=20`,
+		);
+		if (!gamesRes.ok) {
+			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
+		}
+		const games = (await gamesRes.json()).data as GameBulk[];
+		return games.map((game) => ({
+			name: game.names.international,
+			abbreviation: game.abbreviation,
+		}));
 	}
-	const games = (await gamesRes.json()).data as GameBulk[];
-	return games.map((game) => ({
-		name: game.names.international,
-		abbreviation: game.abbreviation,
-	}));
 }
 
 export async function searchUsers(name: string): Promise<{
@@ -395,22 +417,13 @@ export async function searchUsers(name: string): Promise<{
 	// Which is why we fall back on the normal API
 	try {
 		if (name.length <= 1) throw new Error("Short name");
-		const usersRes = await fetch(
-			`${SRC_URL}/ajax_search.php?type=users&showall=true&term=${
-				encodeURIComponent(name)
-			}`,
-		);
-		if (!usersRes.ok) {
-			throw new Error(`Got an unexpected status: ${usersRes.status}`);
-		}
-		const users = await usersRes.json() as {
-			label: string;
-			url: string;
-			category: string;
-		}[];
-
-		output.push(...users.map((user) => ({
-			name: user.label,
+		const users = await GetSearch({
+			includeUsers: true,
+			query: name,
+			limit: 20,
+		}, { language: Language.en });
+		output.push(...users.userList.map((user) => ({
+			name: user.name,
 		})));
 	} catch (err: unknown) {
 		if (!(err instanceof Error && err.message === "Short name")) {
