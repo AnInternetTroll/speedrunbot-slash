@@ -48,14 +48,7 @@ export async function posts(
 		userAllPostsText.match(/(\d+)(\s+)?<\/div>(\s+)?<\/a>(\s+)?<\/nav>/)?.[0],
 	);
 	const fetchPageTasks: (Promise<string> | string)[] = [];
-
-	if (
-		!userAllPostsText.includes(
-			"hasn't posted any comments yet.",
-		)
-	) {
-		return "This user has not posted anything on the forum yet.";
-	} else if (isNaN(numberOfPages)) {
+	if (isNaN(numberOfPages)) {
 		fetchPageTasks.push(userAllPostsText);
 	} else {
 		for (let i = 1; i < numberOfPages + 1; i++) {
@@ -93,26 +86,32 @@ export async function posts(
 	// @ts-ignore I don't think this is possible to fail
 	const totalMatches = userAllPostsText.match(
 		/Showing \d+ to \d+ of (\d+)?(,)?(\d+)?(,)?(\d+)?/,
-	).filter((f) => !!f);
-	let total = 0;
-	switch (totalMatches?.length) {
-		case 2:
-			total = parseInt(totalMatches[1]);
-			break;
-		case 4:
-			total = parseInt(totalMatches[1]) * 1_000 + parseInt(totalMatches[3]);
-			break;
-		case 6:
-			total = parseInt(totalMatches[1]) * 1_000_000 +
-				parseInt(totalMatches[3]) * 1_000 + parseInt(totalMatches[5]);
-			break;
-	}
+	)?.filter((f) => !!f);
 	let game = 0;
 	let site = 0;
 
 	for (const result of results) {
 		game += result.game;
 		site += result.site;
+	}
+	let total = game + site;
+
+	if (totalMatches) {
+		switch (totalMatches.length) {
+			case 2:
+				total = parseInt(totalMatches[1]);
+				break;
+			case 4:
+				total = parseInt(totalMatches[1]) * 1_000 + parseInt(totalMatches[3]);
+				break;
+			case 6:
+				total = parseInt(totalMatches[1]) * 1_000_000 +
+					parseInt(totalMatches[3]) * 1_000 + parseInt(totalMatches[5]);
+				break;
+			default:
+				total = 0;
+				break;
+		}
 	}
 
 	const secret = (site + game) - total;
