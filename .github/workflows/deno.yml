@@ -40,4 +40,4 @@ jobs:
           deno-version: v1.x
 
       - name: Update commands
-        run: deno run -A main.ts -u
+        run: deno run --no-lock -A main.ts -u

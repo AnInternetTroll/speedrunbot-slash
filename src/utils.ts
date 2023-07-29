@@ -37,7 +37,6 @@ export function renderPage(page: JSX.IntrinsicElements, init?: ResponseInit) {
 }
 export type Json<T> = T extends boolean | number | string | null ? T
 	: T extends Array<(infer U)> ? JsonArray<U>
-	// deno-lint-ignore ban-types
 	: T extends object ? { [K in keyof T]: Json<T[K]> }
 	: never;
 
