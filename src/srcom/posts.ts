@@ -38,35 +38,30 @@ export async function posts(
 	if (!user) throw new CommandError(`No user with the username "${username}"`);
 
 	const userAllPostsRes = await fetch(
-		`https://www.speedrun.com/${user.names.international}/allposts`,
+		`https://www.speedrun.com/users/${user.names.international}/comments`,
 		{ signal },
 	);
 	const userAllPostsText = await userAllPostsRes.text();
 	const numberOfPages = parseInt(
 		// @ts-ignore the regex will only match numbers
 		// And we check below if it's NaN
-		userAllPostsText.match(/Page 1 of (\d+)+/)?.[1],
+		userAllPostsText.match(/(\d+)(\s+)?<\/div>(\s+)?<\/a>(\s+)?<\/nav>/)?.[0],
 	);
-	const fetchPageTasks: Promise<string>[] = [];
+	const fetchPageTasks: (Promise<string> | string)[] = [];
 
 	if (
-		userAllPostsText.includes(
-			"This user has not posted anything on the forum yet.",
+		!userAllPostsText.includes(
+			"hasn't posted any comments yet.",
 		)
 	) {
 		return "This user has not posted anything on the forum yet.";
 	} else if (isNaN(numberOfPages)) {
-		fetchPageTasks.push(
-			fetch(
-				`https://www.speedrun.com/${user.names.international}/allposts`,
-				{ signal },
-			).then((res) => res.text()),
-		);
+		fetchPageTasks.push(userAllPostsText);
 	} else {
 		for (let i = 1; i < numberOfPages + 1; i++) {
 			fetchPageTasks.push(
 				fetch(
-					`https://www.speedrun.com/${user.names.international}/allposts/${i}`,
+					`https://www.speedrun.com/users/${user.names.international}/comments?page=${i}`,
 					{ signal },
 				).then((res) => res.text()),
 			);
@@ -75,7 +70,7 @@ export async function posts(
 
 	const results = (await Promise.all(fetchPageTasks)).map((page) => {
 		const match = page.match(
-			/<\s*a href='\/(.*?)\/forum'[^>]*>(.*?)<\s*\/\s*a>/g,
+			/<\s*a href=".*?\/forums\/.*?"[^>]*>(.*?)<\s*\/\s*a>/g,
 		);
 		const sitePattern =
 			/supporter|news|introductions|speedrunning|streaming_recording_equipment|tournaments_and_races|talk|the_site/;
@@ -95,14 +90,23 @@ export async function posts(
 		};
 	});
 
-	const userInfoRes = await fetch(
-		`https://www.speedrun.com/user/${user.names.international}/info`,
-		{ signal },
-	);
-	const userInfoText = await userInfoRes.text();
-
 	// @ts-ignore I don't think this is possible to fail
-	const total = parseInt(userInfoText.match(/.*Posts:[^0-9]*([0-9]*).*/)?.[1]);
+	const totalMatches = userAllPostsText.match(
+		/Showing \d+ to \d+ of (\d+)?(,)?(\d+)?(,)?(\d+)?/,
+	).filter((f) => !!f);
+	let total = 0;
+	switch (totalMatches?.length) {
+		case 2:
+			total = parseInt(totalMatches[1]);
+			break;
+		case 4:
+			total = parseInt(totalMatches[1]) * 1_000 + parseInt(totalMatches[3]);
+			break;
+		case 6:
+			total = parseInt(totalMatches[1]) * 1_000_000 +
+				parseInt(totalMatches[3]) * 1_000 + parseInt(totalMatches[5]);
+			break;
+	}
 	let game = 0;
 	let site = 0;
 
@@ -111,7 +115,7 @@ export async function posts(
 		site += result.site;
 	}
 
-	const secret = total - site - game;
+	const secret = (site + game) - total;
 
 	signal?.throwIfAborted();
 	if (outputType === MarkupType.Object) {

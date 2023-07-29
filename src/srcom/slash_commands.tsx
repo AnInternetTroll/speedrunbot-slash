@@ -121,18 +121,16 @@ export const commands: SlashCommandPartial[] = [
 			},
 		],
 	},
-	// Disabled temporarly, as the new speedrun.com update broke this
-	// https://www.speedrun.com/news/94vwp28y-welcome-to-the-new-speedrun
-	// {
-	// 	name: "posts",
-	// 	description: "See how many posts a player has posted on the site.",
-	// 	options: [
-	// 		{
-	// 			...srcUser,
-	// 			required: true,
-	// 		},
-	// 	],
-	// },
+	{
+		name: "posts",
+		description: "See how many posts a player has posted on the site.",
+		options: [
+			{
+				...srcUser,
+				required: true,
+			},
+		],
+	},
 	{
 		name: "mod-count",
 		description: "See how many games and series a user moderates.",
