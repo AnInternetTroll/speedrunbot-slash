@@ -48,6 +48,7 @@ import type { SpeedrunCom as ISpeedrunCom } from "./types.d.ts";
 import gameInfo from "./game_info.ts";
 import { Moogle } from "../../deps_general.ts";
 import { MarkupType } from "./fmt.ts";
+import { latestActivity } from "./latest_activity.ts";
 
 const srcUser: ApplicationCommandOption = {
 	name: "username",
@@ -120,16 +121,18 @@ export const commands: SlashCommandPartial[] = [
 			},
 		],
 	},
-	{
-		name: "posts",
-		description: "See how many posts a player has posted on the site.",
-		options: [
-			{
-				...srcUser,
-				required: true,
-			},
-		],
-	},
+	// Disabled temporarly, as the new speedrun.com update broke this
+	// https://www.speedrun.com/news/94vwp28y-welcome-to-the-new-speedrun
+	// {
+	// 	name: "posts",
+	// 	description: "See how many posts a player has posted on the site.",
+	// 	options: [
+	// 		{
+	// 			...srcUser,
+	// 			required: true,
+	// 		},
+	// 	],
+	// },
 	{
 		name: "mod-count",
 		description: "See how many games and series a user moderates.",
@@ -201,6 +204,15 @@ export const commands: SlashCommandPartial[] = [
 			srcStatus,
 			srcExaminer,
 			srcEmulated,
+		],
+	},
+	{
+		name: "latest-activity",
+		description: "See when a game or examiner has last submitted a run.",
+		options: [
+			srcGame,
+			srcStatus,
+			srcExaminer,
 		],
 	},
 	{
@@ -696,6 +708,20 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 					i.option("status"),
 					i.option("examiner"),
 					i.option<string | undefined>("emulated"),
+					{ outputType: MarkupType.Markdown },
+				),
+		);
+	}
+
+	@slash("latest-activity")
+	async latestActivity(i: ApplicationCommandInteraction) {
+		await sendCommand(
+			i,
+			(i) =>
+				latestActivity(
+					i.option("game"),
+					i.option("status"),
+					i.option("examiner"),
 					{ outputType: MarkupType.Markdown },
 				),
 		);

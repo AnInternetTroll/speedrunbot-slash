@@ -256,7 +256,7 @@ export function formatRun(
 				)[]).map((p) =>
 					`${
 						fmt.link(
-							p.rel === "guest" ? p.links[0].uri : p.names.international,
+							p.rel === "guest" ? p.links[0].uri : p.weblink,
 							p.rel === "guest" ? p.name : p.names.international,
 						)
 					}`
