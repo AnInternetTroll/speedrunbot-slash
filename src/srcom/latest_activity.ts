@@ -56,7 +56,7 @@ export async function latestActivity(
 			orderby: "verify-date",
 			max: "1",
 		})}`,
-	).then(r => r.json()).then(res => res.data);
+	).then((r) => r.json()).then((res) => res.data);
 
 	output.push(
 		`Latest Activity: ${
@@ -77,7 +77,11 @@ export async function latestActivity(
 	);
 	if (runs.length) {
 		const run = runs.at(0)!;
-		output.push(`Last activity was on ${dateFormat(new Date(run.status["verify-date"] || run.date))}`)
+		output.push(
+			`Last activity was on ${
+				dateFormat(new Date(run.status["verify-date"] || run.date))
+			}`,
+		);
 	} else output.push("No activity found");
 	return output.join("\n");
 }

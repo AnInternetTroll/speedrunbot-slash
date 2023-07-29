@@ -372,43 +372,17 @@ export async function searchGames(name: string): Promise<{
 	name: string;
 	abbreviation: string;
 }[]> {
-	// This is super un official way and can break at any time
-	// Which is why we fall back on the normal API
-	try {
-		if (name.length <= 2) throw new Error("shortName");
-		const gamesRes = await fetch(
-			`${SRC_URL}/ajax_search.php?type=games&showall=true&term=${
-				encodeURIComponent(name)
-			}`,
-		);
-		if (!gamesRes.ok) {
-			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
-		}
-		const games = await gamesRes.json() as {
-			label: string;
-			url: string;
-			category: string;
-		}[];
-		return games.map((game) => ({
-			name: game.label,
-			abbreviation: game.url,
-		}));
-	} catch (err: unknown) {
-		if (!(err instanceof Error && err.message === "shortName")) {
-			console.error(err);
-		}
-		const gamesRes = await fetch(
-			`${SRC_API}/games?name=${name}&_bulk=true&max=20`,
-		);
-		if (!gamesRes.ok) {
-			throw new Error(`Got an unexpected status: ${gamesRes.status}`);
-		}
-		const games = (await gamesRes.json()).data as GameBulk[];
-		return games.map((game) => ({
-			name: game.names.international,
-			abbreviation: game.abbreviation,
-		}));
+	const gamesRes = await fetch(
+		`${SRC_API}/games?name=${name}&_bulk=true&max=20`,
+	);
+	if (!gamesRes.ok) {
+		throw new Error(`Got an unexpected status: ${gamesRes.status}`);
 	}
+	const games = (await gamesRes.json()).data as GameBulk[];
+	return games.map((game) => ({
+		name: game.names.international,
+		abbreviation: game.abbreviation,
+	}));
 }
 
 export async function searchUsers(name: string): Promise<{

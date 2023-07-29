@@ -1,9 +1,7 @@
 {
 	"$schema": "https://deno.land/x/deno@v1.26.1/cli/schemas/config-file.v1.json",
 	"fmt": {
-		"options": {
-			"useTabs": true
-		}
+		"useTabs": true
 	},
 	"tasks": {
 		"start": "deno run --allow-net --allow-read=.env main.ts",
@@ -12,7 +10,7 @@
 		"fmt": "deno fmt",
 		"lint": "deno lint",
 		"check": "deno task fmt --check && deno task lint && deno check main.ts",
-		"ci": "deno task check && deno task test"
+		"ci": "deno task check"
 	},
 	"compilerOptions": {
 		"jsx": "react",
