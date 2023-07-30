@@ -63,7 +63,7 @@ export async function posts(
 
 	const results = (await Promise.all(fetchPageTasks)).map((page) => {
 		const match = page.match(
-			/<\s*a href=".*?\/forums\/.*?"[^>]*>(.*?)<\s*\/\s*a>/g,
+			/<\s*a href=".*?(\/forums\/|\/runs\/).*?"[^>]*>(.*?)<\s*\/\s*a>/g,
 		);
 		const sitePattern =
 			/supporter|news|introductions|speedrunning|streaming_recording_equipment|tournaments_and_races|talk|the_site/;
@@ -114,7 +114,7 @@ export async function posts(
 		}
 	}
 
-	const secret = (site + game) - total;
+	const secret = total - (site + game);
 
 	signal?.throwIfAborted();
 	if (outputType === MarkupType.Object) {
