@@ -29,6 +29,9 @@ jobs:
     env:
       TOKEN: ${{ secrets.TOKEN }}
       PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
+      PROJECT_NAME: "speedrunbot"
 
     steps:
       - name: Setup repo
@@ -39,5 +42,24 @@ jobs:
         with:
           deno-version: v1.x
 
+      - name: Deploy
+        run: |
+          deno install -Arf https://deno.land/x/deploy/deployctl.ts
+
+          deployctl deploy \
+            --prod \
+            --color=never \
+            --entrypoint="./main.ts" \
+            --project=$PROJECT_NAME \
+            --env=CLIENT_SECRET=$CLIENT_SECRET \
+            --env=PUBLIC_KEY=$PUBLIC_KEY \
+            --env=TOKEN=$TOKEN
+
+          deployment_id="$(deployctl deployments list --project $PROJECT_NAME --format=json | jq -r '. |= sort_by(.createdAt) | reverse | .[].deployment.id' | head -n 1)"
+          deployctl deployments redeploy \
+            --prod \
+            --project=$PROJECT_NAME \
+            --id="$deployment_id"
+
       - name: Update commands
-        run: ./main.ts -u
+        run: deno run --allow-all main.ts -u
