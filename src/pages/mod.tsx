@@ -1,5 +1,5 @@
 /** @jsx h */
-import { h, Helmet, renderSSR, Status } from "../../deps_server.ts";
+import { h, STATUS_CODE } from "../../deps_server.ts";
 
 // Frontend
 import Index from "./index.tsx";
@@ -46,7 +46,7 @@ export async function handler(req: Request): Promise<Response> {
 		return Response.json({
 			message: "Not found",
 		}, {
-			status: Status.NotFound,
+			status: STATUS_CODE.NotFound,
 		});
 	} // Else return a nice website
 	else return renderPage(<NotFound pathname={pathname} />);

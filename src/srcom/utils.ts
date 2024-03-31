@@ -166,7 +166,7 @@ export async function getAll<T extends ApiData>(
 		});
 		const lastIdFound = lastIdIndex !== -1;
 		data = data.concat(
-			lastIdFound ? resJSON.data.slice(-(lastIdIndex)) : resJSON.data,
+			lastIdFound ? resJSON.data.slice(-lastIdIndex) : resJSON.data,
 		);
 		if (lastIdFound) {
 			lastId = undefined;

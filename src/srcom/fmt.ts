@@ -1,4 +1,4 @@
-import { bold as boldTerminal, lowerCase } from "../../deps_general.ts";
+import { bold as boldTerminal } from "../../deps_general.ts";
 
 export enum MarkupType {
 	Browser,
@@ -22,7 +22,7 @@ export const markupTypes = [
 
 export function stringToMarkup(s: string | null): MarkupType | undefined {
 	if (typeof s === "string") {
-		switch (lowerCase(s)) {
+		switch (s.toLowerCase()) {
 			case "browser":
 				return MarkupType.Browser;
 			case "markdown":

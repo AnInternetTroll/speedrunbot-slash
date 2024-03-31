@@ -6,7 +6,7 @@ import {
 	stringToMarkup,
 } from "../../../../srcom/fmt.ts";
 import { statuses } from "../../../../srcom/utils.ts";
-import { Status } from "../../../../../deps_server.ts";
+import { STATUS_CODE } from "../../../../../deps_server.ts";
 
 export default async function (req: Request): Promise<Response> {
 	let game: string | undefined,
@@ -22,7 +22,7 @@ export default async function (req: Request): Promise<Response> {
 
 		if (!game) {
 			throw new ApiError("No game query parameter found", {
-				status: Status.BadRequest,
+				status: STATUS_CODE.BadRequest,
 			});
 		}
 
@@ -32,14 +32,14 @@ export default async function (req: Request): Promise<Response> {
 					Object.keys(statuses).join(", ")
 				}`,
 				{
-					status: Status.BadRequest,
+					status: STATUS_CODE.BadRequest,
 				},
 			);
 		}
 
 		if (!isMarkupType(outputType)) {
 			throw new ApiError("Unexpected output-type", {
-				status: Status.BadRequest,
+				status: STATUS_CODE.BadRequest,
 			});
 		}
 
@@ -54,7 +54,7 @@ export default async function (req: Request): Promise<Response> {
 		return apiResponse(output);
 	} else {
 		throw new ApiError("Only GET requests are allowed", {
-			status: Status.BadRequest,
+			status: STATUS_CODE.BadRequest,
 		});
 	}
 }

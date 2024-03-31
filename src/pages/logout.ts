@@ -1,11 +1,11 @@
-import { deleteCookie, Status } from "../../deps_server.ts";
+import { deleteCookie, STATUS_CODE } from "../../deps_server.ts";
 
-export default (req: Request): Response => {
+export default (_req: Request): Response => {
 	const headers = new Headers();
-	headers.set("Location", req.headers.get("referer") || "/");
+	headers.set("Location", "/");
 	deleteCookie(headers, "access_token");
 	return new Response(null, {
 		headers,
-		status: Status.TemporaryRedirect,
+		status: STATUS_CODE.TemporaryRedirect,
 	});
 };

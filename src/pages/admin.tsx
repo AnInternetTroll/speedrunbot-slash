@@ -4,7 +4,7 @@ import {
 	getCookies,
 	h,
 	setCookie,
-	Status,
+	STATUS_CODE,
 } from "../../deps_server.ts";
 import { DISCORD_URL, renderPage } from "../utils.ts";
 import { client } from "../client.ts";
@@ -97,7 +97,7 @@ export default async (req: Request): Promise<Response> => {
 
 		return new Response(null, {
 			headers,
-			status: Status.TemporaryRedirect,
+			status: STATUS_CODE.TemporaryRedirect,
 		});
 	} // The user is now logged in
 	else if (access_token) {

@@ -40,7 +40,6 @@ export type Json<T> = T extends boolean | number | string | null ? T
 	: T extends object ? { [K in keyof T]: Json<T[K]> }
 	: never;
 
-// deno-lint-ignore no-empty-interface
 interface JsonArray<T> extends Array<Json<T>> {}
 
 export function apiResponse(obj: JSON | string) {

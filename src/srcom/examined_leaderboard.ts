@@ -10,7 +10,6 @@ import {
 } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { groupBy } from "../../deps_general.ts";
 
 interface LeaderboardMod {
 	username: string;
@@ -18,13 +17,12 @@ interface LeaderboardMod {
 }
 
 function mergeMods(users: LeaderboardMod[]): LeaderboardMod[] {
-	const mods = groupBy(users, (user) => user.username);
+	const mods = Object.groupBy(users, (user) => user.username);
 
 	return Object.entries(mods).map(([username, entries]) => {
 		return {
 			username,
-			// @ts-ignore I'm don't understand why `entries` can be undefined
-			count: entries.reduce((acc, c) => acc + c.count, 0),
+			count: entries?.reduce((acc, c) => acc + c.count, 0) ?? 0,
 		};
 	});
 }
