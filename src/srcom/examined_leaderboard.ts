@@ -71,12 +71,14 @@ export async function examinedLeaderboard(
 				return Object.keys(gameObj.moderators).map<Promise<LeaderboardMod>>(
 					async (mod) => {
 						const url = new URL(urlG.toString());
-						// @ts-ignore The user exists or else they wouldn't be a mod
-						const user: SpeedrunCom.User = await getUser(mod);
+						const user = await getUser(mod);
 						url.searchParams.set("examiner", mod);
 						const runs = await getAll<SpeedrunCom.Run>(url, { signal });
 						return {
-							username: user.names.international,
+							// If a user deleted their account while being a mod
+							// then they remain a moderator,
+							// even though we can't get the user
+							username: user ? user.names.international : "Moderator not found",
 							count: runs.length,
 						};
 					},
