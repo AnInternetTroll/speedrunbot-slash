@@ -43,5 +43,6 @@ export {
 
 export {
 	GetSearch,
+	GetUserLeaderboard,
 	Language,
-} from "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/1a31ce46d0e4cb5de1dcc212b451c1515865d377/mod.ts";
+} from "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/mod.ts";

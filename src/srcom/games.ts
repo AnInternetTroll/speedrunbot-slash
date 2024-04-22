@@ -3,6 +3,7 @@ import { MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
+import { GetUserLeaderboard } from "../../deps_server.ts";
 
 interface GamesObject {
 	games: number;
@@ -25,18 +26,27 @@ export async function games(
 	const user = await getUser(username, { signal });
 	if (!user) throw new CommandError(`${username} user not found.`);
 
-	const res = await fetch(`${SRC_API}/users/${user.id}/personal-bests`, {
-		signal,
-	});
-	const runs = (await res.json()).data as {
-		place: number;
-		run: SpeedrunCom.Run;
-	}[];
+	try {
+		const userLeaderboard = await GetUserLeaderboard({ userId: user.id });
+		userLeaderboard.runs.forEach((run) => {
+			if (games.includes(run.gameId)) return;
+			else games.push(run.gameId);
+		});
+	} catch (e) {
+		console.error("Error in games command, using fallback logic", e);
+		const res = await fetch(`${SRC_API}/users/${user.id}/personal-bests`, {
+			signal,
+		});
+		const runs = (await res.json()).data as {
+			place: number;
+			run: SpeedrunCom.Run;
+		}[];
 
-	runs.forEach((run) => {
-		if (games.includes(run.run.game)) return;
-		else games.push(run.run.game);
-	});
+		runs.forEach((run) => {
+			if (games.includes(run.run.game)) return;
+			else games.push(run.run.game);
+		});
+	}
 
 	if (outputType === MarkupType.Object) return { games: games.length };
 
