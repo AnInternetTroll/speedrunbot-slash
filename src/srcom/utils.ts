@@ -5,7 +5,6 @@ import { delay, TimeDelta } from "../../deps_general.ts";
 import { GetSearch, Language } from "../../deps_server.ts";
 export const SRC_URL = "https://www.speedrun.com";
 export const SRC_API = `${SRC_URL}/api/v1`;
-export const CACHE_KEY = `srcom-v1`;
 
 export interface Opts {
 	outputType?: MarkupType;
@@ -36,46 +35,16 @@ export async function fetch(
 	input: string | URL | Request,
 	init?: RequestInit | undefined,
 ): Promise<Response> {
-	// Caching logic summed up
-	// 1. Save every response in the cache, and by extension their date and etag values
-	// 2. When we need to make a new call, check if we have something in
-	//   our cache and if it's not a day old, then ask speedrun.com if what
-	//   we have is still actual (Send ETag as If-None-Match)
-	// 3. If speedrun.com says what we have is good then we use the cache,
-	//   if not then we ask speedrun.com for something new and save that in
-	//   cache instead
-	const cache = await caches.open(CACHE_KEY);
-	const req = new Request(input, {
+	const res = await globalThis.fetch(input, {
 		...init,
 		headers: {
 			...init?.headers,
 			"User-Agent": "aninternettroll/speedrunbot-slash",
 		},
 	});
-	const match = await cache.match(req);
-	const date = match?.headers.get("date");
-	const dayAgo = new Date();
-	dayAgo.setDate(dayAgo.getDate() - 1);
-	const cacheOutdated = !!date && new Date(date).getTime() < dayAgo.getTime();
-	if (!match || cacheOutdated) {
-		const res = await globalThis.fetch(req);
-		if (res.status >= 500) {
-			throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
-		} else {
-			await cache.put(req, res.clone());
-			return res;
-		}
-	}
-	const etag = match.headers.get("ETag");
-	if (etag) req.headers.append("If-None-Match", etag);
-	const res = await globalThis.fetch(req);
 	if (res.status >= 500) {
 		throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
-	} else if (res.status === 304) {
-		return match;
 	} else {
-		req.headers.delete("ETag");
-		await cache.put(req, res);
 		return res;
 	}
 }
