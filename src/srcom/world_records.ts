@@ -16,6 +16,8 @@ export async function worldRecords(
 	let individualLevelRuns = 0;
 	const user = await getUser(username);
 	if (!user) throw new CommandError(`${username} user not found.`);
+	const gameObjs = await getGames(games);
+
 	const output: string[] = [];
 	try {
 		const userLeaderboard = await GetUserLeaderboard({
@@ -26,7 +28,7 @@ export async function worldRecords(
 			if (
 				run.place === 1 &&
 				(!games.length ||
-					userLeaderboard.games.find((game) => game.id === run.gameId))
+					gameObjs.find((game) => game.id === run.gameId))
 			) {
 				if (run.levelId) individualLevelRuns++;
 				else fullGameRuns++;
@@ -34,8 +36,6 @@ export async function worldRecords(
 		});
 	} catch (e) {
 		console.error("Error in world_records command, using fallback logic", e);
-		const gameObjs = await getGames(games);
-
 		const res = await fetch(
 			`${SRC_API}/users/${user.id}/personal-bests?top=1`,
 		);
@@ -54,16 +54,16 @@ export async function worldRecords(
 				else fullGameRuns++;
 			}
 		});
-
-		output.push(
-			`World Record Count: ${user.names.international}${
-				gameObjs.length
-					? " - " +
-						gameObjs.map((game) => game.names.international).join(" and ")
-					: ""
-			}`,
-		);
 	}
+
+	output.push(
+		`World Record Count: ${user.names.international}${
+			gameObjs.length
+				? " - " +
+					gameObjs.map((game) => game.names.international).join(" and ")
+				: ""
+		}`,
+	);
 	output.push(`${fmt.bold("Fullgame")}: ${fullGameRuns}`);
 	output.push(`${fmt.bold("Individual Level")}: ${individualLevelRuns}`);
 

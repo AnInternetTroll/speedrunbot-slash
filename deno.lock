@@ -9,6 +9,7 @@
       "jsr:@std/io@0.217": "jsr:@std/io@0.217.0",
       "jsr:@std/path@^0.217.0": "jsr:@std/path@0.217.0",
       "npm:@evan/wasm@0.0.95": "npm:@evan/wasm@0.0.95",
+      "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:ts-mixer@6.0.0": "npm:ts-mixer@6.0.0"
     },
     "jsr": {
@@ -43,6 +44,10 @@
     "npm": {
       "@evan/wasm@0.0.95": {
         "integrity": "sha512-fWW2p6iNhEVhsMStf3gj4UD+IQz2TZFunqRPjSeKYlVUHyoLoStNrW3XaiiEj4b7u/0mUPcvT4oYAauerDWF/Q==",
+        "dependencies": {}
+      },
+      "@types/node@18.16.19": {
+        "integrity": "sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==",
         "dependencies": {}
       },
       "ts-mixer@6.0.0": {
