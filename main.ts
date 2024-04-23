@@ -1,5 +1,4 @@
 #!/usr/bin/env -S deno run --allow-net --allow-read --no-check --watch --location=http://speedrunbot-slash/
-import { serve } from "./deps_server.ts";
 import { config } from "./src/config.ts";
 import { handler } from "./src/pages/mod.tsx";
 import { commands as srcCommands } from "./src/srcom/slash_commands.tsx";
@@ -31,6 +30,6 @@ if (import.meta.main) {
 		}
 	}
 	if ((await Deno.permissions.query({ name: "net" })).state === "granted") {
-		serve(handler);
+		Deno.serve(handler);
 	} else console.warn("Webserver is NOT running!");
 }
