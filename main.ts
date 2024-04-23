@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-net --allow-read=.env --no-check --watch
+#!/usr/bin/env -S deno run --allow-net --allow-read=.env --no-check --watch --location=http://speedrunbot-slash/
 import { serve } from "./deps_server.ts";
 import { config } from "./src/config.ts";
 import { handler } from "./src/pages/mod.tsx";
