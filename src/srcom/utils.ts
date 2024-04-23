@@ -1,4 +1,3 @@
-#!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
 import type { Format, MarkupType } from "./fmt.ts";
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
@@ -6,6 +5,7 @@ import { GetSearch, Language } from "../../deps_server.ts";
 export const SRC_URL = "https://www.speedrun.com";
 export const SRC_API = `${SRC_URL}/api/v1`;
 export const CACHE_KEY = `srcom-v1`;
+const cacheAvailable = typeof caches !== "undefined";
 
 export interface Opts {
 	outputType?: MarkupType;
@@ -44,7 +44,6 @@ export async function fetch(
 	// 3. If speedrun.com says what we have is good then we use the cache,
 	//   if not then we ask speedrun.com for something new and save that in
 	//   cache instead
-	const cache = await caches.open(CACHE_KEY);
 	const req = new Request(input, {
 		...init,
 		headers: {
@@ -52,31 +51,42 @@ export async function fetch(
 			"User-Agent": "aninternettroll/speedrunbot-slash",
 		},
 	});
-	const match = await cache.match(req);
-	const date = match?.headers.get("date");
-	const dayAgo = new Date();
-	dayAgo.setDate(dayAgo.getDate() - 1);
-	const cacheOutdated = !!date && new Date(date).getTime() < dayAgo.getTime();
-	if (!match || cacheOutdated) {
+	if (cacheAvailable) {
+		const cache = await caches.open(CACHE_KEY);
+		const match = await cache.match(req);
+		const date = match?.headers.get("date");
+		const dayAgo = new Date();
+		dayAgo.setDate(dayAgo.getDate() - 1);
+		const cacheOutdated = !!date && new Date(date).getTime() < dayAgo.getTime();
+		if (!match || cacheOutdated) {
+			const res = await globalThis.fetch(req);
+			if (res.status >= 500) {
+				throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
+			} else {
+				await cache.put(req, res.clone());
+				return res;
+			}
+		}
+		const etag = match.headers.get("ETag");
+		if (etag) req.headers.append("If-None-Match", etag);
+		const res = await globalThis.fetch(req);
+		if (res.status >= 500) {
+			throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
+		} else if (res.status === 304) {
+			return match;
+		} else {
+			req.headers.delete("ETag");
+			await cache.put(req, res);
+			return res;
+		}
+	} else {
+		// Fallback, we have no cache
 		const res = await globalThis.fetch(req);
 		if (res.status >= 500) {
 			throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
 		} else {
-			await cache.put(req, res.clone());
 			return res;
 		}
-	}
-	const etag = match.headers.get("ETag");
-	if (etag) req.headers.append("If-None-Match", etag);
-	const res = await globalThis.fetch(req);
-	if (res.status >= 500) {
-		throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
-	} else if (res.status === 304) {
-		return match;
-	} else {
-		req.headers.delete("ETag");
-		await cache.put(req, res);
-		return res;
 	}
 }
 
