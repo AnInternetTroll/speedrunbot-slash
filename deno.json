@@ -4,8 +4,8 @@
 		"useTabs": true
 	},
 	"tasks": {
-		"start": "deno run --allow-net --allow-read=.env main.ts",
-		"dev": "deno run --allow-net --allow-read=.env --check --watch main.ts & deno task lint --watch",
+		"start": "deno run --allow-env=TOKEN,TEST_SERVER,CLIENT_SECRET,PUBLIC_KEY --allow-net --allow-read --location=http://speedrunbot-slash/ --no-check --no-prompt main.ts",
+		"dev": "deno run --allow-net --allow-read --check --watch --no-prompt main.ts & deno task lint --watch",
 		"test": "deno test --allow-net",
 		"fmt": "deno fmt",
 		"lint": "deno lint",

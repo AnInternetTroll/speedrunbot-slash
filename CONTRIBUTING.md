@@ -13,12 +13,12 @@
 ```
 
 If you want to add a new website support just make a new folder in `src` with a
-prefered abbreviation of the site, such as `srcom` or `mkr` or `halo`.
+preferred abbreviation of the site, such as `srcom` or `mkr` or `halo`.
 
-It is strongly prefered that commands can be executed outside of the context of
+It is strongly preferred that commands can be executed outside of the context of
 a discord bot, such as `./src/srcom/whois.ts aninternettroll`.
 
-It is strongly prefered that commands don't use any `Deno` APIs, as most
+It is strongly preferred that commands don't use any `Deno` APIs, as most
 commands could be executed in the context of a browser. An exception to this can
 be if the `Deno` API works on [Deno Deploy](https://deno.com/deploy) as well.
 
@@ -48,7 +48,7 @@ deno task dev
 The permissions required are as follows:
 
 - allow-read
-  - . (to read the `.env` file)
+  - Used to read the `.env` file, as well as deno's cache for some wasm modules
 - allow-env (to read `TOKEN` and `TEST_SERVER`)
 - allow-net
   - www.speedrun.com (for the speedrun.com api)
