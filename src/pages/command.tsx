@@ -21,14 +21,10 @@ export async function Command({ req }: CommandProps) {
 	const match = ROUTE.exec(req.url);
 	if (!match) return "oh oh";
 	const cmd = commands.find((c) => match.pathname.groups.name === c.name);
-	if (
-		!match.pathname.groups.name ||
-		!cmd
-	) {
+	if (!match.pathname.groups.name || !cmd) {
 		return "command not found";
 	}
 	const url = new URL(req.url);
-	// const params = new URLSearchParams(req.url);
 	const params = url.searchParams;
 	const out = await executeCommand(cmd.name, params);
 	return renderPage(<Page out={out} cmd={cmd} params={params} />);
@@ -46,47 +42,71 @@ function Page({ cmd, out, params }: PageProps) {
 		<div>
 			<h1>Speedrun.bot</h1>
 			<p>
-				This is the command page of speedrun.bot
+				This is the <b>{cmd.name}</b> command page of speedrun.bot
 			</p>
 			<form>
-				{cmd.name}
 				{cmd.options?.map((o) => {
 					switch (o.type) {
 						case SlashCommandOptionType.STRING:
 							return (
-								<label>
-									{o.name}
-									<input name={o.name} type="text" />
+								<label for={`form-${cmd.name}-${o.name}`}>
+									{o.name}:
+									<br />
+									<input
+										id={`form-${cmd.name}-${o.name}`}
+										name={o.name}
+										type="text"
+										value={params.get(o.name)}
+									/>
+									<br />
 								</label>
 							);
 						case SlashCommandOptionType.BOOLEAN:
 							// <input name={o.name} type="checkbox" />
 							return (
-								<label>
-									{o.name}
-									<select name={o.name}>
-										<option value="undefined">
-											Both
-										</option>
-										<option value="false">
-											No
-										</option>
-										<option value="true">
-											Yes
-										</option>
-									</select>
-								</label>
+								<fieldset>
+									<legend>{o.name}</legend>
+									<label>
+										<input
+											name={o.name}
+											checked={params.get(o.name) === "undefined"}
+											type="radio"
+											value="undefined"
+										/>
+										Both
+									</label>
+									<label>
+										<input
+											name={o.name}
+											checked={params.get(o.name) === "false"}
+											type="radio"
+											value="false"
+										/>
+										No
+									</label>
+									<label>
+										<input
+											name={o.name}
+											checked={params.get(o.name) === "true"}
+											type="radio"
+											value="true"
+										/>
+										Yes
+									</label>
+								</fieldset>
 							);
 					}
 				})}
-				<button type="submit" action="GET">Execute</button>
+				<br />
+				<button type="submit" action="GET">
+					Execute
+				</button>
 			</form>
 			<h2>{header}</h2>
 			<ul>
-				{rows.map((r) => <li
-					dangerouslySetInnerHTML={{ __html: r }}
-					key={r}
-				/>)}
+				{rows.map((r) => (
+					<li dangerouslySetInnerHTML={{ __html: r }} key={r} />
+				))}
 			</ul>
 		</div>
 	);
@@ -106,14 +126,9 @@ async function executeCommand(
 			console.log(user, game, status, examiner, emulated, args);
 
 			try {
-				return await runs(
-					user,
-					game,
-					status,
-					examiner,
-					emulated,
-					{ outputType: MarkupType.Browser },
-				);
+				return await runs(user, game, status, examiner, emulated, {
+					outputType: MarkupType.Browser,
+				});
 			} catch (err) {
 				console.error(err);
 				return err.message;
