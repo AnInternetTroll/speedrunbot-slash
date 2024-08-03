@@ -23,6 +23,7 @@ export type {
 	Interaction,
 	MessageComponentInteraction,
 	SlashCommandPartial,
+	ApplicationCommandPartial,
 } from "https://raw.githubusercontent.com/harmonyland/harmony/b890958215c020d33866846510fc3e19f6295cec/mod.ts";
 
 export { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";

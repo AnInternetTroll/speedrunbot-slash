@@ -1,6 +1,7 @@
 /** @jsx h */
 import { h } from "../../deps_server.ts";
 import { client } from "../client.ts";
+import { commands } from "../srcom/slash_commands.tsx";
 import { DISCORD_URL, renderPage } from "../utils.ts";
 
 export default () => renderPage(<Home />);
@@ -22,6 +23,18 @@ export function Home() {
 					</a>
 				)
 				: "Loading..."}
+			<div>
+				<p>Command</p>
+				<ul>
+					{commands.map((c) => (
+						<li key={c.name}>
+							<a href="TODO">
+								{c.name}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
 		</div>
 	);
 }

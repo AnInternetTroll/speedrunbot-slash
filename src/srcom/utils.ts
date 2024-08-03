@@ -76,7 +76,7 @@ export async function fetch(
 			return match;
 		} else {
 			req.headers.delete("ETag");
-			await cache.put(req, res);
+			await cache.put(req, res.clone());
 			return res;
 		}
 	} else {

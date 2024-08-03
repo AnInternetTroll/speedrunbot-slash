@@ -1,4 +1,7 @@
-import { bold as boldTerminal } from "../../deps_general.ts";
+import { bold as boldTerminal, DOMPurify, JSDOM } from "../../deps_general.ts";
+
+const window = new JSDOM('').window;
+const purify = DOMPurify.default(window);
 
 export enum MarkupType {
 	Browser,
@@ -47,10 +50,10 @@ export class Format {
 	constructor(markup: MarkupType) {
 		this.markup = markup;
 	}
-	bold(string: string, markupOpt: MarkupType = MarkupType.Plain): string {
-		switch (this.markup || markupOpt) {
+	bold(string: string): string {
+		switch (this.markup) {
 			case MarkupType.Browser:
-				return `<b>${string}</b>`;
+				return `<b>${purify.sanitize(string)}</b>`;
 			case MarkupType.Markdown:
 				return `**${string}**`;
 			case MarkupType.Terminal:
@@ -63,11 +66,17 @@ export class Format {
 	link(
 		link: string,
 		name: string | false = false,
-		markupOpt: MarkupType = MarkupType.Plain,
 	): string {
-		switch (this.markup || markupOpt) {
+		switch (this.markup) {
 			case MarkupType.Markdown:
 				if (name) return `[${name}](${link})`;
+				/* falls through */
+			case MarkupType.Browser:
+				if (name) {
+					return `<a href="${purify.sanitize(link)}">${
+						purify.sanitize(name)
+					}</a>`;
+				}
 				/* falls through */
 			default:
 				return link;

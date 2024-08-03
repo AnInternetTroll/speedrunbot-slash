@@ -1,7 +1,5 @@
 #!/usr/bin/env -S deno run --allow-net=irc.libera.chat,www.speedrun.com --allow-read --no-check --watch --no-prompt --location=http://speedrunbot-slash/
-import { Client } from "https://deno.land/x/irc@v0.15.0/mod.ts";
-import { parse } from "https://esm.sh/shell-quote@1.8.1";
-import { parseFlags } from "https://deno.land/x/cliffy@v1.0.0-rc.4/flags/mod.ts";
+import { Client, parse, parseFlags } from "./deps_irc.ts";
 import { runs } from "./src/srcom/runs.ts";
 import { MarkupType } from "./src/srcom/fmt.ts";
 

@@ -4,11 +4,13 @@ import { h, STATUS_CODE } from "../../deps_server.ts";
 // Frontend
 import Index from "./index.tsx";
 import Admin from "./admin.tsx";
+import Command from "./command.tsx";
 // API
 import DiscordInteractions from "./api/discord/interactions.ts";
 import ExaminedLeaderboard from "./api/v1/srcom/examined_leaderboard.ts";
 import logout from "./logout.ts";
 import { ApiError, renderPage } from "../utils.ts";
+import { commands } from "../srcom/slash_commands.tsx";
 
 const routes: Record<
 	string,
@@ -20,6 +22,10 @@ const routes: Record<
 	"/admin": Admin,
 	"/logout": logout,
 };
+
+for (const c of commands) {
+	routes[`/command/${c.name}`] = Command;
+}
 
 export async function handler(req: Request): Promise<Response> {
 	const { pathname } = new URL(req.url);
