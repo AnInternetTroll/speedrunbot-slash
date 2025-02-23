@@ -1,54 +1,60 @@
 {
-  "version": "3",
-  "packages": {
-    "specifiers": {
-      "jsr:@std/assert@^0.217.0": "jsr:@std/assert@0.217.0",
-      "jsr:@std/bytes@^0.217.0": "jsr:@std/bytes@0.217.0",
-      "jsr:@std/encoding@0.217": "jsr:@std/encoding@0.217.0",
-      "jsr:@std/fs@0.217": "jsr:@std/fs@0.217.0",
-      "jsr:@std/io@0.217": "jsr:@std/io@0.217.0",
-      "jsr:@std/path@^0.217.0": "jsr:@std/path@0.217.0",
-      "npm:@evan/wasm@0.0.95": "npm:@evan/wasm@0.0.95",
-      "npm:ts-mixer@6.0.0": "npm:ts-mixer@6.0.0"
+  "version": "4",
+  "specifiers": {
+    "jsr:@std/assert@0.217": "0.217.0",
+    "jsr:@std/bytes@0.217": "0.217.0",
+    "jsr:@std/encoding@0.217": "0.217.0",
+    "jsr:@std/fs@0.217": "0.217.0",
+    "jsr:@std/io@0.217": "0.217.0",
+    "jsr:@std/path@0.217": "0.217.0",
+    "npm:@evan/wasm@0.0.95": "0.0.95",
+    "npm:@types/node@*": "22.5.4",
+    "npm:ts-mixer@6.0.0": "6.0.0"
+  },
+  "jsr": {
+    "@std/assert@0.217.0": {
+      "integrity": "c98e279362ca6982d5285c3b89517b757c1e3477ee9f14eb2fdf80a45aaa9642"
     },
-    "jsr": {
-      "@std/assert@0.217.0": {
-        "integrity": "c98e279362ca6982d5285c3b89517b757c1e3477ee9f14eb2fdf80a45aaa9642"
-      },
-      "@std/bytes@0.217.0": {
-        "integrity": "58209975707478fe12423d0b3270f4d400fd135a4edb1f50eeca8f92e34e6580"
-      },
-      "@std/encoding@0.217.0": {
-        "integrity": "b03e8ff94c98d6b6a02c02c5cf8e5d203400155516248964fc4559abc04669dc"
-      },
-      "@std/fs@0.217.0": {
-        "integrity": "0bfff5f3618d68c385b28b4ffbf3a15c98293a0f1186444458b62e0111ce77b2",
-        "dependencies": [
-          "jsr:@std/path@^0.217.0"
-        ]
-      },
-      "@std/io@0.217.0": {
-        "integrity": "08d3dd7c10956d1433be95306ec15179cdebe49a0ce5a74238fabf140bb74382",
-        "dependencies": [
-          "jsr:@std/bytes@^0.217.0"
-        ]
-      },
-      "@std/path@0.217.0": {
-        "integrity": "1217cc25534bca9a2f672d7fe7c6f356e4027df400c0e85c0ef3e4343bc67d11",
-        "dependencies": [
-          "jsr:@std/assert@^0.217.0"
-        ]
-      }
+    "@std/bytes@0.217.0": {
+      "integrity": "58209975707478fe12423d0b3270f4d400fd135a4edb1f50eeca8f92e34e6580"
     },
-    "npm": {
-      "@evan/wasm@0.0.95": {
-        "integrity": "sha512-fWW2p6iNhEVhsMStf3gj4UD+IQz2TZFunqRPjSeKYlVUHyoLoStNrW3XaiiEj4b7u/0mUPcvT4oYAauerDWF/Q==",
-        "dependencies": {}
-      },
-      "ts-mixer@6.0.0": {
-        "integrity": "sha512-nXIb1fvdY5CBSrDIblLn73NW0qRDk5yJ0Sk1qPBF560OdJfQp9jhl+0tzcY09OZ9U+6GpeoI9RjwoIKFIoB9MQ==",
-        "dependencies": {}
-      }
+    "@std/encoding@0.217.0": {
+      "integrity": "b03e8ff94c98d6b6a02c02c5cf8e5d203400155516248964fc4559abc04669dc"
+    },
+    "@std/fs@0.217.0": {
+      "integrity": "0bfff5f3618d68c385b28b4ffbf3a15c98293a0f1186444458b62e0111ce77b2",
+      "dependencies": [
+        "jsr:@std/path"
+      ]
+    },
+    "@std/io@0.217.0": {
+      "integrity": "08d3dd7c10956d1433be95306ec15179cdebe49a0ce5a74238fabf140bb74382",
+      "dependencies": [
+        "jsr:@std/bytes"
+      ]
+    },
+    "@std/path@0.217.0": {
+      "integrity": "1217cc25534bca9a2f672d7fe7c6f356e4027df400c0e85c0ef3e4343bc67d11",
+      "dependencies": [
+        "jsr:@std/assert"
+      ]
+    }
+  },
+  "npm": {
+    "@evan/wasm@0.0.95": {
+      "integrity": "sha512-fWW2p6iNhEVhsMStf3gj4UD+IQz2TZFunqRPjSeKYlVUHyoLoStNrW3XaiiEj4b7u/0mUPcvT4oYAauerDWF/Q=="
+    },
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
+    "ts-mixer@6.0.0": {
+      "integrity": "sha512-nXIb1fvdY5CBSrDIblLn73NW0qRDk5yJ0Sk1qPBF560OdJfQp9jhl+0tzcY09OZ9U+6GpeoI9RjwoIKFIoB9MQ=="
+    },
+    "undici-types@6.19.8": {
+      "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
     }
   },
   "remote": {
@@ -209,69 +215,69 @@
     "https://deno.land/x/redis@v0.25.1/vendor/https/deno.land/std/io/buffer.ts": "e37482327f62d4b602adaa4c9737a8c9ca05e0471d555e13adc6930134572f81",
     "https://esm.sh/@silane/datetime@1.5.1?pin=v135": "c718212a765108da5315099e4c4fbe2d82ee4774617edfcf08164516afcec845",
     "https://esm.sh/v135/@silane/datetime@1.5.1/denonext/datetime.mjs": "5c3b0cd71bd48ea486816111e133deefa0f8a9be80d6dc77e87630b0dd9d9085",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/deps.ts": "4352a837450b0f2b0a5568b9626bb6ab548da1ad98defb3bdf902c73f5eb48db",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/mod.ts": "6f95ea21e39cd67725febb8fe89f173366612333cad31eff6224666330e24d53",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/GetCommentList.ts": "d5ef9d535619824223986575c5ac9584f5824889280480ba3a2a8b4e4a6f09aa",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/GetCommentListParams.ts": "149ee544d70434c72bd9af75d402d477188de259e38c6c3ae851906f46f5b322",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/GetCommentListResponse.ts": "041b4601d4dc6ca2eb807b5bc0ae6fc8b18a11b1893b4fb365caad5283f746a8",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/mod.ts": "2e6a0180ed9f7d80b6c010e29c5de40f45e76482e7e8e993614e46469c726455",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/GetForumList.ts": "3f51250b822af3c736ea1f3e8c589df253e24071247b9d1f035de54d32d2113a",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/GetForumListParams.ts": "f51f446beef5ee410317bd3b208cbaaa8dbefea03b9a6af09bbb71c08baedd23",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/GetForumListResponse.ts": "0f14a2ceff710ca91728d572fefae0b3415f47e8c648bfbb66379a542f449cd2",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/mod.ts": "ff3d42bccc170ed935724f7a17d412e59fae4f7a38bc0eb582cafdc3dc6e8ab6",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/GetGameLeaderboard2.ts": "4dc2d597ed8b8c681b5db98e950b01432e12a052ed7c0fa6f0b435fafb5540df",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/GetGameLeaderboard2Params.ts": "18f2a069878f4ced53da76fdcf406e3ef9858d4948a3b1574718d12ddabf4b4b",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/GetGameLeaderboard2Response.ts": "ff26bfc13deb74dc8c7163dd709d0b611d773abd8fe71ee777fc8a4d8a120c86",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/mod.ts": "999b304fce572f919e8cc7b4f9305ff5b6e53008b904a584dab700869671cd03",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/GetSearch.ts": "ee6aae1467cd9eef04016245869e6c0b364747075b958e8f576cdc09d2df607c",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/GetSearchParams.ts": "aa1470f75125ec4be32642efd628a1885abf758c04b9b785f3c096dbb1467c84",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/GetSearchResponse.ts": "61f7aacc78648faa6bf1f65e82fd7e867b997f55a0bca9e6d6846ca9b6cc58bd",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/mod.ts": "4f39020cb65109ed428f0997755c0b7becb3f0643cc9770377efe4e04ac9ef0e",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/GetThread.ts": "83dbd280b21309b7fe3422430f82f89e4903d85689e99f8902bbb1a3b5bd0a2e",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/GetThreadParams.ts": "09039a4ce20a06b71d4ba508c4409d80ec75ec58ba572eb51d8bdaf978f2ba4d",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/GetThreadResponse.ts": "bbffa7e3286c0d80f6a8de516965ffcf88c660c18a1c3ee7156c6fde2d21f84f",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/mod.ts": "d2dfc8d1b66188d9c837d6162630601c85f3035e403e81345754fb3a8c9d6169",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/GetThreadList.ts": "4a4182a4de8fb5abf542d5d414bb8f76fb159c0cbd58d678e7054397f8583956",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/GetThreadListParams.ts": "0694c00f7e5a590bfa4453cf770568497d84d346f05a7bbaa826289394c63743",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/GetThreadListResponse.ts": "cc9b3a1bb8c2b0874df4e80bf34cbb15803e2ec1d5f0808b9cc87b5e04f2f49c",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/mod.ts": "612fe2353f870471c3409999a3d46bc9379a86ebe7aceaa00deb1dad2a0e87d3",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/GetUserLeaderboard.ts": "1e23154b93a1f83d25b821fd1eafff0d3a76df22f5a6d1b9264d0b79c070a7f1",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/GetUserLeaderboardParams.ts": "7e3bec95ac7a2974a3c886941e4fb3e52fe08ad88890d9f94164de55d77b9ff5",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/GetUserLeaderboardResponse.ts": "a1359ad550d1fb6b244a23a0951e787773e72ba5bf2ba7eee502354e69e059ab",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/mod.ts": "0ea2f72a7b58fd66d2ca50fdff3bbbba7609a164c3ea1f9d0fb96f8b3803c785",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutAuthSignup/PutAuthSignup.ts": "862e3cd86be2343373da1e222e7fe51135ee3c33bc3b82f46b9bd7e41450b273",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutAuthSignup/PutAuthSignupBody.ts": "f93ee89913a06ea57b27d157e5c7cfba507655e3911bac976ed8bf36d9fff7c2",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutAuthSignup/mod.ts": "1c5031e0829ec6338286acba3b08c6d1c3fa5233ac1ffeaf0d4de534f5e6e93e",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutGameBoostGrant/PutGameBoostGrant.ts": "11226cace40ea5e6b1a5083a7d86715fe619178cae2accc45573d7bbfbbf9a0a",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutGameBoostGrant/mod.ts": "4f98fa8760d384c306485453a776c072d8ec596fb3d6198795cb6afd73aef2aa",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/constants.ts": "6a6506eb9efbc10e941db8cb1f6817877d2309a0990946a2a17f1758c4b91abe",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/AssetType.ts": "e2c1a9d8a852a97a51711f25631921401893ba7702f4ef834516ddbf8bf391e5",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Category.ts": "c96ce5c168363d71ddfe17cba0457111a43dde6bd78100a865b6840648ecfed0",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Challenge.ts": "4870dadd0cc66ef5fb6e3c5a95a63ddee17d271e4ed47f48c11eef20f1d0fdf1",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/EventType.ts": "b78e69ba9e2d8bea7bea8882315e416e563c537d4fc6d180c734bbf0103952ff",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/GameOrderGroup.ts": "609b0c7ee62f62e3a59035e682c0be0afa0d2ec08e314ac56290f81f3f0c88f6",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/GameOrdering.ts": "84c069365c5c1c4bda98ebed5d2f83614c88ebe9896be0e11fccb182ff242e97",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Level.ts": "9e67995202dc85295eae022cb3676fdd829326ba3b88807649d75f67c0de2926",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/ModeratorType.ts": "da0dfb57afd9920ac15d0e1a35d2184bb322abda0c626debb2184f864d07e5e6",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Platform.ts": "17cd9c26dd65c92824afd21e3c4de28445247bc97a206336ecb476ff085649ac",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Player.ts": "241ad187decc3e87ec054d617043b0d2e0d6685dc8812f3cd2e5ca3ec519acd8",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Prize.ts": "530d50550ed89e0c03950c465870f6b304a943e47a03f12ff6ecf7f35e70bb10",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/PrizeConfig.ts": "f4af8b7884237b218ed16bcf4c374a711c86cbbbe9bb43d1c9f4b71400a579bd",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Region.ts": "a669c3da4a38ce167b7742bba0f985ed154bfaac04547e8df07d30a16c665064",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Run.ts": "7d43df92a1c205d0c60af9db37d3f4ccd1c5a688423dfb55e8b8630ce1bbfede",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/UserProfile.ts": "c8a7c26e17a7d531c5c7465ee4433f21cde90b779cc77452385cc16f3480883f",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Value.ts": "29e067be63490fca653dc7fb6515321febd150f55ac5729daf238943a7b9f26d",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Variable.ts": "b2d0928982b98f517881600b37306b8cc7be2d51967e2674a67708464578be46",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/game.ts": "422739038c4aca54a8051a34a8ac8ec09aa62738e1931287c3a37360e7615e6b",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/language.ts": "23cfe017a4df9a295f99d4081747da0e818b437d9c4960797a267370e3a47d03",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/mod.ts": "e91561d025792a1d1ad203eae1713196935e58c585e5916c31230503f61f5ed7",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/pagination.ts": "1947775173f694eb9ce54180011eba705e48d2a9abbd44f60bd335098e3d3933",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/staticAsset.ts": "abe63b79e7214e15b08d97dc679bec69e74504773cc13075a210bf27f1e74e28",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/user.ts": "b16f65de7efbb9fd3affb459fc9c54a2f1c9e43eb0f5a45b064d5979c83aabef",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/SpeedruncomError.ts": "f82aab1e9a567693ca143311e0b0ad0883af503621b8e66778aac5a43445a249",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/mod.ts": "c049bba62e487635a64294f7d51db93ea245e5d4b434f7b7c7a760fec3370234",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/options.ts": "e28420b4f84adc409ea59f0c4aa9985aaf9698b1920b8397d177cdcb55297cf1",
-    "https://git.sr.ht/~aninternettroll/speedruncomapiv2/blob/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/requests.ts": "7d0d687950d7964870778fe3c54a9e6cf3d7a96d818b20375a2a914ba63fa955",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/deps.ts": "4352a837450b0f2b0a5568b9626bb6ab548da1ad98defb3bdf902c73f5eb48db",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/mod.ts": "6f95ea21e39cd67725febb8fe89f173366612333cad31eff6224666330e24d53",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/GetCommentList.ts": "d5ef9d535619824223986575c5ac9584f5824889280480ba3a2a8b4e4a6f09aa",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/GetCommentListParams.ts": "149ee544d70434c72bd9af75d402d477188de259e38c6c3ae851906f46f5b322",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/GetCommentListResponse.ts": "041b4601d4dc6ca2eb807b5bc0ae6fc8b18a11b1893b4fb365caad5283f746a8",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetCommentList/mod.ts": "2e6a0180ed9f7d80b6c010e29c5de40f45e76482e7e8e993614e46469c726455",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/GetForumList.ts": "3f51250b822af3c736ea1f3e8c589df253e24071247b9d1f035de54d32d2113a",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/GetForumListParams.ts": "f51f446beef5ee410317bd3b208cbaaa8dbefea03b9a6af09bbb71c08baedd23",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/GetForumListResponse.ts": "0f14a2ceff710ca91728d572fefae0b3415f47e8c648bfbb66379a542f449cd2",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetForumList/mod.ts": "ff3d42bccc170ed935724f7a17d412e59fae4f7a38bc0eb582cafdc3dc6e8ab6",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/GetGameLeaderboard2.ts": "4dc2d597ed8b8c681b5db98e950b01432e12a052ed7c0fa6f0b435fafb5540df",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/GetGameLeaderboard2Params.ts": "18f2a069878f4ced53da76fdcf406e3ef9858d4948a3b1574718d12ddabf4b4b",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/GetGameLeaderboard2Response.ts": "ff26bfc13deb74dc8c7163dd709d0b611d773abd8fe71ee777fc8a4d8a120c86",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetGameLeaderboard2/mod.ts": "999b304fce572f919e8cc7b4f9305ff5b6e53008b904a584dab700869671cd03",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/GetSearch.ts": "ee6aae1467cd9eef04016245869e6c0b364747075b958e8f576cdc09d2df607c",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/GetSearchParams.ts": "aa1470f75125ec4be32642efd628a1885abf758c04b9b785f3c096dbb1467c84",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/GetSearchResponse.ts": "61f7aacc78648faa6bf1f65e82fd7e867b997f55a0bca9e6d6846ca9b6cc58bd",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetSearch/mod.ts": "4f39020cb65109ed428f0997755c0b7becb3f0643cc9770377efe4e04ac9ef0e",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/GetThread.ts": "83dbd280b21309b7fe3422430f82f89e4903d85689e99f8902bbb1a3b5bd0a2e",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/GetThreadParams.ts": "09039a4ce20a06b71d4ba508c4409d80ec75ec58ba572eb51d8bdaf978f2ba4d",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/GetThreadResponse.ts": "bbffa7e3286c0d80f6a8de516965ffcf88c660c18a1c3ee7156c6fde2d21f84f",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThread/mod.ts": "d2dfc8d1b66188d9c837d6162630601c85f3035e403e81345754fb3a8c9d6169",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/GetThreadList.ts": "4a4182a4de8fb5abf542d5d414bb8f76fb159c0cbd58d678e7054397f8583956",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/GetThreadListParams.ts": "0694c00f7e5a590bfa4453cf770568497d84d346f05a7bbaa826289394c63743",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/GetThreadListResponse.ts": "cc9b3a1bb8c2b0874df4e80bf34cbb15803e2ec1d5f0808b9cc87b5e04f2f49c",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetThreadList/mod.ts": "612fe2353f870471c3409999a3d46bc9379a86ebe7aceaa00deb1dad2a0e87d3",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/GetUserLeaderboard.ts": "1e23154b93a1f83d25b821fd1eafff0d3a76df22f5a6d1b9264d0b79c070a7f1",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/GetUserLeaderboardParams.ts": "7e3bec95ac7a2974a3c886941e4fb3e52fe08ad88890d9f94164de55d77b9ff5",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/GetUserLeaderboardResponse.ts": "a1359ad550d1fb6b244a23a0951e787773e72ba5bf2ba7eee502354e69e059ab",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/GetUserLeaderboard/mod.ts": "0ea2f72a7b58fd66d2ca50fdff3bbbba7609a164c3ea1f9d0fb96f8b3803c785",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutAuthSignup/PutAuthSignup.ts": "862e3cd86be2343373da1e222e7fe51135ee3c33bc3b82f46b9bd7e41450b273",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutAuthSignup/PutAuthSignupBody.ts": "f93ee89913a06ea57b27d157e5c7cfba507655e3911bac976ed8bf36d9fff7c2",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutAuthSignup/mod.ts": "1c5031e0829ec6338286acba3b08c6d1c3fa5233ac1ffeaf0d4de534f5e6e93e",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutGameBoostGrant/PutGameBoostGrant.ts": "11226cace40ea5e6b1a5083a7d86715fe619178cae2accc45573d7bbfbbf9a0a",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/PutGameBoostGrant/mod.ts": "4f98fa8760d384c306485453a776c072d8ec596fb3d6198795cb6afd73aef2aa",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/constants.ts": "6a6506eb9efbc10e941db8cb1f6817877d2309a0990946a2a17f1758c4b91abe",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/AssetType.ts": "e2c1a9d8a852a97a51711f25631921401893ba7702f4ef834516ddbf8bf391e5",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Category.ts": "c96ce5c168363d71ddfe17cba0457111a43dde6bd78100a865b6840648ecfed0",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Challenge.ts": "4870dadd0cc66ef5fb6e3c5a95a63ddee17d271e4ed47f48c11eef20f1d0fdf1",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/EventType.ts": "b78e69ba9e2d8bea7bea8882315e416e563c537d4fc6d180c734bbf0103952ff",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/GameOrderGroup.ts": "609b0c7ee62f62e3a59035e682c0be0afa0d2ec08e314ac56290f81f3f0c88f6",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/GameOrdering.ts": "84c069365c5c1c4bda98ebed5d2f83614c88ebe9896be0e11fccb182ff242e97",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Level.ts": "9e67995202dc85295eae022cb3676fdd829326ba3b88807649d75f67c0de2926",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/ModeratorType.ts": "da0dfb57afd9920ac15d0e1a35d2184bb322abda0c626debb2184f864d07e5e6",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Platform.ts": "17cd9c26dd65c92824afd21e3c4de28445247bc97a206336ecb476ff085649ac",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Player.ts": "241ad187decc3e87ec054d617043b0d2e0d6685dc8812f3cd2e5ca3ec519acd8",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Prize.ts": "530d50550ed89e0c03950c465870f6b304a943e47a03f12ff6ecf7f35e70bb10",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/PrizeConfig.ts": "f4af8b7884237b218ed16bcf4c374a711c86cbbbe9bb43d1c9f4b71400a579bd",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Region.ts": "a669c3da4a38ce167b7742bba0f985ed154bfaac04547e8df07d30a16c665064",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Run.ts": "7d43df92a1c205d0c60af9db37d3f4ccd1c5a688423dfb55e8b8630ce1bbfede",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/UserProfile.ts": "c8a7c26e17a7d531c5c7465ee4433f21cde90b779cc77452385cc16f3480883f",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Value.ts": "29e067be63490fca653dc7fb6515321febd150f55ac5729daf238943a7b9f26d",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/Variable.ts": "b2d0928982b98f517881600b37306b8cc7be2d51967e2674a67708464578be46",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/game.ts": "422739038c4aca54a8051a34a8ac8ec09aa62738e1931287c3a37360e7615e6b",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/language.ts": "23cfe017a4df9a295f99d4081747da0e818b437d9c4960797a267370e3a47d03",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/mod.ts": "e91561d025792a1d1ad203eae1713196935e58c585e5916c31230503f61f5ed7",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/pagination.ts": "1947775173f694eb9ce54180011eba705e48d2a9abbd44f60bd335098e3d3933",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/staticAsset.ts": "abe63b79e7214e15b08d97dc679bec69e74504773cc13075a210bf27f1e74e28",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/types/user.ts": "b16f65de7efbb9fd3affb459fc9c54a2f1c9e43eb0f5a45b064d5979c83aabef",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/SpeedruncomError.ts": "f82aab1e9a567693ca143311e0b0ad0883af503621b8e66778aac5a43445a249",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/mod.ts": "c049bba62e487635a64294f7d51db93ea245e5d4b434f7b7c7a760fec3370234",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/options.ts": "e28420b4f84adc409ea59f0c4aa9985aaf9698b1920b8397d177cdcb55297cf1",
+    "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/src/utils/requests.ts": "7d0d687950d7964870778fe3c54a9e6cf3d7a96d818b20375a2a914ba63fa955",
     "https://raw.githubusercontent.com/harmonyland/harmony/b890958215c020d33866846510fc3e19f6295cec/deps.ts": "965891529dc16667424d5408824c8363a4e3726b7eedffbd18f8d976854aa473",
     "https://raw.githubusercontent.com/harmonyland/harmony/b890958215c020d33866846510fc3e19f6295cec/mod.ts": "104a4ae8d4a29c99f13c14b9fb7487b9dc8dbe1bb649060f16d4e59feafba1cf",
     "https://raw.githubusercontent.com/harmonyland/harmony/b890958215c020d33866846510fc3e19f6295cec/src/cache/adapter.ts": "227cfd1fca519f8c0c37621c3706fdc249ec9df1043aaaad96894341ffeceb43",

@@ -51,13 +51,13 @@ export default async (req: Request): Promise<Response> => {
 		deleteCookie(headers, "access_token");
 
 		return renderPage(
-			<Admin location={location} message={"Logged out!"} />,
+			<Admin location={location} message="Logged out!" />,
 		);
 	} // The user has triggered a reload
 	else if (req.method === "POST") {
 		if (!access_token) {
 			return renderPage(
-				<Admin location={location} message={"Not logged in"} />,
+				<Admin location={location} message="Not logged in" />,
 			);
 		}
 		const user = await getUserFromToken(access_token);
@@ -73,11 +73,11 @@ export default async (req: Request): Promise<Response> => {
 				config.TEST_SERVER,
 			);
 			return renderPage(
-				<Admin location={location} message={"Commands succesfully updated!"} />,
+				<Admin location={location} message="Commands succesfully updated!" />,
 			);
 		} else {
 			return renderPage(
-				<Admin location={location} message={"Access denied"} />,
+				<Admin location={location} message="Access denied" />,
 			);
 		}
 	} // The user just came back from discord
