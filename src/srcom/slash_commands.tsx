@@ -377,7 +377,6 @@ async function sendCommand(
 		i: ApplicationCommandInteraction,
 		signal: AbortSignal,
 	) => Promise<string>,
-	{ defer = true }: { defer?: boolean } = {},
 ) {
 	const controller = new AbortController();
 	const cancelButtonId = crypto.randomUUID();

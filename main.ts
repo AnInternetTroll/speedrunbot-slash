@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-net --allow-read --no-check --watch --no-prompt --location=http://speedrunbot-slash/
+#!/usr/bin/env -S deno run --allow-net --allow-import=git.sr.ht,esm.sh,deno.land,raw.githubusercontent.com,jsr.io --allow-read --no-check --no-prompt --location=http://speedrunbot-slash/
 import { config } from "./src/config.ts";
 import { handler } from "./src/pages/mod.tsx";
 import { commands as srcCommands } from "./src/srcom/slash_commands.tsx";

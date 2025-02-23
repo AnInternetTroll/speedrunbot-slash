@@ -9,7 +9,7 @@
 		"test": "deno test --allow-net",
 		"fmt": "deno fmt",
 		"lint": "deno lint",
-		"check": "deno task fmt --check && deno task lint && deno check --no-lock main.ts",
+		"check": "deno task fmt --check && deno task lint && deno check --no-lock --allow-import=git.sr.ht,esm.sh,deno.land,raw.githubusercontent.com,jsr.io main.ts",
 		"ci": "deno task check"
 	},
 	"compilerOptions": {

@@ -37,7 +37,7 @@ export async function handler(req: Request): Promise<Response> {
 						"Content-Type": "application/json",
 					},
 				});
-			} else return new Response(err);
+			} else return new Response("An unexpected error has occured");
 		}
 	} // If the route is not available
 	// And the client expects an api route

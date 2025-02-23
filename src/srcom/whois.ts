@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-env=NO_COLOR --no-check
+#!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-import=git.sr.ht,esm.sh,deno.land,raw.githubusercontent.com,jsr.io --allow-read --no-check --no-prompt --location=http://speedrunbot-slash/
 import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, getUser } from "./utils.ts";
 import type { Opts } from "./utils.ts";
