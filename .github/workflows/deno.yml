@@ -44,7 +44,7 @@ jobs:
 
       - name: Deploy
         run: |
-          deno install -Arf https://deno.land/x/deploy/deployctl.ts
+          deno install -gArf jsr:@deno/deployctl
 
           deployctl deploy \
             --prod \
