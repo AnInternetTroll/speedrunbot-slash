@@ -1,7 +1,7 @@
-import type { Format, MarkupType } from "./fmt.ts";
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
 import { GetSearch, Language } from "../../deps_server.ts";
+import type { Format, MarkupType } from "./fmt.ts";
 export const SRC_URL = "https://www.speedrun.com";
 export const SRC_API = `${SRC_URL}/api/v1`;
 export const CACHE_KEY = `srcom-v1`;
@@ -63,7 +63,7 @@ export async function fetch(
 			if (res.status >= 500) {
 				throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
 			} else {
-				await cache.put(req, res.clone());
+				await cache.put(req.clone(), res.clone());
 				return res;
 			}
 		}
@@ -76,7 +76,7 @@ export async function fetch(
 			return match;
 		} else {
 			req.headers.delete("ETag");
-			await cache.put(req, res);
+			await cache.put(req.clone(), res.clone());
 			return res;
 		}
 	} else {
@@ -102,7 +102,7 @@ export async function getUser(
 	else {
 		res = await fetch(`${SRC_API}/users/${encodeURI(query)}`, { signal });
 		const data = (await res.json()).data as SpeedrunCom.User;
-		return (res.ok && data) ? data : false;
+		return res.ok && data ? data : false;
 	}
 }
 
@@ -134,10 +134,11 @@ export async function getGames(
 ): Promise<SpeedrunCom.Game[]> {
 	// The filter function should filter out all the `false` stuff.
 	// Trust me bro I got this
-	return (await Promise.all(
-		games.filter((game) => !!game).map((game) => getGame(game, { signal })),
-	))
-		.filter((game) => !!game) as SpeedrunCom.Game[];
+	return (
+		await Promise.all(
+			games.filter((game) => !!game).map((game) => getGame(game, { signal })),
+		)
+	).filter((game) => !!game) as SpeedrunCom.Game[];
 }
 
 export async function getUsers(
@@ -146,13 +147,13 @@ export async function getUsers(
 ): Promise<SpeedrunCom.User[]> {
 	// The filter function should filter out all the `false` stuff.
 	// Trust me bro I got this
-	return (await Promise.all(
-		users.filter((usr) => !!usr).map((username) =>
-			getUser(username, { signal })
-		),
-	)).filter((
-		user,
-	) => !!user) as SpeedrunCom.User[];
+	return (
+		await Promise.all(
+			users
+				.filter((usr) => !!usr)
+				.map((username) => getUser(username, { signal })),
+		)
+	).filter((user) => !!user) as SpeedrunCom.User[];
 }
 
 export async function getAll<T extends ApiData>(
@@ -187,13 +188,14 @@ export async function getAll<T extends ApiData>(
 				if (attempts > 20) break;
 				await delay(30_000);
 			} else if (res.status === 400) {
-				const body = await res.json();
-				// Above 10k speedrun.com just breaks
-				// With this error message
-				if (body.message === "Invalid pagination values.") {
-					lastId = data.at(-1)?.id;
-					break;
-				} else {
+				if (res.headers.get("Content-Type") === "application/json") {
+					const body = await res.json();
+					// Above 10k speedrun.com just breaks
+					// With this error message
+					if (body.message === "Invalid pagination values.") {
+						lastId = data.at(-1)?.id;
+						break;
+					}
 					// This is an unexpected error
 					// So try to walk it off
 					break;
@@ -201,7 +203,7 @@ export async function getAll<T extends ApiData>(
 			}
 			continue;
 		} else attempts = 0;
-		const resJSON = await res.json() as ApiArrayResponse;
+		const resJSON = (await res.json()) as ApiArrayResponse;
 		const lastIdIndex = resJSON.data.findIndex((entry) => {
 			return entry.id === lastId;
 		});
@@ -245,10 +247,7 @@ export async function unofficialGetUserStats(
 
 export function sec2time(timeInSeconds: number): string {
 	const time = new TimeDelta({ seconds: timeInSeconds });
-	return `${time}`.replaceAll(
-		"000",
-		"",
-	);
+	return `${time}`.replaceAll("000", "");
 }
 
 // Adapted from
@@ -278,10 +277,7 @@ type ExtensiveRun = SpeedrunCom.Run & {
 	players: { data: SpeedrunCom.User[] };
 };
 
-export function formatRun(
-	run: ExtensiveRun,
-	fmt: Format,
-): string {
+export function formatRun(run: ExtensiveRun, fmt: Format): string {
 	return `${
 		run.level?.data.name || run.category?.data.name
 			? fmt.link(
@@ -291,26 +287,30 @@ export function formatRun(
 			: run.weblink
 	} ${sec2time(run.times.primary_t)} by ${
 		run.players.data
-			? (run.players
-				.data as (
+			? (
+				run.players.data as (
 					| (SpeedrunCom.User & { rel: "user" })
 					| (SpeedrunCom.Guest & { rel: "guest" })
-				)[]).map((p) =>
-					`${
-						fmt.link(
-							p.rel === "guest" ? p.links[0].uri : p.weblink,
-							p.rel === "guest" ? p.name : p.names.international,
-						)
-					}`
-				).join(" and ")
+				)[]
+			)
+				.map(
+					(p) =>
+						`${
+							fmt.link(
+								p.rel === "guest" ? p.links[0].uri : p.weblink,
+								p.rel === "guest" ? p.name : p.names.international,
+							)
+						}`,
+				)
+				.join(" and ")
 			: "no one :("
 	}`;
 }
 
 export const statuses = {
-	"new": "Pending",
-	"verified": "Verified",
-	"rejected": "Rejected",
+	new: "Pending",
+	verified: "Verified",
+	rejected: "Rejected",
 };
 
 export async function getAllRuns(
@@ -395,11 +395,20 @@ export function getUsersGamesExaminers(
 	{ signal }: { signal?: AbortSignal } = {},
 ): Promise<[SpeedrunCom.User[], SpeedrunCom.Game[], SpeedrunCom.User[]]> {
 	return Promise.all([
-		getUsers((user ? user.split(",") : []).filter((a) => !!a), { signal }),
-		getGames((game ? game.split(",") : []).filter((a) => !!a), { signal }),
-		getUsers((examiner ? examiner.split(",") : []).filter((a) => !!a), {
-			signal,
-		}),
+		getUsers(
+			(user ? user.split(",") : []).filter((a) => !!a),
+			{ signal },
+		),
+		getGames(
+			(game ? game.split(",") : []).filter((a) => !!a),
+			{ signal },
+		),
+		getUsers(
+			(examiner ? examiner.split(",") : []).filter((a) => !!a),
+			{
+				signal,
+			},
+		),
 	]);
 }
 
@@ -410,22 +419,27 @@ interface GameBulk {
 	weblink: string;
 }
 
-export async function searchGames(name: string): Promise<{
-	name: string;
-	abbreviation: string;
-}[]> {
+export async function searchGames(name: string): Promise<
+	{
+		name: string;
+		abbreviation: string;
+	}[]
+> {
 	// GetSearch is unstable, should not be relied upon!!!
 	try {
 		if (name.length <= 1) throw new Error("Short name");
-		const games = await GetSearch({
-			includeGames: true,
-			limit: 20,
-			query: name,
-			includeUsers: false,
-			includeNews: false,
-			includePages: false,
-			includeSeries: false,
-		}, { language: Language.en });
+		const games = await GetSearch(
+			{
+				includeGames: true,
+				limit: 20,
+				query: name,
+				includeUsers: false,
+				includeNews: false,
+				includePages: false,
+				includeSeries: false,
+			},
+			{ language: Language.en },
+		);
 		return games.gameList.map((game) => ({
 			name: game.name,
 			abbreviation: game.url,
@@ -448,9 +462,11 @@ export async function searchGames(name: string): Promise<{
 	}
 }
 
-export async function searchUsers(name: string): Promise<{
-	name: string;
-}[]> {
+export async function searchUsers(name: string): Promise<
+	{
+		name: string;
+	}[]
+> {
 	if (!name) return [];
 	const output: { name: string }[] = [];
 
@@ -458,14 +474,19 @@ export async function searchUsers(name: string): Promise<{
 	// Which is why we fall back on the normal API
 	try {
 		if (name.length <= 1) throw new Error("Short name");
-		const users = await GetSearch({
-			includeUsers: true,
-			query: name,
-			limit: 20,
-		}, { language: Language.en });
-		output.push(...users.userList.map((user) => ({
-			name: user.name,
-		})));
+		const users = await GetSearch(
+			{
+				includeUsers: true,
+				query: name,
+				limit: 20,
+			},
+			{ language: Language.en },
+		);
+		output.push(
+			...users.userList.map((user) => ({
+				name: user.name,
+			})),
+		);
 	} catch (err: unknown) {
 		if (!(err instanceof Error && err.message === "Short name")) {
 			console.error(err);
@@ -475,9 +496,11 @@ export async function searchUsers(name: string): Promise<{
 			throw new Error(`Got an unexpected status: ${usersRes.status}`);
 		}
 		const users = (await usersRes.json()).data as SpeedrunCom.User[];
-		output.push(...users.map((user) => ({
-			name: user.names.international,
-		})));
+		output.push(
+			...users.map((user) => ({
+				name: user.names.international,
+			})),
+		);
 	}
 
 	// If the name still hasn't been found then try to get it directly
@@ -485,9 +508,13 @@ export async function searchUsers(name: string): Promise<{
 		const shortName: false | { name: string } = await fetch(
 			`${SRC_API}/users?lookup=${encodeURIComponent(name)}`,
 		)
-			.then((res) => res.json()).then((user: { data: SpeedrunCom.User[] }) => ({
-				name: user.data[0].names.international,
-			}), (_) => false);
+			.then((res) => res.json())
+			.then(
+				(user: { data: SpeedrunCom.User[] }) => ({
+					name: user.data[0].names.international,
+				}),
+				(_) => false,
+			);
 		if (shortName) output.unshift(shortName);
 	}
 
