@@ -47,6 +47,7 @@ export async function worldRecord(
 					.json()).data;
 			categoryObj = getCategoryObj(category, categories);
 			if (!categoryObj) throw new CommandError("No category found");
+			levelFlag = true;
 		}
 	} else {
 		// Get default category if none supplied.
@@ -125,7 +126,7 @@ export async function worldRecord(
 		)).json()).data;
 	}
 
-	if (!leaderboard.runs.length) {
+	if (!leaderboard?.runs.length) {
 		throw new CommandError("No runs have been set in this category");
 	}
 

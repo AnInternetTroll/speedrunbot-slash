@@ -572,20 +572,29 @@ export class SpeedrunCom extends ApplicationCommandsModule {
 	): Promise<ApplicationCommandChoice[]> {
 		const game = d.option("game");
 		const category = d.option("category");
+		console.debug("category", category, typeof category);
 		if (
 			(typeof game === "string" && game.length) &&
 			(typeof category === "string")
 		) {
 			const gameObj = await getGame(d.option("game"));
 			if (gameObj) {
+				const searchService = new Moogle<ISpeedrunCom.Category | ISpeedrunCom.Level>();
+
 				const categories =
 					(await (await fetch(`${SRC_API}/games/${gameObj.id}/categories`))
 						.json()).data as ISpeedrunCom.Category[];
+				categories.forEach((category) => {
+					if (category.type !== "per-game") return;
+					return searchService.addItem([category.name.toLowerCase()], category);
+				});
 
-				const searchService = new Moogle<ISpeedrunCom.Category>();
-				categories.forEach((category) =>
-					searchService.addItem([category.name.toLowerCase()], category)
-				);
+				const levels =
+					(await (await fetch(`${SRC_API}/games/${gameObj.id}/levels`))
+						.json()).data as ISpeedrunCom.Level[];
+				levels.forEach((level) => {
+					return searchService.addItem([level.name.toLowerCase()], level);
+				});
 
 				const searchResult = searchService.search(
 					category.toLowerCase(),
