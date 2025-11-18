@@ -448,19 +448,12 @@ async function sendCommand(
 		} else if (err instanceof SpeedrunComError) {
 			await i.editResponse({ content: err.message, components: [] });
 		} else if (err instanceof Error) {
-			console.error(err);
+			console.error("Generic Error", err);
 			await i.editResponse({
 				embeds: [
 					new Embed({
 						description:
-							`Unexpected Error, please report this to a developer: ${command}\n\`/${i.data.name} ${
-								i.data.options.map((opt) => `${opt.name}:${opt.value}`)
-							}`,
-						color: 16711680,
-					}),
-					new Embed({
-						title: err.message,
-						description: `\`\`\`ts\n${err.stack}\n\`\`\``,
+							`Unexpected Error, please report this to a developer: \`${command}\``,
 						color: 16711680,
 					}),
 				],
@@ -468,7 +461,7 @@ async function sendCommand(
 				ephemeral: true,
 			});
 		} else {
-			console.error(err);
+			console.error("Unknown error", err);
 			await i.editResponse(
 				{
 					content:
