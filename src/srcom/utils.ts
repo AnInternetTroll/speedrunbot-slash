@@ -52,8 +52,19 @@ export async function fetch(
 		},
 	});
 	if (cacheAvailable) {
-		const cache = await caches.open(CACHE_KEY);
-		const match = await cache.match(req);
+		const cache = await caches.open(CACHE_KEY).catch((res) => {
+			console.error("Failed opening cache", CACHE_KEY, "reason", res);
+			return null;
+		});
+		const match = await cache?.match(req).catch((res) => {
+			console.error(
+				"Failed matching request in cache",
+				CACHE_KEY,
+				"reason",
+				res,
+			);
+			return null;
+		});
 		const date = match?.headers.get("date");
 		const dayAgo = new Date();
 		dayAgo.setDate(dayAgo.getDate() - 1);
@@ -63,7 +74,15 @@ export async function fetch(
 			if (res.status >= 500) {
 				throw new SpeedrunComError(`Speedrun.com panicked ${res.status}`);
 			} else {
-				await cache.put(req.clone(), res.clone());
+				await cache?.put(req.clone(), res.clone()).catch((res) => {
+					console.error(
+						"Failed putting request in cache",
+						CACHE_KEY,
+						"reason",
+						res,
+					);
+					return null;
+				});
 				return res;
 			}
 		}
@@ -76,7 +95,15 @@ export async function fetch(
 			return match;
 		} else {
 			req.headers.delete("ETag");
-			await cache.put(req.clone(), res.clone());
+			await cache?.put(req.clone(), res.clone()).catch((res) => {
+				console.error(
+					"Failed putting request in cache",
+					CACHE_KEY,
+					"reason",
+					res,
+				);
+				return null;
+			});
 			return res;
 		}
 	} else {
