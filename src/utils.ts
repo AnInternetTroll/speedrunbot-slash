@@ -42,6 +42,14 @@ export type Json<T> = T extends boolean | number | string | null ? T
 
 interface JsonArray<T> extends Array<Json<T>> {}
 
+export const corsHeaders = {
+	"Access-Control-Allow-Origin": "*",
+	"Access-Control-Allow-Methods": "GET",
+	"Access-Control-Allow-Headers": "Content-Type",
+	"Access-Control-Max-Age": "86400",
+	"Access-Control-Allow-Credentials": "false",
+};
+
 export function apiResponse(obj: JSON | string) {
 	let output: string;
 	if (typeof obj === "string") output = JSON.stringify({ message: obj });
@@ -51,6 +59,7 @@ export function apiResponse(obj: JSON | string) {
 	return new Response(output, {
 		headers: {
 			"Content-Type": "application/json",
+			...corsHeaders,
 		},
 	});
 }
