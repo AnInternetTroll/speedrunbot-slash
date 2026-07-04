@@ -1,13 +1,36 @@
 #!/usr/bin/env -S deno run --allow-net=www.speedrun.com --allow-import=git.sr.ht,esm.sh,deno.land,raw.githubusercontent.com,jsr.io --allow-read --no-check --no-prompt --location=http://speedrunbot-slash/
 import { Format, MarkupType } from "./fmt.ts";
+import { SpeedrunCom } from "./types.d.ts";
 import {
 	CommandError,
 	formatRun,
 	getAllRuns,
 	getUsersGamesExaminers,
+	sec2time,
 	statuses,
 } from "./utils.ts";
 import type { Opts } from "./utils.ts";
+
+export interface RunsObject {
+	filter: {
+		usernames: string[];
+		games: string[];
+		status: string | null;
+		examiners: string[];
+		emulated: boolean | null;
+	};
+	runs: {
+		levelName: string | null;
+		categoryName: string | null;
+		weblink: string;
+		players: {
+			rel: "user" | "guest";
+			name: string;
+			weblink: string;
+		}[];
+		time: string;
+	}[];
+}
 
 export async function runs(
 	user?: string,
@@ -15,8 +38,25 @@ export async function runs(
 	status?: string,
 	examiner?: string,
 	emulated?: boolean | string,
-	{ outputType = MarkupType.Markdown, signal }: Opts = {},
-): Promise<string> {
+	opts?: { outputType: MarkupType.Object } & Opts,
+): Promise<RunsObject>;
+export async function runs(
+	user?: string,
+	game?: string,
+	status?: string,
+	examiner?: string,
+	emulated?: boolean | string,
+	opts?: Opts,
+): Promise<string>;
+export async function runs(
+	user?: string,
+	game?: string,
+	status?: string,
+	examiner?: string,
+	emulated?: boolean | string,
+	opts?: Opts,
+): Promise<string | RunsObject> {
+	const { outputType = MarkupType.Markdown, signal } = opts ?? {};
 	if (!user && !game && !examiner) {
 		throw new CommandError("A user or a game is required.");
 	}
@@ -49,20 +89,49 @@ export async function runs(
 		signal,
 	});
 
+	if (outputType === MarkupType.Object) {
+		return {
+			filter: {
+				usernames: users.map((user) => user.names.international),
+				examiners: examiners.map((user) => user.names.international),
+				games: games.map((game) => game.names.international),
+				status: status ?? null,
+				emulated: typeof emulated === "boolean" ? emulated : null,
+			},
+			runs: runs.map((run) => ({
+				categoryName: run.category?.data.name ?? null,
+				levelName: run.level?.data.name,
+				time: sec2time(run.times.primary_t),
+				weblink: run.weblink,
+				players: (run.players.data as (
+					| (SpeedrunCom.User & { rel: "user" })
+					| (SpeedrunCom.Guest & { rel: "guest" })
+				)[]).map((p) => ({
+					rel: p.rel,
+					weblink: p.rel === "guest" ? p.links[0].uri : p.weblink,
+					name: p.rel === "guest" ? p.name : p.names.international,
+				})),
+			})),
+		};
+	}
+
 	output.push(
 		`Runs:${
 			users.length
-				? " " + users.map((user) => user.names.international).join(" and ")
+				? " " +
+					users.map((user) => user.names.international).join(" and ")
 				: ""
 		}${
 			games.length
-				? " - " + games.map((game) => game.names.international).join(" and ")
+				? " - " +
+					games.map((game) => game.names.international).join(" and ")
 				: ""
 		}${
 			examiners.length
-				? " Examined by " + examiners.map((user) =>
-					user.names.international
-				).join(" and ")
+				? " Examined by " +
+					examiners.map((user) => user.names.international).join(
+						" and ",
+					)
 				: ""
 		}${
 			status?.length

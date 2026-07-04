@@ -12,6 +12,16 @@ import { Format, MarkupType } from "./fmt.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
+export interface WorldRecordObject {
+	usernames: string[];
+	time: string;
+	weblink: string;
+	videos: string[] | null;
+	game: string;
+	category: string;
+	variable: string | null;
+}
+
 // Strongly copied from
 // https://github.com/Mango0x45/speedrunbot-plusplus/blob/38a7231805c966d55b1e23cd7e94a7ddd042088e/src/srcom/worldrecord.py
 export async function worldRecord(
@@ -19,8 +29,22 @@ export async function worldRecord(
 	category?: string,
 	subcategory?: string,
 	// For consistency sake
+	opts?: { outputType: MarkupType.Object } & Opts,
+): Promise<WorldRecordObject>;
+export async function worldRecord(
+	game: string,
+	category?: string,
+	subcategory?: string,
+	// For consistency sake
+	opts?: Opts,
+): Promise<string>;
+export async function worldRecord(
+	game: string,
+	category?: string,
+	subcategory?: string,
+	// For consistency sake
 	{ outputType = MarkupType.Markdown, signal }: Opts = {},
-): Promise<string> {
+): Promise<string | WorldRecordObject> {
 	const output: string[] = [];
 	const fmt = new Format(outputType);
 
@@ -95,11 +119,13 @@ export async function worldRecord(
 	let leaderboard: SpeedrunCom.Leaderboard;
 	// ILs.
 	if (levelFlag) {
-		const categories: SpeedrunCom.Category[] =
-			(await (await fetch(`${SRC_API}/levels/${categoryObj.id}/categories`, {
+		const categories: SpeedrunCom.Category[] = (await (await fetch(
+			`${SRC_API}/levels/${categoryObj.id}/categories`,
+			{
 				signal,
-			}))
-				.json()).data;
+			},
+		))
+			.json()).data;
 		const individualLevel = categories[0];
 		leaderboard = (await (await fetch(
 			`${SRC_API}/leaderboards/${gameObj.id}/level/${categoryObj.id}/${individualLevel.id}?${new URLSearchParams(
@@ -137,7 +163,9 @@ export async function worldRecord(
 			`The category '${category}' is an IL category, not level`,
 		);
 	}
-	const playersTasks: (Promise<string> | string)[] = wr.players.map((player) =>
+	const playersTasks: (Promise<string> | string)[] = wr.players.map((
+		player,
+	) =>
 		player.rel === "user"
 			? getUser(player.id, { signal }).then((user) =>
 				user ? fmt.link(user.weblink, user.names.international) : ""
@@ -145,6 +173,18 @@ export async function worldRecord(
 			: player.name
 	);
 	const players = await Promise.all(playersTasks);
+
+	if (outputType === MarkupType.Object) {
+		return {
+			time: sec2time(wr.times.primary_t),
+			usernames: players,
+			weblink: wr.weblink,
+			videos: wr.videos?.links.map((x) => x.uri) ?? null,
+			category: categoryObj.name,
+			variable: variableObj ? variableObj.name : null,
+			game: gameObj.names.international,
+		};
+	}
 
 	output.push(
 		`World Record: ${gameObj.names.international} - ${categoryObj.name} ${

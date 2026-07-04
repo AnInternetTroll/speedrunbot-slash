@@ -11,7 +11,7 @@ import {
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
 
-interface LeaderboardMod {
+export interface LeaderboardMod {
 	username: string;
 	count: number;
 }

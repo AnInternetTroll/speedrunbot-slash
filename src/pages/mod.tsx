@@ -7,8 +7,10 @@ import Admin from "./admin.tsx";
 // API
 import DiscordInteractions from "./api/discord/interactions.ts";
 import ExaminedLeaderboard from "./api/v1/srcom/examined_leaderboard.ts";
+import Runs from "./api/v1/srcom/runs.ts";
+import WorldRecord from "./api/v1/srcom/world_record.ts";
 import logout from "./logout.ts";
-import { ApiError, renderPage } from "../utils.ts";
+import { ApiError, corsHeaders, renderPage } from "../utils.ts";
 
 const routes: Record<
 	string,
@@ -16,16 +18,27 @@ const routes: Record<
 > = {
 	"/api/discord/interactions": DiscordInteractions,
 	"/api/v1/srcom/examined-leaderboard": ExaminedLeaderboard,
+	"/api/v1/srcom/runs": Runs,
+	"/api/v1/srcom/world-record": WorldRecord,
 	"/": Index,
 	"/admin": Admin,
 	"/logout": logout,
 };
+
+function isApiRoute(pathname: string) {
+	return pathname.startsWith("/api/");
+}
 
 export async function handler(req: Request): Promise<Response> {
 	const { pathname } = new URL(req.url);
 
 	// Check if the requested route is available
 	if (Object.keys(routes).includes(pathname)) {
+		if (req.method === "OPTIONS" && isApiRoute(pathname)) {
+			return new Response(null, {
+				headers: corsHeaders,
+			});
+		}
 		try {
 			return await routes[pathname](req);
 		} catch (err) {
@@ -42,7 +55,7 @@ export async function handler(req: Request): Promise<Response> {
 	} // If the route is not available
 	// And the client expects an api route
 	// Return as JSON
-	else if (pathname.includes("api")) {
+	else if (isApiRoute(pathname)) {
 		return Response.json({
 			message: "Not found",
 		}, {
