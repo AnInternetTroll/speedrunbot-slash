@@ -126,7 +126,8 @@ export namespace SpeedrunCom {
 		comment: string;
 		status: Status;
 		players: (Player | Guest & { rel: "guest" })[];
-		date: string;
+		date: string | null;
+		"date-time": string | null;
 		submitted?: any;
 		times: Times;
 		system: System;

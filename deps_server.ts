@@ -30,6 +30,7 @@ export { load } from "https://deno.land/std@0.223.0/dotenv/mod.ts";
 export {
 	deleteCookie,
 	getCookies,
+	getSetCookies,
 	setCookie,
 	STATUS_CODE,
 } from "https://deno.land/std@0.223.0/http/mod.ts";
@@ -39,9 +40,3 @@ export {
 	Helmet,
 	renderSSR,
 } from "https://deno.land/x/nano_jsx@v0.1.0/mod.ts";
-
-export {
-	GetSearch,
-	GetUserLeaderboard,
-	Language,
-} from "https://raw.githubusercontent.com/AnInternetTroll/speedruncomapiv2/664e9b5ced69ba7dc52a4db2d0bd5db032abb8f7/mod.ts";

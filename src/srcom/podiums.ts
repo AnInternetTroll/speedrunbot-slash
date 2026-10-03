@@ -3,7 +3,7 @@ import { Format, MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getGames, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { GetUserLeaderboard } from "../../deps_server.ts";
+import { GetUserLeaderboard } from "../speedruncomapiv2/mod.ts";
 
 interface PodiumsObject {
 	podiums: number;
@@ -36,8 +36,9 @@ export async function podiums(
 
 	try {
 		const userLeaderboard = await GetUserLeaderboard({ userId: user.id });
-		userLeaderboard.runs.forEach((run) => {
-			if (run.place <= 3) {
+		userLeaderboard.runs?.forEach((run) => {
+			const place = parseInt(run.place, 10);
+			if (place <= 3) {
 				if (!gameObjs.length) total++;
 				else {
 					if (gameObjs.find((game) => game.id === run.gameId)) {

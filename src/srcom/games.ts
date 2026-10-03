@@ -3,7 +3,7 @@ import { MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { GetUserLeaderboard } from "../../deps_server.ts";
+import { GetUserLeaderboard } from "../speedruncomapiv2/mod.ts";
 
 interface GamesObject {
 	games: number;
@@ -28,7 +28,7 @@ export async function games(
 
 	try {
 		const userLeaderboard = await GetUserLeaderboard({ userId: user.id });
-		userLeaderboard.runs.forEach((run) => {
+		userLeaderboard.runs?.forEach((run) => {
 			if (games.includes(run.gameId)) return;
 			else games.push(run.gameId);
 		});

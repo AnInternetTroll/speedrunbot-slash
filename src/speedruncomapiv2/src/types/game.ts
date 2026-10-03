@@ -1,0 +1,42 @@
+import type { StaticAsset } from "./staticAsset.ts";
+
+export interface Game {
+	activePlayerCount: number;
+	addedDate: number;
+	autoVerify: boolean;
+	boostDistinctDonorsCount: number;
+	boostReceivedCount: number;
+	coverPath: string;
+	defaultTimer: number;
+	defaultView: number;
+	discordUrl: string;
+	emulator: number;
+	gameTypeIds: [] | undefined;
+	guidePermissionType: number;
+	id: string;
+	igt: boolean;
+	loadtimes: boolean;
+	milliseconds: boolean;
+	name: string;
+	platformIds: [] | undefined;
+	regionIds: [] | undefined;
+	releaseDate: number;
+	requireVideo: boolean;
+	resourcePermissionType: number;
+	rules: string;
+	runCommentsMode: number;
+	runCount: number;
+	staticAssets: StaticAsset[] | undefined;
+	totalPlayerCount: number;
+	touchDate: number;
+	trophy1stPath: string;
+	trophy2ndPath: string;
+	trophy3rdPath: string;
+	trophy4thPath: string;
+	type: string;
+	url: string;
+	validTimers: number[] | undefined;
+	verification: boolean;
+	viewPowerLevel: number;
+	websiteUrl: string;
+}

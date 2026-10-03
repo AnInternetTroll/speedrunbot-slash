@@ -3,7 +3,7 @@ import { MarkupType } from "./fmt.ts";
 import { CommandError, fetch, getUser, SRC_API } from "./utils.ts";
 import type { Opts } from "./utils.ts";
 import type { SpeedrunCom } from "./types.d.ts";
-import { GetUserLeaderboard } from "../../deps_server.ts";
+import { GetUserLeaderboard } from "../speedruncomapiv2/mod.ts";
 
 interface CategoriesObject {
 	categoriesPlayed: number;
@@ -32,7 +32,7 @@ export async function categoriesPlayed(
 	if (!user) throw new CommandError(`${username} user not found.`);
 	try {
 		const userLeaderboard = await GetUserLeaderboard({ userId: user.id });
-		userLeaderboard.runs.forEach((run) => {
+		userLeaderboard.runs?.forEach((run) => {
 			if (categories.includes(run.categoryId)) return;
 			else {
 				if (games.length) {

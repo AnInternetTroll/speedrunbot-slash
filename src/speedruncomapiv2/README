@@ -1,0 +1,61 @@
+SpeedrunComApiV2.ts
+===================
+
+The goal of this project is to document and use the new Speedrun.com v2 API
+
+Current version is: 0.0.1
+
+WARNING
+-------
+
+This API is UNSTABLE. Things can change both in the project and on speedrun.com's side
+There is NO GUARANTEE that things will work tomorrow the same way they work today.
+
+TODO
+----
+
+Some APIs have types and functions to call and work, some don't.
+Here is a rough overview of their status.
+If anything is missing feel free to let me know.
+
+- [x] GetSearch
+- [x] GetCommentList
+- [x] PutAuthSignup
+- [x] PutGameBoostGrant
+- [ ] GetGameData
+- [ ] GetConversations
+- [ ] GetNotifications
+- [ ] GetModerationGames
+- [ ] GetSession
+- [ ] GetGameSettings
+- [ ] PutGameSettings
+- [ ] GetThemeSettings
+- [ ] GetAuditLogList
+- [ ] GetModerationRuns
+- [ ] PutSessionPing
+- [ ] GetGameLeaderboard2
+- [ ] GetGameRecordHistory
+- [ ] GetConversationMessages
+- [ ] GetForumList
+- [ ] GetForumReadStatus
+- [ ] GetThreadReadStatus
+- [ ] GetCommentable
+- [ ] PutThreadRead
+- [ ] GetThread
+- [ ] GetUserBlocks
+
+Besides all of the API calls above, their types should also be documented.
+Speedrun.com uses a lot of enums in places, such as `guidePermissionType: 0`.
+What is 0? We have to document this for everything.
+
+Codebase
+--------
+
+The code is written in TypeScript and developed primarely with deno in mind,
+but compatibility with browsers is kept in mind.
+
+This will likely not work in browsers though because of CORS.
+
+Please run `deno check index.ts` and `deno fmt --check` before contributing any patches,
+to ensure that the code matches the style of everything else.
+

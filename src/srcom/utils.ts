@@ -1,6 +1,6 @@
 import type { SpeedrunCom, SpeedrunComUnofficial } from "./types.d.ts";
 import { delay, TimeDelta } from "../../deps_general.ts";
-import { GetSearch, Language } from "../../deps_server.ts";
+import { GetSearch, Language } from "../speedruncomapiv2/mod.ts";
 import type { Format, MarkupType } from "./fmt.ts";
 export const SRC_URL = "https://www.speedrun.com";
 export const SRC_API = `${SRC_URL}/api/v1`;
@@ -509,11 +509,13 @@ export async function searchUsers(name: string): Promise<
 			},
 			{ language: Language.en },
 		);
-		output.push(
-			...users.userList.map((user) => ({
-				name: user.name,
-			})),
-		);
+		if (users.userList) {
+			output.push(
+				...users.userList.map((user) => ({
+					name: user.name,
+				})),
+			);
+		}
 	} catch (err: unknown) {
 		if (!(err instanceof Error && err.message === "Short name")) {
 			console.error(err);

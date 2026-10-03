@@ -1,0 +1,75 @@
+import type { StaticAsset } from "../types/staticAsset.ts";
+import type { User } from "../types/user.ts";
+
+export interface GetSearchResponse {
+	gameList: {
+		id: string;
+		name: string;
+		url: string;
+		type: string;
+		loadtimes: boolean;
+		milliseconds: boolean;
+		igt: boolean;
+		verification: boolean;
+		autoVerify: boolean;
+		requireVideo: boolean;
+		emulator: number;
+		defaultTimer: number;
+		validTimers: number[];
+		releaseDate: number;
+		addedDate: number;
+		touchDate: number;
+		coverPath: string;
+		trophy1stPath: string;
+		trophy2ndPath: string;
+		trophy3rdPath: string;
+		runCommentsMode: number;
+		runCount: number;
+		activePlayerCount: number;
+		totalPlayerCount: number;
+		boostReceivedCount: number;
+		boostDistinctDonorsCount: number;
+		rules: string;
+		viewPowerLevel: number;
+		platformIds: string[] | undefined;
+		regionIds: string[] | undefined;
+		gameTypeIds: string[] | undefined;
+		websiteUrl: string;
+		discordUrl: string;
+		defaultView: number;
+		guidePermissionType: number;
+		resourcePermissionType: number;
+		staticAssets: StaticAsset[] | undefined;
+	}[];
+	newsList: {
+		id: string;
+		slug: string;
+		title: string;
+		summary: string;
+		body: string;
+		userId: string;
+		createDate: number;
+		updateDate: number;
+		publishDate: number;
+		publishTarget: "news";
+		publishTags: string[] | undefined;
+		coverImagePath: string;
+		commentsCount: number;
+	}[];
+	pageList: [];
+	seriesList: {
+		id: string;
+		name: string;
+		url: string;
+		addedDate: number;
+		touchDate: number;
+		websiteUrl: string;
+		discordUrl: string;
+		runCount: number;
+		activePlayerCount: number;
+		totalPlayerCount: number;
+		officialGameCount: number;
+		staticAssets: StaticAsset[] | undefined;
+	}[];
+	userList: User[] | undefined;
+}
