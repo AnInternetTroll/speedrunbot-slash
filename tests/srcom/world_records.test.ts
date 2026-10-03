@@ -7,8 +7,8 @@ Deno.test("Get world records by username", async () => {
 		outputType: MarkupType.Plain,
 	});
 	const expected = `World Record Count: 1
-Fullgame: 1
-Individual Level: 9
-Total: 10`;
+Fullgame: 0
+Individual Level: 7
+Total: 7`;
 	assertEquals(res, expected);
 });

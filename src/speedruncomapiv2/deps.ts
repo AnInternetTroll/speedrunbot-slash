@@ -1,4 +1,1 @@
-export {
-	getSetCookies,
-	setCookie,
-} from "../../deps_server.ts";
+export { getSetCookies, setCookie } from "../../deps_server.ts";
